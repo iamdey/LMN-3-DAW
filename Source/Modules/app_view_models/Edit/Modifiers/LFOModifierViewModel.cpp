@@ -89,7 +89,7 @@ double LFOModifierViewModel::getParameterInterval(int index) {
     case 0:
         return 1;
     case 1:
-        return .1;
+        return .5;
     case 2:
         return .01;
     case 3:
