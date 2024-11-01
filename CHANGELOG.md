@@ -8,6 +8,14 @@ and this project adheres to
 
 ## [Unreleased]
 
+### Added
+
+- Load/Save track, from settings it allows to create or select a track.
+
+### Fixed
+
+- Update internals (tracktion_engine 2.1).
+
 ## [0.1.1] - 2022-06-15
 
 ### Added
