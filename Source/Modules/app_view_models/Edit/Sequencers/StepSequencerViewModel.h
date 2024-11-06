@@ -90,6 +90,10 @@ class StepSequencerViewModel : public juce::ValueTree::Listener,
                                   const juce::Identifier &property) override;
 
     void generateMidiSequence();
+    void addNoteToSequence(int channel, int noteIndex);
+    void removeNoteFromSequence(int channel, int noteIndex);
+    std::optional<tracktion::MidiNote *> findNoteInSequence(int channel,
+                                                            int noteIndex);
 
     // used for transport changes
     void playbackContextChanged() override {}
