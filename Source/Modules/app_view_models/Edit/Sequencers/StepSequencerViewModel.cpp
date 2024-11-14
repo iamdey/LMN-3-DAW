@@ -25,15 +25,18 @@ StepSequencerViewModel::StepSequencerViewModel(tracktion::AudioTrack::Ptr t)
         // it also cannot be greater than the maximum number of notes allowed
         if (param <= 1)
             return 1;
-        else if (param >= app_models::StepChannel::maxNumberOfNotes)
-            return app_models::StepChannel::maxNumberOfNotes;
+        else if (param >= app_models::StepChannel::getMaxNumberOfNotes(
+                              notesPerMeasure.get()))
+            return app_models::StepChannel::getMaxNumberOfNotes(
+                notesPerMeasure.get());
         else
             return param;
     };
 
     numberOfNotes.setConstrainer(numberOfNotesConstrainer);
-    numberOfNotes.referTo(state, IDs::numberOfNotes, nullptr,
-                          app_models::StepChannel::maxNumberOfNotes);
+    numberOfNotes.referTo(
+        state, IDs::numberOfNotes, nullptr,
+        app_models::StepChannel::getMaxNumberOfNotes(notesPerMeasure.get()));
 
     std::function<int(int)> selectedNoteIndexConstrainer = [this](int param) {
         // selected index cannot be less than 0
@@ -96,7 +99,7 @@ int StepSequencerViewModel::getNumChannels() {
 }
 
 int StepSequencerViewModel::getNumNotesPerChannel() {
-    return app_models::StepChannel::maxNumberOfNotes;
+    return app_models::StepChannel::getMaxNumberOfNotes(notesPerMeasure.get());
 }
 
 bool StepSequencerViewModel::hasNoteAt(int channel, int noteIndex) {
@@ -163,6 +166,12 @@ void StepSequencerViewModel::incrementNotesPerMeasure() {
                 newIndex = currentIndex + 1;
 
             notesPerMeasure.setValue(notesPerMeasureOptions[newIndex], nullptr);
+            // compute the new number of notes for the measure division
+            float prevNbMeasures =
+                numberOfNotes.get() / notesPerMeasureOptions[currentIndex];
+            int newNbNotes =
+                (int)std::round(notesPerMeasure.get() * prevNbMeasures);
+            numberOfNotes.setValue(newNbNotes, nullptr);
         }
     }
 }
@@ -180,6 +189,12 @@ void StepSequencerViewModel::decrementNotesPerMeasure() {
                 newIndex = currentIndex - 1;
 
             notesPerMeasure.setValue(notesPerMeasureOptions[newIndex], nullptr);
+            // compute the new number of notes for the measure division
+            float prevNbMeasures =
+                numberOfNotes.get() / notesPerMeasureOptions[currentIndex];
+            int newNbNotes =
+                (int)std::round(notesPerMeasure.get() * prevNbMeasures);
+            numberOfNotes.setValue(newNbNotes, nullptr);
         }
     }
 }

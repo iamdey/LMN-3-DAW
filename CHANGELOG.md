@@ -12,6 +12,11 @@ and this project adheres to
 
 - Load/Save track, from settings it allows to create or select a track.
 
+### Changed
+
+- Step Sequencer: Keep the same number of measures when changing the number of
+  notes per measure. The grid can hold 64 notes.
+
 ### Fixed
 
 - Update internals (tracktion_engine 2.1).

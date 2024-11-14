@@ -26,9 +26,8 @@ void StepSequencerGridComponent::paint(juce::Graphics &g) {
     float rowSpacing =
         (float(getHeight()) - (paddingBottom + paddingTop)) / float(numRows);
 
-    int numCols = 16;
-    while (int((float(getWidth()) - (paddingLeft + paddingRight))) % numCols !=
-           0)
+    int numCols = viewModel.getNotesPerMeasure() * 4;
+    while (int((float(getWidth()) - (paddingLeft + paddingRight))) % 2 != 0)
         paddingLeft += 1;
     float colSpacing =
         (float(getWidth()) - (paddingLeft + paddingRight)) / float(numCols);
