@@ -1,7 +1,7 @@
 namespace app_models {
 
 const int StepChannel::maxNumberOfChannels = 24;
-const int StepChannel::maxNumberOfNotes = 16;
+const int StepChannel::maxNumberOfMeasures = 4;
 
 StepChannel::StepChannel(juce::ValueTree v) : state(v) {
     jassert(state.hasType(IDs::STEP_CHANNEL));
@@ -12,6 +12,11 @@ StepChannel::StepChannel(juce::ValueTree v) : state(v) {
 
     std::function<juce::String(juce::String)> patternConstrainer =
         [this](juce::String param) {
+            // Idk how to compute maxNumberOfNotes dynamically in the
+            // constructor or in the pattern constrainer (and may be it's not
+            // important). Set a maximal initial value: 16 notes per measure × 4
+            // measures
+            const int maxNumberOfNotes = 64;
             if (param.length() > maxNumberOfNotes)
                 return param.dropLastCharacters(param.length() -
                                                 maxNumberOfNotes);
@@ -47,5 +52,9 @@ void StepChannel::setNote(int noteIndex, bool value) {
 }
 
 bool StepChannel::getNote(int noteIndex) { return getPattern()[noteIndex]; }
+
+int StepChannel::getMaxNumberOfNotes(int notesPerMeasure) {
+    return maxNumberOfMeasures * notesPerMeasure;
+}
 
 } // namespace app_models
