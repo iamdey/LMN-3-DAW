@@ -192,7 +192,7 @@ void EditTabBarView::renderButtonReleased() {
             tracksToDo.setBit(i);
 
         tracktion::Renderer::renderToFile("Render", renderFile, edit, timeRange,
-                                          tracksToDo, true, {}, true);
+                                          tracksToDo, true, true, {}, true);
         juce::Logger::writeToLog("Render complete!");
         messageBox.setMessage("Render Complete!");
         // must call resized so message box width is updated to fit text

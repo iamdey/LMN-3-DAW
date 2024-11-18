@@ -8,6 +8,10 @@ and this project adheres to
 
 ## [Unreleased]
 
+### Fixed
+
+- Update internals (tracktion_engine 3.0, c++@20).
+
 ## [0.3.0] - 2025-01-30
 
 ### Changed

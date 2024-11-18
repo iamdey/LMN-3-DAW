@@ -4,7 +4,7 @@ namespace app_view_models {
 
 ModifiersListAdapter::ModifiersListAdapter(tracktion::Track::Ptr t) : track(t) {
     // remove any dangling modifiers that dont have any parameters to modify
-    for (auto modifier : track->getModifierList().getModifiers())
+    for (auto modifier : track->getModifierList()->getModifiers())
         if (auto modifierSource =
                 dynamic_cast<tracktion::AutomatableParameter::ModifierSource *>(
                     modifier))
@@ -16,7 +16,7 @@ ModifiersListAdapter::ModifiersListAdapter(tracktion::Track::Ptr t) : track(t) {
 
 juce::StringArray ModifiersListAdapter::getItemNames() {
     juce::StringArray itemNames;
-    for (auto modifier : track->getModifierList().getModifiers()) {
+    for (auto modifier : track->getModifierList()->getModifiers()) {
         if (auto modifierSource =
                 dynamic_cast<tracktion::AutomatableParameter::ModifierSource *>(
                     modifier)) {
@@ -50,11 +50,11 @@ juce::StringArray ModifiersListAdapter::getItemNames() {
 }
 
 int ModifiersListAdapter::size() {
-    return track->getModifierList().getModifiers().size();
+    return track->getModifierList()->getModifiers().size();
 }
 
 tracktion::EditItem *ModifiersListAdapter::getItemAtIndex(int index) {
-    return track->getModifierList().getModifiers()[index];
+    return track->getModifierList()->getModifiers()[index];
 }
 
 } // namespace app_view_models

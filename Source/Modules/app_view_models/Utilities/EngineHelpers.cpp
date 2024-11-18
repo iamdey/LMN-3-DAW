@@ -5,8 +5,8 @@ namespace app_view_models {
 bool EngineHelpers::isTrackArmed(tracktion::AudioTrack &t, int position) {
     auto &edit = t.edit;
     for (auto instance : edit.getAllInputDevices())
-        if (instance->isOnTargetTrack(t, position))
-            return instance->isRecordingEnabled(t);
+        if (tracktion::isOnTargetTrack(*instance, t, position))
+            return instance->isRecordingEnabled(t.itemID);
 
     return false;
 }
