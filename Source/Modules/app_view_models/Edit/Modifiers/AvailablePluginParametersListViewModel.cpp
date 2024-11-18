@@ -27,7 +27,7 @@ tracktion::Modifier *
 AvailablePluginParametersListViewModel::addModifierToSelectedParameter(
     juce::Identifier modifierID) {
     if (auto pluginParameter = getSelectedItem()) {
-        auto modifier = track->getModifierList().insertModifier(
+        auto modifier = track->getModifierList()->insertModifier(
             juce::ValueTree(modifierID), -1, nullptr);
         if (auto lfoModifier =
                 dynamic_cast<tracktion::LFOModifier *>(modifier.get()))

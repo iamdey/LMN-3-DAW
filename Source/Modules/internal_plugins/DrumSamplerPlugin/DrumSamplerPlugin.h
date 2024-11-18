@@ -10,7 +10,7 @@ class DrumSamplerPlugin : public tracktion::SamplerPlugin {
 
     static const char *xmlTypeName;
 
-    juce::String getName() override { return TRANS("DrumSampler"); }
+    juce::String getName() const override { return TRANS("DrumSampler"); }
 
     juce::String getPluginType() override { return xmlTypeName; }
 

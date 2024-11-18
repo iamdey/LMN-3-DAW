@@ -223,10 +223,12 @@ TEST_F(TracksListViewModelTest, stopPlayingWhenAlreadyStopped) {
     singleTrackViewModel.addListener(&listener);
 
     // move playhead forward in time a bit
-    singleTrackEdit->getTransport().setCurrentPosition(1.0);
+    singleTrackEdit->getTransport().setPosition(
+        tracktion::TimePosition::fromSeconds(1.0));
     singleTrackViewModel.stopRecordingOrPlaying();
     singleTrackEdit->getTransport().sendSynchronousChangeMessage();
-    EXPECT_FLOAT_EQ(singleTrackEdit->getTransport().getCurrentPosition(), 0.0);
+    EXPECT_FLOAT_EQ(singleTrackEdit->getTransport().getPosition().inSeconds(),
+                    0.0);
 }
 
 TEST_F(TracksListViewModelTest, tracksViewTypeChange) {
@@ -253,28 +255,33 @@ TEST_F(TracksListViewModelTest, tracksViewTypeChange) {
 }
 
 TEST_F(TracksListViewModelTest, nudgeForward) {
-    double position = singleTrackEdit->getTransport().getCurrentPosition();
+    double position = singleTrackEdit->getTransport().getPosition().inSeconds();
     singleTrackViewModel.nudgeTransportForward();
-    EXPECT_FLOAT_EQ(singleTrackEdit->getTransport().getCurrentPosition(),
+
+    EXPECT_FLOAT_EQ(singleTrackEdit->getTransport().getPosition().inSeconds(),
                     position + singleTrackCamera.getNudgeAmount());
 }
 
 TEST_F(TracksListViewModelTest, nudgeBackward) {
-    double position = singleTrackEdit->getTransport().getCurrentPosition();
+    double position = singleTrackEdit->getTransport().getPosition().inSeconds();
     singleTrackViewModel.nudgeTransportBackward();
-    EXPECT_EQ(singleTrackEdit->getTransport().getCurrentPosition(), position);
+    EXPECT_EQ(singleTrackEdit->getTransport().getPosition().inSeconds(),
+              position);
 
-    singleTrackEdit->getTransport().setCurrentPosition(1.0);
-    position = singleTrackEdit->getTransport().getCurrentPosition();
+    singleTrackEdit->getTransport().setPosition(
+        tracktion::TimePosition::fromSeconds(1.0));
+    position = singleTrackEdit->getTransport().getPosition().inSeconds();
     singleTrackViewModel.nudgeTransportBackward();
-    EXPECT_FLOAT_EQ(singleTrackEdit->getTransport().getCurrentPosition(),
+
+    EXPECT_FLOAT_EQ(singleTrackEdit->getTransport().getPosition().inSeconds(),
                     position - singleTrackCamera.getNudgeAmount());
 }
 
 TEST_F(TracksListViewModelTest, edgeScrollForward) {
-    singleTrackEdit->getTransport().setCurrentPosition(
-        singleTrackCamera.getCenter() +
-        singleTrackCamera.getCenterOffsetLimit());
+    singleTrackEdit->getTransport().setPosition(
+        tracktion::TimePosition::fromSeconds(
+            singleTrackCamera.getCenter() +
+            singleTrackCamera.getCenterOffsetLimit()));
     double cameraCenter = singleTrackCamera.getCenter();
     singleTrackViewModel.nudgeTransportForward();
     singleTrackEdit->getTransport().dispatchPendingMessages();
@@ -284,9 +291,10 @@ TEST_F(TracksListViewModelTest, edgeScrollForward) {
 
 TEST_F(TracksListViewModelTest, edgeScrollBackward) {
     singleTrackCamera.setCenter(3 * singleTrackCamera.getCenter());
-    singleTrackEdit->getTransport().setCurrentPosition(
-        singleTrackCamera.getCenter() -
-        singleTrackCamera.getCenterOffsetLimit());
+    singleTrackEdit->getTransport().setPosition(
+        tracktion::TimePosition::fromSeconds(
+            singleTrackCamera.getCenter() -
+            singleTrackCamera.getCenterOffsetLimit()));
     double cameraCenter = singleTrackCamera.getCenter();
     singleTrackViewModel.nudgeTransportBackward();
     singleTrackEdit->getTransport().dispatchPendingMessages();
@@ -314,7 +322,8 @@ TEST_F(TracksListViewModelTest,
                           tracktion::TimePosition::fromSeconds(1)},
                          nullptr);
     EXPECT_EQ(track->getClips().size(), 1);
-    singleTrackEdit->getTransport().setCurrentPosition(.99);
+    singleTrackEdit->getTransport().setPosition(
+        tracktion::TimePosition::fromSeconds(.99));
     singleTrackViewModel.cutSelectedTracksClipAtPlayHead();
     EXPECT_EQ(track->getClips().size(), 0);
 }
@@ -327,7 +336,8 @@ TEST_F(TracksListViewModelTest,
                           tracktion::TimePosition::fromSeconds(1)},
                          nullptr);
     EXPECT_EQ(track->getClips().size(), 1);
-    singleTrackEdit->getTransport().setCurrentPosition(.5);
+    singleTrackEdit->getTransport().setPosition(
+        tracktion::TimePosition::fromSeconds(.5));
     singleTrackViewModel.cutSelectedTracksClipAtPlayHead();
     EXPECT_EQ(track->getClips().size(), 0);
 }
@@ -340,7 +350,8 @@ TEST_F(TracksListViewModelTest,
                           tracktion::TimePosition::fromSeconds(1)},
                          nullptr);
     EXPECT_EQ(track->getClips().size(), 1);
-    singleTrackEdit->getTransport().setCurrentPosition(1.01);
+    singleTrackEdit->getTransport().setPosition(
+        tracktion::TimePosition::fromSeconds(1.01));
     singleTrackViewModel.cutSelectedTracksClipAtPlayHead();
     EXPECT_EQ(track->getClips().size(), 1);
 }
@@ -353,7 +364,8 @@ TEST_F(TracksListViewModelTest,
                           tracktion::TimePosition::fromSeconds(1)},
                          nullptr);
     EXPECT_EQ(track->getClips().size(), 1);
-    singleTrackEdit->getTransport().setCurrentPosition(.5);
+    singleTrackEdit->getTransport().setPosition(
+        tracktion::TimePosition::fromSeconds(.5));
     singleTrackViewModel.splitSelectedTracksClipAtPlayHead();
     EXPECT_EQ(track->getClips().size(), 2);
 }
@@ -366,7 +378,8 @@ TEST_F(TracksListViewModelTest,
                           tracktion::TimePosition::fromSeconds(1)},
                          nullptr);
     EXPECT_EQ(track->getClips().size(), 1);
-    singleTrackEdit->getTransport().setCurrentPosition(1.01);
+    singleTrackEdit->getTransport().setPosition(
+        tracktion::TimePosition::fromSeconds(1.01));
     singleTrackViewModel.splitSelectedTracksClipAtPlayHead();
     EXPECT_EQ(track->getClips().size(), 1);
 }

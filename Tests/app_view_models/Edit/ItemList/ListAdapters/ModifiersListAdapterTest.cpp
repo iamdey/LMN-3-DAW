@@ -13,8 +13,8 @@ class ModifiersListAdapterTest : public ::testing::Test {
         auto modifier1 =
             tracktion::getAudioTracks(*edit)[0]
                 ->getModifierList()
-                .insertModifier(juce::ValueTree(tracktion::IDs::LFO), -1,
-                                nullptr);
+                ->insertModifier(juce::ValueTree(tracktion::IDs::LFO), -1,
+                                 nullptr);
         auto pluginParameter =
             tracktion::getAudioTracks(*edit)[0]->getVolumePlugin()->volParam;
         pluginParameter->addModifier(*modifier1);
@@ -22,8 +22,8 @@ class ModifiersListAdapterTest : public ::testing::Test {
         auto modifier2 =
             tracktion::getAudioTracks(*edit)[0]
                 ->getModifierList()
-                .insertModifier(juce::ValueTree(tracktion::IDs::STEP), -1,
-                                nullptr);
+                ->insertModifier(juce::ValueTree(tracktion::IDs::STEP), -1,
+                                 nullptr);
         auto pluginParameter2 =
             tracktion::getAudioTracks(*edit)[0]->getVolumePlugin()->panParam;
         pluginParameter2->addModifier(*modifier2);
@@ -31,8 +31,8 @@ class ModifiersListAdapterTest : public ::testing::Test {
         auto modifier3 =
             tracktion::getAudioTracks(*edit)[0]
                 ->getModifierList()
-                .insertModifier(juce::ValueTree(tracktion::IDs::RANDOM), -1,
-                                nullptr);
+                ->insertModifier(juce::ValueTree(tracktion::IDs::RANDOM), -1,
+                                 nullptr);
         auto pluginParameter3 =
             tracktion::getAudioTracks(*edit)[0]->getVolumePlugin()->panParam;
         pluginParameter3->addModifier(*modifier3);
