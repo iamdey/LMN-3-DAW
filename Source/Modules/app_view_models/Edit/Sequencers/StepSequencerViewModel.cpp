@@ -83,7 +83,7 @@ StepSequencerViewModel::~StepSequencerViewModel() {
     // if the sequence is empty, delete the clip
     // and disable looping
     if (midiClip->getSequence().isEmpty()) {
-        midiClip->removeFromParentTrack();
+        midiClip->removeFromParent();
         track->edit.getTransport().looping.setValue(false, nullptr);
     }
 
@@ -237,7 +237,8 @@ void StepSequencerViewModel::stop() {
     } else {
         // if we try to stop while currently not playing
         // return transport to beginning
-        transport.setCurrentPosition(midiClipStart.inSeconds());
+        transport.setPosition(
+            tracktion::TimePosition::fromSeconds(midiClipStart.inSeconds()));
     }
 }
 

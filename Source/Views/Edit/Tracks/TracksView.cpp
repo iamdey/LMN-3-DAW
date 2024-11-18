@@ -428,7 +428,8 @@ void TracksView::timerCallback() {
     informationPanel.setTimecode(edit.getTimecodeFormat().getString(
         edit.tempoSequence, edit.getTransport().getPosition(), false));
     playheadComponent.setBounds(
-        camera.timeToX(edit.getTransport().getCurrentPosition(), getWidth()),
+        camera.timeToX(edit.getTransport().getPosition().inSeconds(),
+                       getWidth()),
         informationPanel.getHeight(), 2,
         getHeight() - informationPanel.getHeight());
 

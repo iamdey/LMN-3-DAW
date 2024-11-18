@@ -75,7 +75,7 @@ void TrackView::buildRecordingClip() {
     if (track->edit.getTransport().isRecording()) {
         for (auto in : track->edit.getAllInputDevices()) {
             if (in->isRecordingActive() &&
-                track.get() == in->getTargetTracks().getFirst()) {
+                track.get() == tracktion::getTargetTracks(*in).getFirst()) {
                 needed = true;
                 break;
             }
