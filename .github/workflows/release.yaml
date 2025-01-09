@@ -4,6 +4,8 @@ on:
   push:
     tags:
       - "v*.*.*"
+
+# TODO: Fix containers to use latest image & correct platform
 jobs:
   test:
     runs-on: ubuntu-20.04
@@ -124,4 +126,3 @@ jobs:
             LMN-3-x86_64.zip
             LMN-3-arm-linux-gnueabihf.zip
             LMN-3-aarch64-linux-gnu.zip
-
