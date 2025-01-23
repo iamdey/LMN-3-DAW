@@ -233,9 +233,8 @@ void LoadSaveSongListView::loadTrackFromFile(const juce::File &projectFile) {
                         juce::Logger::writeToLog("File deleted: " +
                                                  file.getFullPathName());
                     } else {
-                        juce::Logger::writeToLog(
-                            "File could not be deleted: " +
-                            file.getFullPathName());
+                        juce::Logger::writeToLog("File could not be deleted: " +
+                                                 file.getFullPathName());
                     }
                 }
             } else {

@@ -17,8 +17,7 @@ class ConfigurationHelpers {
     static bool getShowTitleBar(juce::File &configFile);
     static double getWidth(juce::File &configFile);
     static double getHeight(juce::File &configFile);
-    static void
-    setSavedTrackName(const juce::File &newValue);
+    static void setSavedTrackName(const juce::File &newValue);
     static juce::File getSavedTrackName();
     static juce::String getApplicationName();
 
