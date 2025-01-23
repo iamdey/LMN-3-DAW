@@ -15,6 +15,7 @@ and this project adheres to
 ### Fixed
 
 - Update internals (tracktion_engine 2.1).
+- Change the interval of the rate selector in modifiers for .5 instead of .1.
 
 ## [0.1.1] - 2022-06-15
 
