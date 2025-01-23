@@ -478,7 +478,7 @@ void TracksView::noteOnPressed(int noteNumber) {
             break;
         }
         if (trackIndex != -1) {
-            // Verifica si el índice es válido
+            // Checks if the index is valid
             if (trackIndex < viewModel.listViewModel.itemListState.listSize) {
                 viewModel.listViewModel.itemListState.setSelectedItemIndex(
                     trackIndex);

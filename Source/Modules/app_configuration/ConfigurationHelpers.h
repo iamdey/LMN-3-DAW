@@ -18,9 +18,9 @@ class ConfigurationHelpers {
     static double getWidth(juce::File &configFile);
     static double getHeight(juce::File &configFile);
     static void
-    setSavedTrackName(const juce::File &newValue); // Declaración del método
-    static juce::File getSavedTrackName();         // Declaración del método
-    static juce::String getApplicationName();      // Declaración del método
+    setSavedTrackName(const juce::File &newValue);
+    static juce::File getSavedTrackName();
+    static juce::String getApplicationName();
 
   private:
     static bool writeBinarySamplesToDirectory(const juce::File &destDir,

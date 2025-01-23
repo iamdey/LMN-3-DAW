@@ -99,7 +99,7 @@ class GuiAppApplication : public juce::JUCEApplication {
             edit = tracktion::loadEditFromFile(engine, latestFile);
             ConfigurationHelpers::setSavedTrackName(latestFile);
         } else {
-            // Generar nombre de archivo basado en la fecha actual
+            // Generate file name based on current date
             auto currentTime = juce::Time::getCurrentTime();
             auto day =
                 juce::String(currentTime.getDayOfMonth()).paddedLeft('0', 2);
@@ -119,7 +119,7 @@ class GuiAppApplication : public juce::JUCEApplication {
             auto editFile = savedDirectory.getChildFile(newEditFileName);
 
             ConfigurationHelpers::setSavedTrackName(editFile);
-            // Crear el archivo y la edición
+            // Create file and edit
             editFile.create();
             edit = tracktion::createEmptyEdit(engine, editFile);
             edit->ensureNumberOfAudioTracks(

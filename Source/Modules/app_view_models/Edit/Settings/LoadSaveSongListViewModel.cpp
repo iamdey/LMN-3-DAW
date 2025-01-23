@@ -30,8 +30,7 @@ juce::String LoadSaveSongListViewModel::getSelectedItem() {
 }
 
 void LoadSaveSongListViewModel::selectedIndexChanged(int newIndex) {
-    // Aquí puedes añadir la lógica que necesites cuando cambie el índice
-    // seleccionado
+    // Here you can add the logic you need when you change the index selected
 }
 
 void LoadSaveSongListViewModel::loadSongList(const juce::File &directory) {
@@ -47,35 +46,34 @@ void LoadSaveSongListViewModel::loadSongList(const juce::File &directory) {
 
     itemListState.listSize = songNames.size();
     itemListState.setSelectedItemIndex(
-        0); // Opcional: Resetear al primer ítem o cualquier otra lógica que
-            // necesites
+        0); // Optional: Reset to the first item or any other
     itemListState.addListener(this);
 }
 void saveEditState(const tracktion::engine::Edit &edit,
                    const juce::File &file) {
-    // Serializar el estado del Edit a XML
+    // Serialize Edit status to XML
     auto xml = edit.state.createXml();
 
-    // Guardar el XML en un archivo
+    // Save the XML to a file
     if (xml) {
         if (!xml->writeTo(file)) {
-            // Manejar el error si la escritura al archivo falla
+            // Handle error if write fails
             DBG("Failed to write Edit state to file.");
         }
     } else {
-        // Manejar el error si la serialización falla
+        // Handling error if serialization fails
         DBG("Failed to create XML from Edit state.");
     }
 }
 void loadEditState(tracktion::engine::Edit &edit, const juce::File &file) {
-    // Leer el XML desde el archivo
+    // Read the XML from the file
     auto xml = juce::XmlDocument::parse(file);
 
     if (xml) {
-        // Deserializar el XML para restaurar el estado del Edit
+        // Deserialize XML to restore Edit status
         edit.state = juce::ValueTree::fromXml(*xml);
     } else {
-        // Manejar el error si la lectura del archivo falla
+        // Handle error if file reading fails
         DBG("Failed to read Edit state from file.");
     }
 }

@@ -164,16 +164,16 @@ void LoadSaveSongListView::restartApplication() {
         juce::JUCEApplication::getInstance()->quit();
 
     } else {
-        juce::Logger::writeToLog("Error al intentar reiniciar la aplicación.");
+        juce::Logger::writeToLog("Error al intentar reiniciar la aplicaciï¿½n.");
     }
 }
 // void LoadSaveSongListView::restartApplication() {
 ////    juce::Logger::writeToLog("Wait 2 seconds.");
-////    // Esperar un breve momento para que la aplicación actual termine
+////    // Wait a short time for the current application to finish.
 //// juce::Time::waitForMillisecondCounter(juce::Time::getMillisecondCounter() +
 ////                                          2000);
 ////
-////    // Obtener el nombre del ejecutable de la aplicación
+////    // get the name of the executable of the application
 ////    juce::String appPath =
 ////        juce::File::getSpecialLocation(juce::File::currentExecutableFile)
 ////            .getFullPathName();
@@ -201,7 +201,7 @@ void LoadSaveSongListView::restartApplication() {
 ////    }
 ////#endif
 //    juce::JUCEApplication::getInstance()->quit();
-//    // Cierra la aplicación actual después de un breve retraso
+//    // Closes the current application after a brief delay
 //    /* juce::Timer::callAfterDelay(
 //        100, [] { juce::JUCEApplication::getInstance()->quit(); });*/
 //}
@@ -230,11 +230,11 @@ void LoadSaveSongListView::loadTrackFromFile(const juce::File &projectFile) {
 
                 for (const auto &file : files) {
                     if (file.deleteRecursively()) {
-                        juce::Logger::writeToLog("Archivo eliminado: " +
+                        juce::Logger::writeToLog("File deleted: " +
                                                  file.getFullPathName());
                     } else {
                         juce::Logger::writeToLog(
-                            "No se pudo eliminar el archivo: " +
+                            "File could not be deleted: " +
                             file.getFullPathName());
                     }
                 }
