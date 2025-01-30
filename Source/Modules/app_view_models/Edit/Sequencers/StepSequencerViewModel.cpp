@@ -25,15 +25,18 @@ StepSequencerViewModel::StepSequencerViewModel(tracktion::AudioTrack::Ptr t)
         // it also cannot be greater than the maximum number of notes allowed
         if (param <= 1)
             return 1;
-        else if (param >= app_models::StepChannel::maxNumberOfNotes)
-            return app_models::StepChannel::maxNumberOfNotes;
+        else if (param >= app_models::StepChannel::getMaxNumberOfNotes(
+                              notesPerMeasure.get()))
+            return app_models::StepChannel::getMaxNumberOfNotes(
+                notesPerMeasure.get());
         else
             return param;
     };
 
     numberOfNotes.setConstrainer(numberOfNotesConstrainer);
-    numberOfNotes.referTo(state, IDs::numberOfNotes, nullptr,
-                          app_models::StepChannel::maxNumberOfNotes);
+    numberOfNotes.referTo(
+        state, IDs::numberOfNotes, nullptr,
+        app_models::StepChannel::getMaxNumberOfNotes(notesPerMeasure.get()));
 
     std::function<int(int)> selectedNoteIndexConstrainer = [this](int param) {
         // selected index cannot be less than 0
@@ -96,7 +99,7 @@ int StepSequencerViewModel::getNumChannels() {
 }
 
 int StepSequencerViewModel::getNumNotesPerChannel() {
-    return app_models::StepChannel::maxNumberOfNotes;
+    return app_models::StepChannel::getMaxNumberOfNotes(notesPerMeasure.get());
 }
 
 bool StepSequencerViewModel::hasNoteAt(int channel, int noteIndex) {
@@ -104,12 +107,21 @@ bool StepSequencerViewModel::hasNoteAt(int channel, int noteIndex) {
 }
 
 void StepSequencerViewModel::toggleNoteNumberAtSelectedIndex(int noteNumber) {
+    // FIXME: it crashes if octave is higher or lower than normal
+    int channel = noteNumberToChannel(noteNumber);
+    bool active = hasNoteAt(channel, selectedNoteIndex.get());
+    stepSequence.getChannel(channel)->setNote(selectedNoteIndex.get(), !active);
+
     if (!track->edit.getTransport().isPlaying()) {
-        int channel = noteNumberToChannel(noteNumber);
-        stepSequence.getChannel(channel)->setNote(
-            selectedNoteIndex.get(), !stepSequence.getChannel(channel)->getNote(
-                                         selectedNoteIndex.get()));
         incrementSelectedNoteIndex();
+    } else {
+        // When looping also add or remove note from the midi sequence to hear
+        // it
+        if (!active) {
+            addNoteToSequence(channel, selectedNoteIndex.get());
+        } else {
+            removeNoteFromSequence(channel, selectedNoteIndex.get());
+        }
     }
 }
 
@@ -163,6 +175,12 @@ void StepSequencerViewModel::incrementNotesPerMeasure() {
                 newIndex = currentIndex + 1;
 
             notesPerMeasure.setValue(notesPerMeasureOptions[newIndex], nullptr);
+            // compute the new number of notes for the measure division
+            float prevNbMeasures =
+                numberOfNotes.get() / notesPerMeasureOptions[currentIndex];
+            int newNbNotes =
+                (int)std::round(notesPerMeasure.get() * prevNbMeasures);
+            numberOfNotes.setValue(newNbNotes, nullptr);
         }
     }
 }
@@ -180,14 +198,21 @@ void StepSequencerViewModel::decrementNotesPerMeasure() {
                 newIndex = currentIndex - 1;
 
             notesPerMeasure.setValue(notesPerMeasureOptions[newIndex], nullptr);
+            // compute the new number of notes for the measure division
+            float prevNbMeasures =
+                numberOfNotes.get() / notesPerMeasureOptions[currentIndex];
+            int newNbNotes =
+                (int)std::round(notesPerMeasure.get() * prevNbMeasures);
+            numberOfNotes.setValue(newNbNotes, nullptr);
         }
     }
 }
 
 void StepSequencerViewModel::clearNotesAtSelectedIndex() {
-    if (!track->edit.getTransport().isPlaying())
-        for (int i = 0; i < app_models::StepChannel::maxNumberOfChannels; i++)
-            stepSequence.getChannel(i)->setNote(selectedNoteIndex, false);
+    for (int i = 0; i < app_models::StepChannel::maxNumberOfChannels; i++) {
+        stepSequence.getChannel(i)->setNote(selectedNoteIndex, false);
+        removeNoteFromSequence(i, selectedNoteIndex);
+    }
 }
 
 void StepSequencerViewModel::play() {
@@ -198,18 +223,21 @@ void StepSequencerViewModel::play() {
     if (!track->edit.getTransport().isPlaying()) {
         generateMidiSequence();
         track->edit.clickTrackEnabled.setValue(false, nullptr);
-        track->edit.getTransport().setCurrentPosition(
-            midiClipStart.inSeconds());
         track->setSolo(true);
         track->edit.getTransport().play(false);
     }
 }
 
 void StepSequencerViewModel::stop() {
-    if (track->edit.getTransport().isPlaying()) {
+    auto &transport = track->edit.getTransport();
+    if (transport.isPlaying()) {
         track->edit.clickTrackEnabled.setValue(true, nullptr);
         track->setSolo(false);
-        track->edit.getTransport().stop(false, false);
+        transport.stop(false, false);
+    } else {
+        // if we try to stop while currently not playing
+        // return transport to beginning
+        transport.setCurrentPosition(midiClipStart.inSeconds());
     }
 }
 
@@ -306,18 +334,56 @@ void StepSequencerViewModel::generateMidiSequence() {
     for (int i = 0; i < getNumChannels(); i++)
         for (int j = 0; j < getNumNotesPerChannel(); j++)
             if (hasNoteAt(i, j)) {
-                // Need to get the pitch based on the sequence position and
-                // current octave remember that we need to add the min note
-                // number to get things correct since the min note number
-                // possible is not 0, its 5
-                int pitch = i + (NOTES_PER_OCTAVE * getZeroBasedOctave()) +
-                            MIN_NOTE_NUMBER;
-                auto startBeat = tracktion::BeatPosition::fromBeats(
-                    double(j * 4.0) / double(notesPerMeasure.get()));
-                auto duration = tracktion::BeatDuration::fromBeats(
-                    4.0 / double(notesPerMeasure.get()));
-                sequence.addNote(pitch, startBeat, duration, 127, 1, nullptr);
+                addNoteToSequence(i, j);
             }
+}
+
+void StepSequencerViewModel::addNoteToSequence(int channel, int noteIndex) {
+    // Need to get the pitch based on the sequence position and
+    // current octave remember that we need to add the min note
+    // number to get things correct since the min note number
+    // possible is not 0, its 5
+    int pitch =
+        channel + (NOTES_PER_OCTAVE * getZeroBasedOctave()) + MIN_NOTE_NUMBER;
+    auto startBeat = tracktion::BeatPosition::fromBeats(
+        double(noteIndex * 4.0) / double(notesPerMeasure.get()));
+    auto duration =
+        tracktion::BeatDuration::fromBeats(4.0 / double(notesPerMeasure.get()));
+
+    auto &sequence = midiClip->getSequence();
+    sequence.addNote(pitch, startBeat, duration, 127, 1, nullptr);
+}
+
+void StepSequencerViewModel::removeNoteFromSequence(int channel,
+                                                    int noteIndex) {
+    auto note = findNoteInSequence(channel, noteIndex);
+    if (note.has_value()) {
+        auto &sequence = midiClip->getSequence();
+        sequence.removeNote(*note.value(), nullptr);
+    }
+}
+
+std::optional<tracktion::MidiNote *>
+StepSequencerViewModel::findNoteInSequence(int channel, int noteIndex) {
+    auto &sequence = midiClip->getSequence();
+
+    // compute the note we want to remove
+    int pitch =
+        channel + (NOTES_PER_OCTAVE * getZeroBasedOctave()) + MIN_NOTE_NUMBER;
+    auto startBeat = tracktion::BeatPosition::fromBeats(
+        double(noteIndex * 4.0) / double(notesPerMeasure.get()));
+    auto duration =
+        tracktion::BeatDuration::fromBeats(4.0 / double(notesPerMeasure.get()));
+
+    // find the first node with matching pitch & startBeat
+    for (auto note : sequence.getNotes()) {
+        if (note->getStartBeat().inBeats() == startBeat.inBeats() &&
+            note->getNoteNumber() == pitch) {
+            return note;
+        }
+    }
+
+    return std::nullopt;
 }
 
 void StepSequencerViewModel::setVideoPosition(
