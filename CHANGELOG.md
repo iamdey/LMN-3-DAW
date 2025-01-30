@@ -8,6 +8,8 @@ and this project adheres to
 
 ## [Unreleased]
 
+## [0.3.0] - 2025-01-30
+
 ### Changed
 
 - Step Sequencer: edit the sequence while playing the loop. Press `+` to toggle
@@ -44,6 +46,8 @@ and this project adheres to
 
 [unreleased]:
   https://github.com/FundamentalFrequency/LMN-3-DAW/compare/v0.1.1...HEAD
+[0.3.0]:
+  https://github.com/FundamentalFrequency/LMN-3-DAW/compare/v0.2.0...v0.3.0
 [0.2.0]:
   https://github.com/FundamentalFrequency/LMN-3-DAW/compare/v0.1.1...v0.2.0
 [0.1.1]:
