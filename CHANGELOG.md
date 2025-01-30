@@ -8,18 +8,18 @@ and this project adheres to
 
 ## [Unreleased]
 
-## [0.2.0] - 2025-01-28
-
-### Added
-
-- Load/Save track, from settings it allows to create or select a track.
-
 ### Changed
 
 - Step Sequencer: edit the sequence while playing the loop. Press `+` to toggle
   a note or press `-` to remove all the notes, same way as classic editing.
 - Step Sequencer: Keep the same number of measures when changing the number of
   notes per measure. The grid can hold 64 notes.
+
+## [0.2.0] - 2025-01-28
+
+### Added
+
+- Load/Save track, from settings it allows to create or select a track.
 
 ### Fixed
 
