@@ -1,0 +1,101 @@
+From 21abbfd3b19f189d5a82890899cc3505a67f779c Mon Sep 17 00:00:00 2001
+From: Hendrik Noeller <hendrik@algoriddim.com>
+Date: Tue, 11 Feb 2025 13:21:11 +0100
+Subject: [PATCH] progressive_backoff_wait: add 32-bit ARM implementation
+
+wft is not universally available, this uses yield instead
+---
+ .../impl/progressive_backoff_wait_impl.h      | 57 ++++++++++++++++++-
+ include/crill/progressive_backoff_wait.h      |  4 ++
+ 2 files changed, 60 insertions(+), 1 deletion(-)
+
+diff --git a/modules/3rd_party/crill/impl/progressive_backoff_wait_impl.h b/modules/3rd_party/crill/impl/progressive_backoff_wait_impl.h
+index 80d17d9..d8fafb5 100644
+--- a/modules/3rd_party/crill/impl/progressive_backoff_wait_impl.h
++++ b/modules/3rd_party/crill/impl/progressive_backoff_wait_impl.h
+@@ -10,7 +10,7 @@
+
+ #if CRILL_INTEL
+   #include <emmintrin.h>
+-#elif CRILL_ARM_64BIT
++#elif CRILL_ARM
+   #include <arm_acle.h>
+ #endif
+
+@@ -85,6 +85,61 @@ namespace crill::impl
+         }
+     }
+   #endif // CRILL_ARM_64BIT
++
++  #if CRILL_ARM_32BIT
++      template <std::size_t N0, std::size_t N1, typename Predicate>
++      void progressive_backoff_wait_armv7(Predicate&& pred)
++      {
++          for (int i = 0; i < N0; ++i)
++          {
++              if (pred())
++                  return;
++          }
++
++          while (true)
++          {
++              for (int i = 0; i < N1; ++i)
++              {
++                  if (pred())
++                      return;
++
++                  __yield();
++                  __yield();
++                  __yield();
++                  __yield();
++                  __yield();
++                  __yield();
++                  __yield();
++                  __yield();
++                  __yield();
++                  __yield();
++                  __yield();
++                  __yield();
++                  __yield();
++                  __yield();
++                  __yield();
++                  __yield();
++                  __yield();
++                  __yield();
++                  __yield();
++                  __yield();
++                  __yield();
++                  __yield();
++                  __yield();
++                  __yield();
++                  __yield();
++                  __yield();
++                  __yield();
++                  __yield();
++                  __yield();
++                  __yield();
++              }
++
++              // waiting longer than we should, let's give other threads a chance to recover
++              std::this_thread::yield();
++          }
++      }
++    #endif // CRILL_ARM_32BIT
+ } // namespace crill::impl
+
+ #endif //CRILL_PROGRESSIVE_BACKOFF_WAIT_IMPL_H
+diff --git a/modules/3rd_party/crill/progressive_backoff_wait.h b/modules/3rd_party/crill/progressive_backoff_wait.h
+index 1aac9e3..a854c34 100644
+--- a/modules/3rd_party/crill/progressive_backoff_wait.h
++++ b/modules/3rd_party/crill/progressive_backoff_wait.h
+@@ -39,6 +39,10 @@ void progressive_backoff_wait(Predicate&& pred)
+     impl::progressive_backoff_wait_armv8<2, 750>(std::forward<Predicate>(pred));
+     // approx. 2x10 ns (= 20 ns) and 750x1333 ns (~ 1 ms), respectively, on an
+     // Apple Silicon Mac or an armv8 based phone.
++  #elif CRILL_ARM_32BIT
++    impl::progressive_backoff_wait_armv7<2, 7100>(std::forward<Predicate>(pred));
++    // approx. 2x10 ns (= 20 ns) and 7100x140 ns (~ 1 ms), respectively, when
++    // measured on an LG K32
+   #else
+     #error "Platform not supported!"
+   #endif

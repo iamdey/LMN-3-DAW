@@ -60,6 +60,15 @@ jobs:
         with:
           submodules: recursive
 
+      - name: patch
+        run: |
+          (cd tracktion_engine && patch -i ../patches_armv7/BufferedFileReader.patch -p1)
+          (cd tracktion_engine/modules/juce && patch -i ../../../patches_armv7/juce_dsp.h.patch -p1)
+          (cd tracktion_engine && patch -i ../patches_armv7/crill-21.patch -p1)
+          (cd tracktion_engine && patch -i ../patches_armv7/progressive_backoff_wait.h.patch -p1)
+          (cd tracktion_engine && patch -i ../patches_armv7/tracktion_CPU.patch -p1)
+          (cd tracktion_engine && patch -i ../patches_armv7/tracktion_NodePlayerUtilities.patch -p1)
+
       # -DPACKAGE_TESTS=OFF so that the tests dont get executed once build is finished
       - name: build
         run: |

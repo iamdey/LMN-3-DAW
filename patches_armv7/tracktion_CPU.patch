@@ -1,0 +1,18 @@
+diff --git a/modules/tracktion_core/utilities/tracktion_CPU.h b/modules/tracktion_core/utilities/tracktion_CPU.h
+index 31fd6828655..b9c28dd3de4 100644
+--- a/modules/tracktion_core/utilities/tracktion_CPU.h
++++ b/modules/tracktion_core/utilities/tracktion_CPU.h
+@@ -35,9 +35,10 @@ namespace tracktion { inline namespace core
+ inline std::uint64_t rdtsc()
+ {
+    #if TRACKTION_ARM && ! defined (_MSC_VER)
+-    std::uint64_t result;
+-    __asm __volatile("mrs %0, CNTVCT_EL0" : "=&r" (result));
+-    return result;
++    // std::uint64_t result;
++    // __asm __volatile("mrs %0, CNTVCT_EL0" : "=&r" (result));
++    // return result;
++    return 0;
+    #elif defined __has_builtin
+     #if __has_builtin(__builtin_readcyclecounter)
+      return __builtin_readcyclecounter();

@@ -2,6 +2,7 @@
 .idea/
 .cache/
 build/
+build_*
 build-raspberry/
 cmake-build-debug/
 cmake-build-release/
