@@ -5,7 +5,8 @@ project(LMN-3 VERSION 0.3.0)
 
 add_subdirectory(yaml-cpp)
 add_subdirectory(tracktion_engine/modules/juce)
-add_subdirectory(Plugins)
+# juce_vst3_helper is missing. Plugins aren't used yet.
+# add_subdirectory(Plugins)
 
 option(PACKAGE_TESTS "Build the tests" ON)
 if(PACKAGE_TESTS)
