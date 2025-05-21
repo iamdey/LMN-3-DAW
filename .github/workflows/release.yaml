@@ -6,7 +6,7 @@ on:
       - "v*.*.*"
 jobs:
   test:
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-22.04
     container: iamdey/lmn-3-daw-docker-compiler:amd64
     steps:
       - name: checkout
@@ -23,7 +23,7 @@ jobs:
           ./build/Tests/Tests_artefacts/Release/Tests
 
   build_x86_64:
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-22.04
     container: iamdey/lmn-3-daw-docker-compiler:amd64
 
     needs: test
@@ -49,7 +49,7 @@ jobs:
           retention-days: 1
 
   build_arm:
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-22.04
     container: iamdey/lmn-3-daw-docker-compiler:armv7
 
     needs: test
@@ -84,7 +84,7 @@ jobs:
           retention-days: 1
 
   build_aarch64:
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-22.04
     container: iamdey/lmn-3-daw-docker-compiler:arm64
 
     needs: test
@@ -110,7 +110,7 @@ jobs:
           retention-days: 1
 
   release:
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-22.04
     needs: [build_x86_64, build_arm, build_aarch64]
     steps:
       - name: Download x86-64 LMN-3 artifact

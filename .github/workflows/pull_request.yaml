@@ -4,7 +4,7 @@ on: [pull_request]
 
 jobs:
   linting:
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-22.04
     steps:
       - uses: actions/checkout@v2
       - uses: DoozyX/clang-format-lint-action@v0.18.1
@@ -15,7 +15,7 @@ jobs:
 
   test:
     needs: linting
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-22.04
     container: iamdey/lmn-3-daw-docker-compiler:amd64
     steps:
       - name: checkout
