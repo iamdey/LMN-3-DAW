@@ -8,6 +8,8 @@ and this project adheres to
 
 ## [Unreleased]
 
+## [0.4.0] - 2025-05-22
+
 ### Fixed
 
 - Update internals (tracktion_engine 3.0, c++@20).
@@ -49,7 +51,9 @@ and this project adheres to
 - Initial release
 
 [unreleased]:
-  https://github.com/FundamentalFrequency/LMN-3-DAW/compare/v0.1.1...HEAD
+  https://github.com/FundamentalFrequency/LMN-3-DAW/compare/v0.4.0...HEAD
+[0.4.0]:
+  https://github.com/FundamentalFrequency/LMN-3-DAW/compare/v0.3.0...v0.4.0
 [0.3.0]:
   https://github.com/FundamentalFrequency/LMN-3-DAW/compare/v0.2.0...v0.3.0
 [0.2.0]:
