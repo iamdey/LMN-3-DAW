@@ -1,0 +1,29 @@
+diff --git a/modules/juce_dsp/juce_dsp.h b/modules/juce_dsp/juce_dsp.h
+index 6dafebdb2e..ef1de06dbe 100644
+--- a/modules/juce_dsp/juce_dsp.h
++++ b/modules/juce_dsp/juce_dsp.h
+@@ -85,13 +85,19 @@
+ #elif JUCE_ARM
+ 
+  #ifndef JUCE_USE_SIMD
+-  #define JUCE_USE_SIMD 1
++  #if __ARM_NEON__
++   #define JUCE_USE_SIMD 1
++  #else
++   #define JUCE_USE_SIMD 0
++  #endif
+  #endif
+ 
+- #if JUCE_64BIT && JUCE_WINDOWS
+-  #include <arm64_neon.h>
+- #else
+-  #include <arm_neon.h>
++ #if JUCE_USE_SIMD
++  #if JUCE_64BIT && JUCE_WINDOWS
++   #include <arm64_neon.h>
++  #else
++   #include <arm_neon.h>
++  #endif
+  #endif
+ 
+ #else

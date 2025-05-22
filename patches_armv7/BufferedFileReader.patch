@@ -1,0 +1,13 @@
+diff --git a/modules/tracktion_engine/audio_files/tracktion_BufferedFileReader.cpp b/modules/tracktion_engine/audio_files/tracktion_BufferedFileReader.cpp
+index 9118a2ee41d..a7252071de3 100644
+--- a/modules/tracktion_engine/audio_files/tracktion_BufferedFileReader.cpp
++++ b/modules/tracktion_engine/audio_files/tracktion_BufferedFileReader.cpp
+@@ -42,7 +42,7 @@ BufferedFileReader::BufferedFileReader (juce::AudioFormatReader* sourceReader,
+     for (size_t i = 0; i < numBlocksToBuffer; ++i)
+     {
+         // The following code makes the assumption that the pointers are at least 8-bit aligned
+-        static_assert (alignof (BufferedBlock*) >= 8);
++        // static_assert (alignof (BufferedBlock*) >= 8);
+         blocks.push_back (std::make_unique<BufferedBlock> (*source));
+ 
+         // Check the least significant bit is actually 0

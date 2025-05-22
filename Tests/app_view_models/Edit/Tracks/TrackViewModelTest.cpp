@@ -53,7 +53,7 @@ TEST_F(TrackViewModelTest, clipRemoved) {
     viewModel.addListener(&listener);
 
     auto clip = track->getClips()[0];
-    clip->removeFromParentTrack();
+    clip->removeFromParent();
     viewModel.handleUpdateNowIfNeeded();
 
     EXPECT_EQ(track->getClips().size(), 0);

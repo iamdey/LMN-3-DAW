@@ -1,0 +1,13 @@
+diff --git a/modules/3rd_party/crill/progressive_backoff_wait.h b/modules/3rd_party/crill/progressive_backoff_wait.h
+index 68ddf91a93e..6259916c00c 100644
+--- a/modules/3rd_party/crill/progressive_backoff_wait.h
++++ b/modules/3rd_party/crill/progressive_backoff_wait.h
+@@ -40,7 +40,7 @@ void progressive_backoff_wait(Predicate&& pred)
+     // approx. 2x10 ns (= 20 ns) and 750x1333 ns (~ 1 ms), respectively, on an
+     // Apple Silicon Mac or an armv8 based phone.
+   #else
+-    #error "Platform not supported!"
++    // #error "Platform not supported!"
+   #endif
+ }
+ 

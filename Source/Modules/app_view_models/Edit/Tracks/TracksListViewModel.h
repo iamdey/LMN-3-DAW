@@ -110,6 +110,10 @@ class TracksListViewModel : public juce::ValueTree::Listener,
 
     void valueTreePropertyChanged(juce::ValueTree &treeWhosePropertyHasChanged,
                                   const juce::Identifier &property) override;
+    /**
+     * Syntaxic sugar while migrating to tracktion v3
+     */
+    void setCurrentPosition(double seconds);
 
   public:
     // Must appear below the other variables since it needs to be initialized

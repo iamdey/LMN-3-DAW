@@ -1,11 +1,12 @@
 cmake_minimum_required(VERSION 3.16)
-set(CMAKE_CXX_STANDARD 17)
+set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
-project(LMN-3 VERSION 0.1.1)
+project(LMN-3 VERSION 0.3.0)
 
 add_subdirectory(yaml-cpp)
 add_subdirectory(tracktion_engine/modules/juce)
-add_subdirectory(Plugins)
+# juce_vst3_helper is missing. Plugins aren't used yet.
+# add_subdirectory(Plugins)
 
 option(PACKAGE_TESTS "Build the tests" ON)
 if(PACKAGE_TESTS)
@@ -23,7 +24,7 @@ juce_add_gui_app(LMN-3
     PRODUCT_NAME LMN-3         # The name of the final executable, which can differ from the target name
 )
 
-target_compile_features(LMN-3  PRIVATE cxx_std_17)
+target_compile_features(LMN-3  PRIVATE cxx_std_20)
 
 target_sources(LMN-3  PRIVATE
     Source/Main.cpp
