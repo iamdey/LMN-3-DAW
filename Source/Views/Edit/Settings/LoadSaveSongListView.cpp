@@ -56,7 +56,6 @@ void LoadSaveSongListView::encoder1ButtonReleased() {
     if (isShowing()) {
         const auto index = viewModel.itemListState.getSelectedItemIndex();
         if (index == 0) { // Add
-            const auto i = index;
             const auto loadFile = ConfigurationHelpers::getSavedTrackName();
             const auto loadFileName = loadFile.getFileName();
 

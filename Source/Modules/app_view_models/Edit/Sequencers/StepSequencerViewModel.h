@@ -48,9 +48,9 @@ class StepSequencerViewModel : public juce::ValueTree::Listener,
         virtual ~Listener() = default;
 
         virtual void patternChanged() {}
-        virtual void selectedNoteIndexChanged(int newIndex) {}
-        virtual void numberOfNotesChanged(int newNumberOfNotes) {}
-        virtual void notesPerMeasureChanged(int newNotesPerMeasure) {}
+        virtual void selectedNoteIndexChanged(int) {}
+        virtual void numberOfNotesChanged(int) {}
+        virtual void notesPerMeasureChanged(int) {}
     };
 
     void addListener(Listener *l);

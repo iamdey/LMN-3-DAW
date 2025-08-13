@@ -25,9 +25,9 @@ class TempoSettingsViewModel : public juce::ValueTree::Listener,
       public:
         virtual ~Listener() = default;
 
-        virtual void bpmChanged(const double newBpm, const double newBps) {}
-        virtual void clickTrackGainChanged(const double newGain) {}
-        virtual void tapModeChanged(const bool newTapMode) {}
+        virtual void bpmChanged(const double, const double) {}
+        virtual void clickTrackGainChanged(const double) {}
+        virtual void tapModeChanged(const bool) {}
     };
 
     void addListener(Listener *l);

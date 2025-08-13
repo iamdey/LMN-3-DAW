@@ -18,10 +18,9 @@ class MidiCommandManager : private juce::MidiInputCallback {
       public:
         virtual ~Listener() = default;
 
-        virtual void controllerEventReceived(int controllerNumber,
-                                             int controllerValue) {}
+        virtual void controllerEventReceived(int, int) {}
 
-        virtual void noteOnPressed(int noteNumber) {}
+        virtual void noteOnPressed(int) {}
 
         virtual void encoder1Increased() {}
         virtual void encoder1Decreased() {}
@@ -132,7 +131,7 @@ class MidiCommandManager : private juce::MidiInputCallback {
         virtual void undoButtonPressed() {}
         virtual void undoButtonReleased() {}
 
-        virtual void octaveChanged(int newOctave) {}
+        virtual void octaveChanged(int) {}
     };
 
     void addListener(Listener *l);

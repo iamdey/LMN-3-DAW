@@ -37,8 +37,8 @@ class AvailablePluginsViewModel : public juce::ValueTree::Listener,
       public:
         virtual ~Listener() = default;
 
-        virtual void selectedCategoryIndexChanged(int newIndex) {}
-        virtual void selectedPluginIndexChanged(int newIndex) {}
+        virtual void selectedCategoryIndexChanged(int) {}
+        virtual void selectedPluginIndexChanged(int) {}
     };
 
     void addListener(Listener *l);

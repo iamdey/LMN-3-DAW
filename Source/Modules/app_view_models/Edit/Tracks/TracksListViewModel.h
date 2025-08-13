@@ -65,12 +65,12 @@ class TracksListViewModel : public juce::ValueTree::Listener,
       public:
         virtual ~Listener() = default;
 
-        virtual void isRecordingChanged(bool isRecording) {}
-        virtual void isPlayingChanged(bool isPlaying) {}
-        virtual void tracksViewTypeChanged(TracksViewType type) {}
-        virtual void loopingChanged(bool isLooping) {}
-        virtual void soloStateChanged(bool solo) {}
-        virtual void muteStateChanged(bool mute) {}
+        virtual void isRecordingChanged(bool) {}
+        virtual void isPlayingChanged(bool) {}
+        virtual void tracksViewTypeChanged(TracksViewType) {}
+        virtual void loopingChanged(bool) {}
+        virtual void soloStateChanged(bool) {}
+        virtual void muteStateChanged(bool) {}
     };
 
     void addListener(Listener *l);
