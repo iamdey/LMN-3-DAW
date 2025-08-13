@@ -5,9 +5,9 @@ SimpleListModel::SimpleListModel(juce::StringArray listItems)
     : items(listItems) {}
 
 int SimpleListModel::getNumRows() { return items.size(); }
-void SimpleListModel::paintListBoxItem(int rowNumber, juce::Graphics &g,
-                                       int width, int height,
-                                       bool rowIsSelected) {}
+void SimpleListModel::paintListBoxItem(int /*rowNumber*/, juce::Graphics &/*g*/,
+                                       int /*width*/, int /*height*/,
+                                       bool /*rowIsSelected*/) {}
 
 juce::Component *SimpleListModel::refreshComponentForRow(
     int rowNumber, bool isRowSelected,

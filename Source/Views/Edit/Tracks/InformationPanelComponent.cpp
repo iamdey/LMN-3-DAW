@@ -89,7 +89,7 @@ void InformationPanelComponent::resized() {
     muteLabel.setBounds(muteLabelX, 0, getHeight(), getHeight());
 }
 
-void InformationPanelComponent::setIsPlaying(bool isPlaying) { resized(); }
+void InformationPanelComponent::setIsPlaying(bool /*isPlaying*/) { resized(); }
 
 void InformationPanelComponent::setIsRecording(bool isRecording) {
     if (isRecording) {

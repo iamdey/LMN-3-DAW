@@ -23,8 +23,8 @@ bool ConfigurationHelpers::writeBinarySamplesToDirectory(
     return f.replaceWithData(data, static_cast<size_t>(dataSizeInBytes));
 }
 
-void ConfigurationHelpers::initBinarySamples(const juce::File &tempSynthDir,
-                                             const juce::File &tempDrumDir) {
+void ConfigurationHelpers::initBinarySamples(const juce::File &/*tempSynthDir*/,
+                                             const juce::File &/*tempDrumDir*/) {
     //    NB: Binary samples are currently not used, so the sample data
     //    libraries do not get built which is why this is commented out for (int
     //    i = 0; i < SynthSampleData::namedResourceListSize; ++i) {
