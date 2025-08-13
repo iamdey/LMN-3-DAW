@@ -65,7 +65,7 @@ InternalPluginView::InternalPluginView(tracktion::CompressorPlugin *p,
 
 void InternalPluginView::init() {
     titleLabel.setFont(juce::Font(juce::Font::getDefaultMonospacedFontName(),
-                                  getHeight() * .1, juce::Font::plain));
+                                  getHeight() * 0.1f, juce::Font::plain));
     titleLabel.setText(viewModel->getPluginName(), juce::dontSendNotification);
     titleLabel.setJustificationType(juce::Justification::centred);
     addAndMakeVisible(titleLabel);
@@ -93,7 +93,7 @@ void InternalPluginView::init() {
     setCurrentTabIndex(0);
 
     pageLabel.setFont(juce::Font(juce::Font::getDefaultMonospacedFontName(),
-                                 getHeight() * .2, juce::Font::plain));
+                                 getHeight() * 0.2f, juce::Font::plain));
     pageLabel.setText(juce::String(getCurrentTabIndex() + 1) + "/" +
                           juce::String(getNumTabs()),
                       juce::dontSendNotification);
@@ -120,11 +120,11 @@ void InternalPluginView::resized() {
     juce::TabbedComponent::resized();
 
     titleLabel.setFont(juce::Font(juce::Font::getDefaultMonospacedFontName(),
-                                  getHeight() * .1, juce::Font::plain));
+                                  getHeight() * 0.1f, juce::Font::plain));
     titleLabel.setBounds(0, getHeight() * .1, getWidth(), getHeight() * .1);
 
     pageLabel.setFont(juce::Font(juce::Font::getDefaultMonospacedFontName(),
-                                 getHeight() * .05, juce::Font::plain));
+                                 getHeight() * 0.05f, juce::Font::plain));
     pageLabel.setBounds(
         getHeight() * .05, getHeight() * .05,
         pageLabel.getFont().getStringWidth(pageLabel.getText()) + 10,

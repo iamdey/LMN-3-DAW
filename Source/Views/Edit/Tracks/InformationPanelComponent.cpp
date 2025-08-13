@@ -3,7 +3,7 @@
 
 InformationPanelComponent::InformationPanelComponent() {
     trackNumberLabel.setFont(
-        juce::Font(juce::Font::getDefaultMonospacedFontName(), getHeight() * .7,
+        juce::Font(juce::Font::getDefaultMonospacedFontName(), getHeight() * 0.7f,
                    juce::Font::plain));
     trackNumberLabel.setText("1", juce::dontSendNotification);
     trackNumberLabel.setJustificationType(juce::Justification::centred);
@@ -12,7 +12,7 @@ InformationPanelComponent::InformationPanelComponent() {
     addAndMakeVisible(trackNumberLabel);
 
     timecodeLabel.setFont(juce::Font(juce::Font::getDefaultMonospacedFontName(),
-                                     getHeight() * .7, juce::Font::plain));
+                                     getHeight() * 0.7f, juce::Font::plain));
     timecodeLabel.setText("time", juce::dontSendNotification);
     timecodeLabel.setJustificationType(juce::Justification::centred);
     timecodeLabel.setAlwaysOnTop(true);
@@ -52,7 +52,7 @@ void InformationPanelComponent::paint(juce::Graphics &) {}
 void InformationPanelComponent::resized() {
     double height = getHeight() * .5;
     // font awesome needs to be scaled down just a bit more
-    fontAwesomeFont.setHeight(height * .6);
+    fontAwesomeFont.setHeight(height * 0.6f);
 
     loopingLabel.setFont(fontAwesomeFont);
     soloLabel.setFont(fontAwesomeFont);

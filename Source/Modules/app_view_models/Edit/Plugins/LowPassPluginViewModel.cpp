@@ -18,7 +18,7 @@ double LowPassPluginViewModel::getFrequency() {
 
 void LowPassPluginViewModel::setFrequency(double freq) {
     if (lowPassPlugin->frequency->getModifiers().size() == 0)
-        lowPassPlugin->frequencyValue.setValue(freq, nullptr);
+        lowPassPlugin->frequencyValue.setValue(static_cast<float>(freq), nullptr);
 }
 
 juce::Range<double> LowPassPluginViewModel::getFrequencyRange() {

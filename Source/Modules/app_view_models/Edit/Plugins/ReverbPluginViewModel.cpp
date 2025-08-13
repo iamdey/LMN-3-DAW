@@ -55,23 +55,23 @@ void ReverbPluginViewModel::setParameterValue(int index, double value) {
     switch (index) {
     case 0:
         if (reverbPlugin->roomSizeParam->getModifiers().size() == 0)
-            reverbPlugin->setRoomSize(value);
+            reverbPlugin->setRoomSize(static_cast<float>(value));
         break;
     case 1:
         if (reverbPlugin->widthParam->getModifiers().size() == 0)
-            reverbPlugin->setWidth(value);
+            reverbPlugin->setWidth(static_cast<float>(value));
         break;
     case 2:
         if (reverbPlugin->dampParam->getModifiers().size() == 0)
-            reverbPlugin->setDamp(value);
+            reverbPlugin->setDamp(static_cast<float>(value));
         break;
     case 3:
         if (reverbPlugin->wetParam->getModifiers().size() == 0)
-            reverbPlugin->setWet(value);
+            reverbPlugin->setWet(static_cast<float>(value));
         break;
     case 4:
         if (reverbPlugin->dryParam->getModifiers().size() == 0)
-            reverbPlugin->setDry(value);
+            reverbPlugin->setDry(static_cast<float>(value));
         break;
     default:
         break;

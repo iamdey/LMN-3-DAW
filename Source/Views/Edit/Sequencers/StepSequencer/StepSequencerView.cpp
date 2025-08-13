@@ -4,7 +4,7 @@ StepSequencerView::StepSequencerView(tracktion::AudioTrack::Ptr p,
                                      app_services::MidiCommandManager &mcm)
     : viewModel(p), midiCommandManager(mcm), grid(viewModel) {
     notesPerMeasureLabel.setFont(
-        juce::Font(juce::Font::getDefaultMonospacedFontName(), getHeight() * .1,
+        juce::Font(juce::Font::getDefaultMonospacedFontName(), getHeight() * 0.1f,
                    juce::Font::plain));
     notesPerMeasureLabel.setText(juce::String(viewModel.getNotesPerMeasure()),
                                  juce::dontSendNotification);

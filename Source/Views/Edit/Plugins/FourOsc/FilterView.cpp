@@ -5,7 +5,7 @@ FilterView::FilterView(tracktion::FourOscPlugin *p,
     : viewModel(p), midiCommandManager(mcm), knobs(mcm, 8),
       filterAdsrView(p, midiCommandManager) {
     titleLabel.setFont(juce::Font(juce::Font::getDefaultMonospacedFontName(),
-                                  getHeight() * .1, juce::Font::plain));
+                                  getHeight() * 0.1f, juce::Font::plain));
     titleLabel.setText("4OSC: Filter", juce::dontSendNotification);
     titleLabel.setJustificationType(juce::Justification::centred);
     addAndMakeVisible(titleLabel);
@@ -48,7 +48,7 @@ void FilterView::paint(juce::Graphics &/*g*/) {}
 
 void FilterView::resized() {
     titleLabel.setFont(juce::Font(juce::Font::getDefaultMonospacedFontName(),
-                                  getHeight() * .1, juce::Font::plain));
+                                  getHeight() * 0.1f, juce::Font::plain));
     titleLabel.setBounds(0, getHeight() * .05, getWidth(), getHeight() * .1);
 
     filterAdsrView.setBounds(getLocalBounds());

@@ -79,72 +79,72 @@ void OscillatorViewModel::decrementVoices() {
 
 void OscillatorViewModel::incrementTune() {
     plugin->oscParams[oscillatorIndex]->tune->setNormalisedParameter(
-        getTune() + .01, juce::dontSendNotification);
+        getTune() +0.01f, juce::dontSendNotification);
 }
 
 void OscillatorViewModel::decrementTune() {
     plugin->oscParams[oscillatorIndex]->tune->setNormalisedParameter(
-        getTune() - .01, juce::dontSendNotification);
+        getTune() -0.01f, juce::dontSendNotification);
 }
 
 void OscillatorViewModel::incrementFineTune() {
     plugin->oscParams[oscillatorIndex]->fineTune->setNormalisedParameter(
-        getFineTune() + .01, juce::dontSendNotification);
+        getFineTune() +0.01f, juce::dontSendNotification);
 }
 
 void OscillatorViewModel::decrementFineTune() {
     plugin->oscParams[oscillatorIndex]->fineTune->setNormalisedParameter(
-        getFineTune() - .01, juce::dontSendNotification);
+        getFineTune() -0.01f, juce::dontSendNotification);
 }
 
 void OscillatorViewModel::incrementLevel() {
     plugin->oscParams[oscillatorIndex]->level->setNormalisedParameter(
-        getLevel() + .01, juce::dontSendNotification);
+        getLevel() +0.01f, juce::dontSendNotification);
 }
 
 void OscillatorViewModel::decrementLevel() {
     plugin->oscParams[oscillatorIndex]->level->setNormalisedParameter(
-        getLevel() - .01, juce::dontSendNotification);
+        getLevel() -0.01f, juce::dontSendNotification);
 }
 
 void OscillatorViewModel::incrementPulseWidth() {
     plugin->oscParams[oscillatorIndex]->pulseWidth->setNormalisedParameter(
-        getPulseWidth() + .01, juce::dontSendNotification);
+        getPulseWidth() +0.01f, juce::dontSendNotification);
 }
 
 void OscillatorViewModel::decrementPulseWidth() {
     plugin->oscParams[oscillatorIndex]->pulseWidth->setNormalisedParameter(
-        getPulseWidth() - .01, juce::dontSendNotification);
+        getPulseWidth() -0.01f, juce::dontSendNotification);
 }
 
 void OscillatorViewModel::incrementDetune() {
     plugin->oscParams[oscillatorIndex]->detune->setNormalisedParameter(
-        getDetune() + .01, juce::dontSendNotification);
+        getDetune() +0.01f, juce::dontSendNotification);
 }
 
 void OscillatorViewModel::decrementDetune() {
     plugin->oscParams[oscillatorIndex]->detune->setNormalisedParameter(
-        getDetune() - .01, juce::dontSendNotification);
+        getDetune() -0.01f, juce::dontSendNotification);
 }
 
 void OscillatorViewModel::incrementSpread() {
     plugin->oscParams[oscillatorIndex]->spread->setNormalisedParameter(
-        getSpread() + .01, juce::dontSendNotification);
+        getSpread() +0.01f, juce::dontSendNotification);
 }
 
 void OscillatorViewModel::decrementSpread() {
     plugin->oscParams[oscillatorIndex]->spread->setNormalisedParameter(
-        getSpread() - .01, juce::dontSendNotification);
+        getSpread() -0.01f, juce::dontSendNotification);
 }
 
 void OscillatorViewModel::incrementPan() {
     plugin->oscParams[oscillatorIndex]->pan->setNormalisedParameter(
-        getPan() + .01, juce::dontSendNotification);
+        getPan() +0.01f, juce::dontSendNotification);
 }
 
 void OscillatorViewModel::decrementPan() {
     plugin->oscParams[oscillatorIndex]->pan->setNormalisedParameter(
-        getPan() - .01, juce::dontSendNotification);
+        getPan() -0.01f, juce::dontSendNotification);
 }
 
 void OscillatorViewModel::handleAsyncUpdate() {

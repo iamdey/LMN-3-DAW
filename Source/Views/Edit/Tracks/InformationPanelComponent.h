@@ -8,7 +8,7 @@
 class InformationPanelComponent : public juce::Component {
   public:
     InformationPanelComponent();
-    ~InformationPanelComponent();
+    ~InformationPanelComponent() override;
 
     void paint(juce::Graphics &) override;
     void resized() override;

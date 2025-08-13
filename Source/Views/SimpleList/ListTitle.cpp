@@ -4,7 +4,7 @@ ListTitle::ListTitle(const juce::String &titleString, IconType type,
                      const juce::String &iconString)
     : title(titleString), iconType(type), icon(iconString) {
     titleLabel.setFont(juce::Font(juce::Font::getDefaultMonospacedFontName(),
-                                  getHeight() * .1, juce::Font::plain));
+                                  getHeight() * 0.1f, juce::Font::plain));
     titleLabel.setText(title, juce::dontSendNotification);
     titleLabel.setJustificationType(juce::Justification::left);
     titleLabel.setAlwaysOnTop(true);
@@ -48,16 +48,16 @@ void ListTitle::resized() {
     iconLabel.setBounds(getWidth() * .9, 0, getWidth() * .1, getHeight());
 
     titleLabel.setFont(juce::Font(juce::Font::getDefaultMonospacedFontName(),
-                                  getHeight() * .7, juce::Font::plain));
+                                  getHeight() * 0.7f, juce::Font::plain));
 
     switch (iconType) {
     case IconType::FONT_AWESOME:
-        fontAwesomeFont.setHeight(getHeight() * .75 * .8);
+        fontAwesomeFont.setHeight(getHeight() * 0.75f * .8);
         iconLabel.setFont(fontAwesomeFont);
         break;
 
     default:
-        fontAwesomeFont.setHeight(getHeight() * .75 * .8);
+        fontAwesomeFont.setHeight(getHeight() * 0.75f * .8);
         iconLabel.setFont(fontAwesomeFont);
         break;
     }

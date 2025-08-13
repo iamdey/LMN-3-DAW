@@ -22,7 +22,7 @@ void EqualiserPluginViewModel::setParameterValue(int index, double value) {
             ->getModifiers()
             .size() == 0)
         equaliserPlugin->getAutomatableParameter(index)->setNormalisedParameter(
-            value, juce::dontSendNotification);
+            static_cast<float>(value), juce::dontSendNotification);
 }
 
 } // namespace app_view_models

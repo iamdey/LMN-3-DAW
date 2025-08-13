@@ -55,7 +55,7 @@ void TempoSettingsView::resized() {
                                     beatSettingsWidth,
                                     getHeight() - 2 * padding);
 
-    fontAwesomeFont.setHeight(getHeight() * .1);
+    fontAwesomeFont.setHeight(getHeight() * 0.1f);
     gainIcon.setFont(fontAwesomeFont);
     gainIcon.setBounds(getWidth() - padding - getHeight() * .21, padding,
                        getHeight() * .21, getHeight() * .2);

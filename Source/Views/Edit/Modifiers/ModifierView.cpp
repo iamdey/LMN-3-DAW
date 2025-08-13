@@ -18,7 +18,7 @@ ModifierView::ModifierView(tracktion::LFOModifier *mod,
 
 void ModifierView::init() {
     titleLabel.setFont(juce::Font(juce::Font::getDefaultMonospacedFontName(),
-                                  getHeight() * .1, juce::Font::plain));
+                                  getHeight() * 0.1f, juce::Font::plain));
     titleLabel.setText(viewModel->getModifierName(),
                        juce::dontSendNotification);
     titleLabel.setJustificationType(juce::Justification::centred);
@@ -47,7 +47,7 @@ void ModifierView::paint(juce::Graphics &/*g*/) {}
 
 void ModifierView::resized() {
     titleLabel.setFont(juce::Font(juce::Font::getDefaultMonospacedFontName(),
-                                  getHeight() * .1, juce::Font::plain));
+                                  getHeight() * 0.1f, juce::Font::plain));
     titleLabel.setBounds(0, getHeight() * .1, getWidth(), getHeight() * .1);
 
     int knobWidth = getWidth() / 8;

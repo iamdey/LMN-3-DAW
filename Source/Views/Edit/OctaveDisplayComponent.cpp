@@ -6,8 +6,8 @@ void OctaveDisplayComponent::paint(juce::Graphics &g) {
     g.setColour(appLookAndFeel.backgroundColour);
     g.fillRect(getLocalBounds());
     juce::Font font(juce::Font::getDefaultMonospacedFontName(),
-                    getHeight() * .75, juce::Font::plain);
-    fontAwesomeFont.setHeight(getHeight() * .5);
+                    getHeight() * 0.75f, juce::Font::plain);
+    fontAwesomeFont.setHeight(getHeight() * 0.5f);
     juce::String octaveText = juce::String(octaveInt);
     int totalTextWidth = fontAwesomeFont.getStringWidth(icon) + 5 +
                          font.getStringWidth(octaveText);

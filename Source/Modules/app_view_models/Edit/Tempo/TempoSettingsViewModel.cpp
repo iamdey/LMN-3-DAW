@@ -21,7 +21,7 @@ TempoSettingsViewModel::~TempoSettingsViewModel() {
 
 void TempoSettingsViewModel::setClickTrackGain(const double gain) const {
     if (gain <= clickTrackGainUpperLimit && gain >= clickTrackGainLowerLimit)
-        edit.clickTrackGain.setValue(gain, nullptr);
+        edit.clickTrackGain.setValue(static_cast<float>(gain), nullptr);
 }
 
 void TempoSettingsViewModel::setBpm(const double bpm) const {
@@ -64,10 +64,10 @@ void TempoSettingsViewModel::incrementClickTrackGain() {
     if (double(edit.clickTrackGain.get()) <
         clickTrackGainUpperLimit - clickTrackGainInterval) {
         double newGain = edit.clickTrackGain.get() + clickTrackGainInterval;
-        edit.clickTrackGain.setValue(newGain, nullptr);
+        edit.clickTrackGain.setValue(static_cast<float>(newGain), nullptr);
 
     } else {
-        edit.clickTrackGain.setValue(clickTrackGainUpperLimit, nullptr);
+        edit.clickTrackGain.setValue(static_cast<float>(clickTrackGainUpperLimit), nullptr);
     }
 }
 
@@ -75,11 +75,11 @@ void TempoSettingsViewModel::decrementClickTrackGain() {
     if (edit.clickTrackGain.get() >=
         clickTrackGainLowerLimit + clickTrackGainInterval + .01) {
         double newGain = edit.clickTrackGain.get() - clickTrackGainInterval;
-        edit.clickTrackGain.setValue(newGain, nullptr);
+        edit.clickTrackGain.setValue(static_cast<float>(newGain), nullptr);
 
     } else {
         edit.clickTrackEnabled.setValue(false, nullptr);
-        edit.clickTrackGain.setValue(clickTrackGainLowerLimit, nullptr);
+        edit.clickTrackGain.setValue(static_cast<float>(clickTrackGainLowerLimit), nullptr);
     }
 }
 

@@ -4,7 +4,7 @@ OscillatorView::OscillatorView(tracktion::FourOscPlugin *p, int oscIndex,
                                app_services::MidiCommandManager &mcm)
     : viewModel(p, oscIndex), midiCommandManager(mcm), pluginKnobs(mcm, 8) {
     titleLabel.setFont(juce::Font(juce::Font::getDefaultMonospacedFontName(),
-                                  getHeight() * .1, juce::Font::plain));
+                                  getHeight() * 0.1f, juce::Font::plain));
     titleLabel.setText("4OSC: OSC " + juce::String(oscIndex + 1),
                        juce::dontSendNotification);
     titleLabel.setJustificationType(juce::Justification::centred);
@@ -63,7 +63,7 @@ void OscillatorView::paint(juce::Graphics &/*g*/) {}
 
 void OscillatorView::resized() {
     titleLabel.setFont(juce::Font(juce::Font::getDefaultMonospacedFontName(),
-                                  getHeight() * .1, juce::Font::plain));
+                                  getHeight() * 0.1f, juce::Font::plain));
     titleLabel.setBounds(0, getHeight() * .05, getWidth(), getHeight() * .1);
 
     int knobWidth = getWidth() / 8;
