@@ -17,9 +17,9 @@ StepChannel *StepChannelList::createNewObject(const juce::ValueTree &v) {
 
 void StepChannelList::deleteObject(StepChannel *sc) { delete sc; }
 
-void StepChannelList::newObjectAdded(StepChannel *sc) {}
+void StepChannelList::newObjectAdded(StepChannel * /*sc*/) {}
 
-void StepChannelList::objectRemoved(StepChannel *sc) {}
+void StepChannelList::objectRemoved(StepChannel * /*sc*/) {}
 
 void StepChannelList::objectOrderChanged() {}
 } // namespace app_models

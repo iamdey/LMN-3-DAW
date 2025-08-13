@@ -99,7 +99,7 @@ void TempoSettingsView::tempoSettingsButtonPressed() {
     viewModel.enableTapMode();
 }
 
-void TempoSettingsView::bpmChanged(const double newBpm, const double newBps) {
+void TempoSettingsView::bpmChanged(const double newBpm, const double /*newBps*/) {
     beatSettingsComponent.setBpm(newBpm);
 }
 

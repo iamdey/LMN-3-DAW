@@ -16,7 +16,7 @@ LabeledKnob::LabeledKnob() {
     addAndMakeVisible(label);
 }
 
-void LabeledKnob::paint(juce::Graphics &g) {}
+void LabeledKnob::paint(juce::Graphics &/*g*/) {}
 
 void LabeledKnob::resized() {
     knob.setTextBoxStyle(juce::Slider::TextEntryBoxPosition::TextBoxBelow, true,
