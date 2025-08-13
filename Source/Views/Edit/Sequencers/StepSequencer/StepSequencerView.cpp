@@ -24,7 +24,7 @@ StepSequencerView::~StepSequencerView() {
     midiCommandManager.removeListener(this);
 }
 
-void StepSequencerView::paint(juce::Graphics &g) {}
+void StepSequencerView::paint(juce::Graphics &/*g*/) {}
 
 void StepSequencerView::resized() {
     int horizontalPadding = getWidth() / 10;
@@ -89,7 +89,7 @@ void StepSequencerView::minusButtonReleased() {
     viewModel.clearNotesAtSelectedIndex();
 }
 
-void StepSequencerView::notesPerMeasureChanged(int newNotesPerMeasure) {
+void StepSequencerView::notesPerMeasureChanged(int /*newNotesPerMeasure*/) {
     notesPerMeasureLabel.setText(juce::String(viewModel.getNotesPerMeasure()),
                                  juce::dontSendNotification);
     resized();

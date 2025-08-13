@@ -58,14 +58,14 @@ void TrackViewModel::valueTreePropertyChanged(
 }
 
 void TrackViewModel::valueTreeChildAdded(
-    juce::ValueTree &parentTree, juce::ValueTree &childWhichHasBeenAdded) {
+    juce::ValueTree &/*parentTree*/, juce::ValueTree &childWhichHasBeenAdded) {
     if (tracktion::Clip::isClipState(childWhichHasBeenAdded))
         markAndUpdate(shouldUpdateClips);
 }
 
 void TrackViewModel::valueTreeChildRemoved(
-    juce::ValueTree &parentTree, juce::ValueTree &childWhichHasBeenRemoved,
-    int indexFromWhichChildWasRemoved) {
+    juce::ValueTree &/*parentTree*/, juce::ValueTree &childWhichHasBeenRemoved,
+    int /*indexFromWhichChildWasRemoved*/) {
     if (tracktion::Clip::isClipState(childWhichHasBeenRemoved))
         markAndUpdate(shouldUpdateClips);
 }

@@ -59,7 +59,7 @@ OscillatorView::~OscillatorView() {
     viewModel.removeListener(this);
 }
 
-void OscillatorView::paint(juce::Graphics &g) {}
+void OscillatorView::paint(juce::Graphics &/*g*/) {}
 
 void OscillatorView::resized() {
     titleLabel.setFont(juce::Font(juce::Font::getDefaultMonospacedFontName(),

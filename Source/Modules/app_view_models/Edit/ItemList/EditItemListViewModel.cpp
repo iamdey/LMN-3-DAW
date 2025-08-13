@@ -65,7 +65,7 @@ void EditItemListViewModel::valueTreeChildAdded(
 
 void EditItemListViewModel::valueTreeChildRemoved(
     juce::ValueTree &parentTree, juce::ValueTree &childWhichHasBeenRemoved,
-    int indexFromWhichChildWasRemoved) {
+    int /*indexFromWhichChildWasRemoved*/) {
     if (parentTree == stateToListenToForChildChanges)
         if (childIdentifiersOfInterest.contains(
                 childWhichHasBeenRemoved.getType()))

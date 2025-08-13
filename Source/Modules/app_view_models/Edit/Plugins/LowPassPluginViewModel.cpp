@@ -56,7 +56,7 @@ bool LowPassPluginViewModel::getIsLowPass() {
 
 void LowPassPluginViewModel::valueTreePropertyChanged(
     juce::ValueTree &treeWhosePropertyHasChanged,
-    const juce::Identifier &property) {
+    const juce::Identifier &/*property*/) {
     if (treeWhosePropertyHasChanged == lowPassPlugin->state)
         markAndUpdate(shouldUpdateParameters);
 }

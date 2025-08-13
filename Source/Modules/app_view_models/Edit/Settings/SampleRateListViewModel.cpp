@@ -49,7 +49,7 @@ void SampleRateListViewModel::updateSampleRate() {
     }
 }
 
-void SampleRateListViewModel::selectedIndexChanged(int newIndex) {
+void SampleRateListViewModel::selectedIndexChanged(int /*newIndex*/) {
     updateSampleRate();
 }
 

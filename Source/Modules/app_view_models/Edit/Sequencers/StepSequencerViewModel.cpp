@@ -373,8 +373,8 @@ StepSequencerViewModel::findNoteInSequence(int channel, int noteIndex) {
         channel + (NOTES_PER_OCTAVE * getZeroBasedOctave()) + MIN_NOTE_NUMBER;
     auto startBeat = tracktion::BeatPosition::fromBeats(
         double(noteIndex * 4.0) / double(notesPerMeasure.get()));
-    auto duration =
-        tracktion::BeatDuration::fromBeats(4.0 / double(notesPerMeasure.get()));
+    //auto duration =
+    //    tracktion::BeatDuration::fromBeats(4.0 / double(notesPerMeasure.get()));
 
     // find the first node with matching pitch & startBeat
     for (auto note : sequence.getNotes()) {
@@ -388,7 +388,7 @@ StepSequencerViewModel::findNoteInSequence(int channel, int noteIndex) {
 }
 
 void StepSequencerViewModel::setVideoPosition(
-    tracktion::TimePosition timePosition, bool forceJump) {
+    tracktion::TimePosition timePosition, bool /*forceJump*/) {
     // find beat of current time relative to the start of the midi clip
     // round it down to nearest whole beat
     // then account for the notes per measure

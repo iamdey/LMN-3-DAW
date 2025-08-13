@@ -43,7 +43,7 @@ ModifierView::~ModifierView() {
     viewModel->removeListener(this);
 }
 
-void ModifierView::paint(juce::Graphics &g) {}
+void ModifierView::paint(juce::Graphics &/*g*/) {}
 
 void ModifierView::resized() {
     titleLabel.setFont(juce::Font(juce::Font::getDefaultMonospacedFontName(),

@@ -15,7 +15,7 @@ void InternalPluginViewModel::handleAsyncUpdate() {
 
 void InternalPluginViewModel::valueTreePropertyChanged(
     juce::ValueTree &treeWhosePropertyHasChanged,
-    const juce::Identifier &property) {
+    const juce::Identifier &/*property*/) {
     if (treeWhosePropertyHasChanged == plugin->state)
         markAndUpdate(shouldUpdateParameters);
 }

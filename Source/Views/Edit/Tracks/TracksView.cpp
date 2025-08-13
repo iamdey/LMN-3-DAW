@@ -251,7 +251,7 @@ void TracksView::stopButtonReleased() {
             viewModel.stopRecordingOrPlaying();
 }
 
-void TracksView::selectedIndexChanged(int newIndex) {
+void TracksView::selectedIndexChanged(int /*newIndex*/) {
     multiTrackListBox.updateContent();
     multiTrackListBox.selectRow(
         viewModel.listViewModel.itemListState.getSelectedItemIndex());

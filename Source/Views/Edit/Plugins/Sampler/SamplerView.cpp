@@ -81,7 +81,7 @@ SamplerView::~SamplerView() {
     midiCommandManager.removeListener(this);
 }
 
-void SamplerView::paint(juce::Graphics &g) {}
+void SamplerView::paint(juce::Graphics &/*g*/) {}
 
 void SamplerView::resized() {
     titledList.setBounds(getLocalBounds());

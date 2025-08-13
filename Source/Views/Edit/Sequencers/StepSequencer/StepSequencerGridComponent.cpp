@@ -98,18 +98,18 @@ void StepSequencerGridComponent::patternChanged() {
     repaint();
 }
 
-void StepSequencerGridComponent::selectedNoteIndexChanged(int newIndex) {
+void StepSequencerGridComponent::selectedNoteIndexChanged(int /*newIndex*/) {
     resized();
     repaint();
 }
 
-void StepSequencerGridComponent::numberOfNotesChanged(int newNumberOfNotes) {
+void StepSequencerGridComponent::numberOfNotesChanged(int /*newNumberOfNotes*/) {
     resized();
     repaint();
 }
 
 void StepSequencerGridComponent::notesPerMeasureChanged(
-    int newNotesPerMeasure) {
+    int /*newNotesPerMeasure*/) {
     resized();
     repaint();
 }
