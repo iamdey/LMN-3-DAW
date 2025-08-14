@@ -41,10 +41,11 @@ StepSequencerViewModel::StepSequencerViewModel(tracktion::AudioTrack::Ptr t)
     std::function<int(int)> selectedNoteIndexConstrainer = [this](int param) {
         // selected index cannot be less than 0
         // it also cannot be greater than or equal to the number of notes
-        if (param <= 0)
-            return 0;
-        else if (param >= numberOfNotes.get())
+        // but it would be nice if the cursor wrapped around :)
+        if (param < 0)
             return numberOfNotes.get() - 1;
+        else if (param >= numberOfNotes.get())
+            return 0;
         else
             return param;
     };
