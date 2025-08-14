@@ -4,6 +4,17 @@ namespace IDs {
 const juce::Identifier DRUM_SAMPLER_VIEW_STATE("DRUM_SAMPLER_VIEW_STATE");
 }
 
+struct DrumKitEntry {
+    juce::String name;
+    juce::File mappingFile;
+
+    // Optional: Allow sorting by name
+    bool operator<(const DrumKitEntry& other) const {
+        return name.compareIgnoreCase(other.name) < 0;
+    }
+};
+
+
 class DrumSamplerViewModel : public app_view_models::SamplerViewModel {
   public:
     explicit DrumSamplerViewModel(internal_plugins::DrumSamplerPlugin *sampler);
@@ -22,8 +33,7 @@ class DrumSamplerViewModel : public app_view_models::SamplerViewModel {
                                   const juce::Identifier &property) override;
 
   private:
-    juce::StringArray drumKitNames;
-    juce::Array<juce::File> mapFiles;
+    juce::Array<DrumKitEntry> drumKits;
     juce::Array<juce::File> drumSampleFiles;
 
     void readMappingFileIntoSampler(const juce::File &mappingFile,
