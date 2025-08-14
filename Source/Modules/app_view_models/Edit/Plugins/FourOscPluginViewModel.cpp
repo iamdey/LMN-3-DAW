@@ -109,42 +109,42 @@ void FourOscPluginViewModel::setParameterValue(int index, double value) {
     case 0:
         if (fourOscPlugin->ampAttack->getModifiers().size() == 0)
             fourOscPlugin->ampAttack->setNormalisedParameter(
-                static_cast<float>(value), juce::dontSendNotification);
+                (float)value, juce::dontSendNotification);
         break;
     case 1:
         if (fourOscPlugin->ampDecay->getModifiers().size() == 0)
             fourOscPlugin->ampDecay->setNormalisedParameter(
-                static_cast<float>(value), juce::dontSendNotification);
+                (float)value, juce::dontSendNotification);
         break;
     case 2:
         if (fourOscPlugin->ampSustain->getModifiers().size() == 0)
             fourOscPlugin->ampSustain->setNormalisedParameter(
-                static_cast<float>(value), juce::dontSendNotification);
+                (float)value, juce::dontSendNotification);
         break;
     case 3:
         if (fourOscPlugin->ampRelease->getModifiers().size() == 0)
             fourOscPlugin->ampRelease->setNormalisedParameter(
-                static_cast<float>(value), juce::dontSendNotification);
+                (float)value, juce::dontSendNotification);
         break;
     case 4:
         if (fourOscPlugin->oscParams[0]->tune->getModifiers().size() == 0)
             fourOscPlugin->oscParams[0]->tune->setNormalisedParameter(
-                static_cast<float>(value), juce::dontSendNotification);
+                (float)value, juce::dontSendNotification);
         break;
     case 5:
         if (fourOscPlugin->oscParams[1]->tune->getModifiers().size() == 0)
             fourOscPlugin->oscParams[1]->tune->setNormalisedParameter(
-                static_cast<float>(value), juce::dontSendNotification);
+                (float)value, juce::dontSendNotification);
         break;
     case 6:
         if (fourOscPlugin->oscParams[2]->tune->getModifiers().size() == 0)
             fourOscPlugin->oscParams[2]->tune->setNormalisedParameter(
-                static_cast<float>(value), juce::dontSendNotification);
+                (float)value, juce::dontSendNotification);
         break;
     case 7:
         if (fourOscPlugin->oscParams[3]->tune->getModifiers().size() == 0)
             fourOscPlugin->oscParams[3]->tune->setNormalisedParameter(
-                static_cast<float>(value), juce::dontSendNotification);
+                (float)value, juce::dontSendNotification);
         break;
     case 8:
         fourOscPlugin->oscParams[0]->waveShapeValue.setValue(value, nullptr);
@@ -161,22 +161,22 @@ void FourOscPluginViewModel::setParameterValue(int index, double value) {
     case 12:
         if (fourOscPlugin->oscParams[0]->pulseWidth->getModifiers().size() == 0)
             fourOscPlugin->oscParams[0]->pulseWidth->setNormalisedParameter(
-                static_cast<float>(value), juce::dontSendNotification);
+                (float)value, juce::dontSendNotification);
         break;
     case 13:
         if (fourOscPlugin->oscParams[1]->pulseWidth->getModifiers().size() == 0)
             fourOscPlugin->oscParams[1]->pulseWidth->setNormalisedParameter(
-                static_cast<float>(value), juce::dontSendNotification);
+                (float)value, juce::dontSendNotification);
         break;
     case 14:
         if (fourOscPlugin->oscParams[2]->pulseWidth->getModifiers().size() == 0)
             fourOscPlugin->oscParams[2]->pulseWidth->setNormalisedParameter(
-                static_cast<float>(value), juce::dontSendNotification);
+                (float)value, juce::dontSendNotification);
         break;
     case 15:
         if (fourOscPlugin->oscParams[3]->pulseWidth->getModifiers().size() == 0)
             fourOscPlugin->oscParams[3]->pulseWidth->setNormalisedParameter(
-                static_cast<float>(value), juce::dontSendNotification);
+                (float)value, juce::dontSendNotification);
         break;
     default:
         break;

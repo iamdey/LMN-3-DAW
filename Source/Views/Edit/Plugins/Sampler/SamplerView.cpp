@@ -124,14 +124,14 @@ void SamplerView::resized() {
             startX, startY, endX - startX, height);
         sampleExcerptThumbnail.setBounds(sampleExcerptThumbnailBounds);
 
-        juce::Point<float> topLeft(static_cast<float>(startX), static_cast<float>(startY));
+        juce::Point<float> topLeft((float)startX, (float)startY);
         juce::Point<float> topRight(startX + 2, startY);
         juce::Point<float> bottomLeft(startX, startY + height);
         juce::Parallelogram<float> markerBounds(topLeft, topRight, bottomLeft);
         startMarker.setRectangle(markerBounds);
 
-        topLeft = juce::Point<float>(static_cast<float>(endX) - 2.0f, static_cast<float>(startY));
-        topRight = juce::Point<float>(static_cast<float>(endX), static_cast<float>(startY));
+        topLeft = juce::Point<float>((float)(endX - 2.0f), (float)startY);
+        topRight = juce::Point<float>((float)endX, (float)startY);
         bottomLeft = juce::Point<float>(endX - 2.0f, startY + height);
         markerBounds =
             juce::Parallelogram<float>(topLeft, topRight, bottomLeft);

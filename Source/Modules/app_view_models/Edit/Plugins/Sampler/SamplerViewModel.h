@@ -22,7 +22,7 @@ class SamplerViewModel : public juce::ChangeListener,
     virtual void enterDir() {}
     virtual bool isDir() { return false; }
 
-    virtual void setSelectedSoundIndex(int) {}
+    virtual void setSelectedSoundIndex(int /*noteNumber*/) {}
 
     void increaseSelectedIndex();
     void decreaseSelectedIndex();
