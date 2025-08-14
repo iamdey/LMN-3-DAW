@@ -5,19 +5,25 @@ DrumSamplerViewModel::DrumSamplerViewModel(
     internal_plugins::DrumSamplerPlugin *sampler)
     : SamplerViewModel(sampler, IDs::DRUM_SAMPLER_VIEW_STATE) {
     updateDrumKits();
-    itemListState.listSize = drumKitNames.size();
+    itemListState.listSize = drumKits.size();
 
-    if (drumKitNames.size() > 0) {
+    if (drumKits.size() > 0) {
         DBG("current kit index: " +
             std::to_string(itemListState.getSelectedItemIndex()));
-        juce::File currentMap = mapFiles[itemListState.getSelectedItemIndex()];
+        juce::File currentMap = drumKits[itemListState.getSelectedItemIndex()].mappingFile;
         readMappingFileIntoSampler(currentMap, true);
         DBG("updating thumb");
         updateThumb();
     }
 }
 
-juce::StringArray DrumSamplerViewModel::getItemNames() { return drumKitNames; }
+juce::StringArray DrumSamplerViewModel::getItemNames() {
+    // extract names from DrumKits and return
+    juce::StringArray names;
+    for (const auto& kit : drumKits)
+        names.add(kit.name);
+    return names;
+}
 
 juce::String DrumSamplerViewModel::getSelectedItemName() {
     return drumSampleFiles[selectedSoundIndex].getFileNameWithoutExtension();
@@ -30,7 +36,7 @@ void DrumSamplerViewModel::setSelectedSoundIndex(int noteNumber) {
 
 void DrumSamplerViewModel::selectedIndexChanged(int newIndex) {
     // we just changed kits
-    juce::File newMapFile = mapFiles[newIndex];
+    juce::File newMapFile = drumKits[newIndex].mappingFile;
     readMappingFileIntoSampler(newMapFile, true);
     selectedSoundIndex.setValue(0, nullptr);
     markAndUpdate(shouldUpdateGain);
@@ -114,11 +120,11 @@ void DrumSamplerViewModel::readMappingFileIntoSampler(
 }
 
 void DrumSamplerViewModel::updateDrumKits() {
-    mapFiles.clear();
-    drumKitNames.clear();
 
+    drumKits.clear();
     const auto sampleDir = ConfigurationHelpers::getTempDrumKitsDirectory(
         samplerPlugin->edit.engine);
+    // find all yaml files recursively
     for (juce::DirectoryEntry entry : juce::RangedDirectoryIterator(
              sampleDir, true, "*.yaml",
              juce::File::TypesOfFileToFind::findFiles)) {
@@ -126,14 +132,19 @@ void DrumSamplerViewModel::updateDrumKits() {
             YAML::LoadFile(entry.getFile().getFullPathName().toStdString());
 
         if (!node.IsNull()) {
-            drumKitNames.add(node["name"].as<std::string>());
-            mapFiles.add(entry.getFile());
+            // file seems valid, build a drumkit entry
+            DrumKitEntry entryData;
+            entryData.name = node["name"].as<std::string>();
+            entryData.mappingFile = entry.getFile();
+            drumKits.add(entryData);
         } else {
             juce::Logger::writeToLog(
                 "unable to read YAML file: " +
                 entry.getFile().getFullPathName().toStdString());
         }
     }
+    // sort alphabetically
+    std::sort(drumKits.begin(), drumKits.end());
 }
 
 void DrumSamplerViewModel::updateThumb() {
