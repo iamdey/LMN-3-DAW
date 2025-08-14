@@ -37,7 +37,7 @@ void App::paint(juce::Graphics &g) {
 
 void App::resized() {
     progressView.setBounds(
-        getLocalBounds().reduced((float)(getWidth() / 2.25), (float)(getHeight() / 2.25)));
+        getLocalBounds().reduced((int)(getWidth() / 2.25), (int)(getHeight() / 2.25)));
     editTabBarView.setBounds(getLocalBounds());
 }
 

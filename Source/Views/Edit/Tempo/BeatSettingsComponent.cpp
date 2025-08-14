@@ -32,13 +32,13 @@ void BeatSettingsComponent::paint(juce::Graphics &g) {
 void BeatSettingsComponent::resized() {
     bpmLabel.setFont(juce::Font(juce::Font::getDefaultMonospacedFontName(),
                                 getHeight() * 0.2f, juce::Font::plain));
-    bpmLabel.setBounds(0, 0, getWidth(), getHeight() * .2);
+    bpmLabel.setBounds(0, 0, getWidth(), (int)(getHeight() * .2));
 
     currentBpmValueLabel.setFont(
         juce::Font(juce::Font::getDefaultMonospacedFontName(), getHeight() * 0.5f,
                    juce::Font::plain));
     currentBpmValueLabel.setBounds(0, bpmLabel.getHeight(), getWidth(),
-                                   getHeight() * .5);
+                                   (int)(getHeight() * .5));
 }
 
 void BeatSettingsComponent::setBpm(double bpm) {

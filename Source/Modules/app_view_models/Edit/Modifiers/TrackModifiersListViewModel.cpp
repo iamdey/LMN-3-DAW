@@ -22,7 +22,7 @@ void TrackModifiersListViewModel::toggleSelectedModifierEnabled() {
     if (auto modifier = dynamic_cast<tracktion::Modifier *>(
             listViewModel.getSelectedItem()))
         //        modifier->enabled.setValue(!modifier->enabled.get(), nullptr);
-        modifier->enabledParam->setParameter(!modifier->enabled.get(),
+        modifier->enabledParam->setParameter(!(bool)modifier->enabled.get(),
                                              juce::dontSendNotification);
 }
 

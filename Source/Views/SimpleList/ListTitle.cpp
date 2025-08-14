@@ -44,8 +44,8 @@ void ListTitle::paint(juce::Graphics &g) {
 }
 
 void ListTitle::resized() {
-    titleLabel.setBounds(0, 0, getWidth() * .9, getHeight());
-    iconLabel.setBounds(getWidth() * .9, 0, getWidth() * .1, getHeight());
+    titleLabel.setBounds(0, 0, (int)(getWidth() * .9), getHeight());
+    iconLabel.setBounds((int)(getWidth() * .9), 0, (int)(getWidth() * .1), getHeight());
 
     titleLabel.setFont(juce::Font(juce::Font::getDefaultMonospacedFontName(),
                                   getHeight() * 0.7f, juce::Font::plain));

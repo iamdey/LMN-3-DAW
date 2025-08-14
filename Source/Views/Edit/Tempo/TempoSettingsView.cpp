@@ -47,9 +47,9 @@ void TempoSettingsView::paint(juce::Graphics &g) {
 }
 
 void TempoSettingsView::resized() {
-    double padding = getHeight() * .08;
+    int padding =  (int) getHeight() * .08;
 
-    int beatSettingsWidth = getWidth() - 2 * padding;
+    int beatSettingsWidth = (int) getWidth() - 2 * padding;
     int beatSettingsX = (getWidth() / 2) - (beatSettingsWidth / 2);
     beatSettingsComponent.setBounds(beatSettingsX, 2 * padding,
                                     beatSettingsWidth,
@@ -57,18 +57,18 @@ void TempoSettingsView::resized() {
 
     fontAwesomeFont.setHeight(getHeight() * 0.1f);
     gainIcon.setFont(fontAwesomeFont);
-    gainIcon.setBounds(getWidth() - padding - getHeight() * .21, padding,
-                       getHeight() * .21, getHeight() * .2);
+    gainIcon.setBounds((int)(getWidth() - padding - getHeight() * .21), padding,
+                       (int)(getHeight() * .21),(int)(getHeight() * .2));
 
     int sliderWidth = 6;
     int gainSliderX =
-        gainIcon.getX() + (gainIcon.getWidth() / 2.0) - sliderWidth / 2.0 + 1;
+        gainIcon.getX() + (gainIcon.getWidth() / 2) - sliderWidth / 2 + 1;
     int gainSliderY = gainIcon.getY() + gainIcon.getHeight();
     gainSlider.setBounds(gainSliderX, gainSliderY, sliderWidth,
                          getHeight() - padding - gainSliderY);
 
     tapIcon.setFont(fontAwesomeFont);
-    tapIcon.setBounds(padding, padding, getHeight() * .11, getHeight() * .1);
+    tapIcon.setBounds(padding, padding, (int)(getHeight() * .11), (int)(getHeight() * .1));
 }
 
 void TempoSettingsView::encoder1Increased() {

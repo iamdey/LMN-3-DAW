@@ -6,7 +6,7 @@ void OctaveDisplayComponent::paint(juce::Graphics &g) {
     g.setColour(appLookAndFeel.backgroundColour);
     g.fillRect(getLocalBounds());
     juce::Font font(juce::Font::getDefaultMonospacedFontName(),
-                    getHeight() * 0.75f, juce::Font::plain);
+                    (int)(getHeight() * 0.75f), juce::Font::plain);
     fontAwesomeFont.setHeight(getHeight() * 0.5f);
     juce::String octaveText = juce::String(octaveInt);
     int totalTextWidth = fontAwesomeFont.getStringWidth(icon) + 5 +
@@ -17,7 +17,7 @@ void OctaveDisplayComponent::paint(juce::Graphics &g) {
 
     g.setFont(fontAwesomeFont);
     g.setColour(appLookAndFeel.whiteColour);
-    g.drawText(icon, keyboardX, (getHeight() - fontAwesomeFont.getHeight()) / 2,
+    g.drawText(icon, keyboardX, (int)((getHeight() - fontAwesomeFont.getHeight()) / 2),
                fontAwesomeFont.getStringWidth(icon),
                fontAwesomeFont.getHeight(), juce::Justification::centred);
 
@@ -30,8 +30,8 @@ void OctaveDisplayComponent::paint(juce::Graphics &g) {
     }
 
     g.setFont(font);
-    g.drawText(octaveText, octaveX, (getHeight() - font.getHeight()) / 2,
-               font.getStringWidth(octaveText), font.getHeight(),
+    g.drawText(octaveText, octaveX,(int)((getHeight() - font.getHeight()) / 2),
+               font.getStringWidth(octaveText), (int) font.getHeight(),
                juce::Justification::centred);
 }
 void OctaveDisplayComponent::resized() {}
