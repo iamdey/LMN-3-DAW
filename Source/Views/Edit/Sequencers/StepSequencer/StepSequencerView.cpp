@@ -99,3 +99,5 @@ void StepSequencerView::notesPerMeasureChanged(int /*newNotesPerMeasure*/) {
                                  juce::dontSendNotification);
     resized();
 }
+
+void StepSequencerView::rangeSelectionEnabledChanged(bool /*rangeSelectionEnabled*/) {}

@@ -117,3 +117,9 @@ void StepSequencerGridComponent::notesPerMeasureChanged(
     resized();
     repaint();
 }
+
+
+void StepSequencerGridComponent::rangeSelectionEnabledChanged(bool /*rangeSelectionEnabled*/) {
+    resized();
+    repaint();
+}

@@ -344,6 +344,12 @@ void StepSequencerViewModel::handleAsyncUpdate() {
         listeners.call([this](Listener &l) {
             l.notesPerMeasureChanged(notesPerMeasure.get());
         });
+
+    if (compareAndReset(shouldUpdateRangeSelectionEnabled)) {
+        listeners.call([this](Listener &l) {
+          l.rangeSelectionEnabledChanged(rangeSelectionEnabled.get());
+        });
+    }
 }
 
 void StepSequencerViewModel::valueTreePropertyChanged(
@@ -384,6 +390,10 @@ void StepSequencerViewModel::valueTreePropertyChanged(
 
             markAndUpdate(shouldUpdateNotesPerMeasure);
         }
+
+        if (property == IDs::RANGE_SELECTION_ENABLED) {
+            markAndUpdate(shouldUpdateRangeSelectionEnabled);
+        }
     }
 
     if (treeWhosePropertyHasChanged.hasType(IDs::EDIT_VIEW_STATE)) {
@@ -400,6 +410,7 @@ void StepSequencerViewModel::addListener(Listener *l) {
     l->selectedNoteIndexChanged(selectedNoteIndex.get());
     l->numberOfNotesChanged(numberOfNotes.get());
     l->notesPerMeasureChanged(notesPerMeasure.get());
+    l->rangeSelectionEnabledChanged(rangeSelectionEnabled.get());
 }
 
 void StepSequencerViewModel::removeListener(Listener *l) {

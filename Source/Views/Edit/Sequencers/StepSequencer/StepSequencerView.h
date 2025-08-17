@@ -37,6 +37,8 @@ class StepSequencerView
 
     void notesPerMeasureChanged(int newNotesPerMeasure) override;
 
+    void rangeSelectionEnabledChanged(bool /*rangeSelectionEnabled*/) override;
+
   private:
     app_view_models::StepSequencerViewModel viewModel;
     app_services::MidiCommandManager &midiCommandManager;

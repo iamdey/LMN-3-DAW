@@ -68,6 +68,7 @@ class StepSequencerViewModel : public juce::ValueTree::Listener,
         virtual void selectedNoteIndexChanged(int /*newIndex*/) {}
         virtual void numberOfNotesChanged(int /*newNumberOfNotes*/) {}
         virtual void notesPerMeasureChanged(int /*newNotesPerMeasure*/) {}
+        virtual void rangeSelectionEnabledChanged(bool /*rangeSelectionEnabled*/) {}
     };
 
     void addListener(Listener *l);
@@ -98,6 +99,7 @@ class StepSequencerViewModel : public juce::ValueTree::Listener,
     bool shouldUpdateSelectedNoteIndex = false;
     bool shouldUpdateNumberOfNotes = false;
     bool shouldUpdateNotesPerMeasure = false;
+    bool shouldUpdateRangeSelectionEnabled = false;
 
     // Range selection toggle
     tracktion::ConstrainedCachedValue<int> rangeStartIndex;
