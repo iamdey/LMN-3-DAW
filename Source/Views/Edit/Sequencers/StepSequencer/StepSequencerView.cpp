@@ -78,8 +78,13 @@ void StepSequencerView::encoder3Decreased() {
     if (midiCommandManager.isMinusDown)
         viewModel.clearNotesAtSelectedIndex();
 
-    viewModel.decrementSelectedNoteIndex();
+     viewModel.decrementSelectedNoteIndex();
 }
+
+void StepSequencerView::encoder3ButtonReleased() {
+    viewModel.toggleRangeSelection();
+}
+
 
 void StepSequencerView::playButtonReleased() { viewModel.play(); }
 

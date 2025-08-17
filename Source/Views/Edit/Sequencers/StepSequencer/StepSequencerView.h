@@ -28,6 +28,7 @@ class StepSequencerView
 
     void encoder3Increased() override;
     void encoder3Decreased() override;
+    void encoder3ButtonReleased() override;
 
     void playButtonReleased() override;
     void stopButtonReleased() override;

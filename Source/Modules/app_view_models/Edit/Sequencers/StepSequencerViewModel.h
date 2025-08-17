@@ -6,6 +6,9 @@ const juce::Identifier STEP_SEQUENCER_STATE("STEP_SEQUENCER_VIEW_STATE");
 const juce::Identifier selectedNoteIndex("selectedNoteIndex");
 const juce::Identifier numberOfNotes("numberOfNotes");
 const juce::Identifier notesPerMeasure("notesPerMeasure");
+const juce::Identifier RANGE_START_INDEX("RANGE_START_INDEX");
+const juce::Identifier RANGE_END_INDEX("RANGE_END_INDEX");
+const juce::Identifier RANGE_SELECTION_ENABLED("RANGE_SELECTION_ENABLED");
 
 } // namespace IDs
 
@@ -42,6 +45,20 @@ class StepSequencerViewModel : public juce::ValueTree::Listener,
 
     void play();
     void stop();
+
+    // Public toggle and accessor methods
+    void toggleRangeSelection();
+
+    // Bind to state (using referTo for reactive updates)
+    void bindRangeStartIndex();
+    void bindRangeEndIndex();
+
+    int getRangeStartIndex() const { return rangeStartIndex.get(); }
+    int getRangeEndIndex() const { return rangeEndIndex.get(); }
+    //bool isRangeSelectionActive() const { return rangeSelectionToggle; }
+    bool isRangeSelectionActive() const { return rangeSelectionEnabled.get(); }
+
+    void onSelectedNoteIndexChanged(int newIndex);
 
     class Listener {
       public:
@@ -82,8 +99,18 @@ class StepSequencerViewModel : public juce::ValueTree::Listener,
     bool shouldUpdateNumberOfNotes = false;
     bool shouldUpdateNotesPerMeasure = false;
 
+    // Range selection toggle
+    tracktion::ConstrainedCachedValue<int> rangeStartIndex;
+    tracktion::ConstrainedCachedValue<int> rangeEndIndex;
+
+    // Toggle: whether range selection is active
+    //juce::ValueTree::Listener* rangeSelectionToggleListener = nullptr;
+    //juce::ValueTree rangeSelectionToggleState;
+
     juce::CachedValue<int> notesPerMeasure;
     juce::Array<int> notesPerMeasureOptions = juce::Array<int>({4, 8, 16});
+
+    juce::CachedValue<bool> rangeSelectionEnabled;
 
     void handleAsyncUpdate() override;
     void valueTreePropertyChanged(juce::ValueTree &treeWhosePropertyHasChanged,
