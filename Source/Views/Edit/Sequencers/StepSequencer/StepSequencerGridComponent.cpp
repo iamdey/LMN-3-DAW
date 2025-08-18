@@ -96,10 +96,9 @@ void StepSequencerGridComponent::paint(juce::Graphics &g) {
       g.fillRect(float(startX - (lineThickness / 2) +
                        float(viewModel.getRangeStartIndex()) * colSpacing),
                  float(startY) - (lineThickness / 2),
-
-                float(startX - (lineThickness / 2) +
-                       float(viewModel.getRangeEndIndex() + 1) * colSpacing),
-                 float(endY - startY) + (lineThickness));
+                
+                 float(viewModel.getRangeEndIndex() - viewModel.getRangeStartIndex() + 1) * colSpacing,
+                 float(endY - startY + lineThickness));
     }
 }
 

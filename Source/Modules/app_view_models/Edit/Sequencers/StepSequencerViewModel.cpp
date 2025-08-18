@@ -72,7 +72,7 @@ StepSequencerViewModel::StepSequencerViewModel(tracktion::AudioTrack::Ptr t) :
     rangeAnchorIndex.setConstrainer(rangeIndexConstrainer);
     rangeAnchorIndex.referTo(state, IDs::RANGE_ANCHOR_INDEX, nullptr, 0);
 
-    rangeSelectionEnabled.referTo(state, IDs::RANGE_SELECTION_ENABLED, nullptr, 0);
+    rangeSelectionEnabled.referTo(state, IDs::RANGE_SELECTION_ENABLED, nullptr, false);
 
     double secondsPerBeat = 1.0 / track->edit.tempoSequence.getBeatsPerSecondAt(
                                       tracktion::TimePosition::fromSeconds(0));
@@ -267,11 +267,11 @@ void StepSequencerViewModel::stop() {
 
 void StepSequencerViewModel::toggleRangeSelection() {
     // Toggle the state (using state or a dedicated field)
-    bool currentActive = rangeSelectionEnabled.get();
-    rangeSelectionEnabled.setValue(!currentActive, nullptr);
+    bool nowActive = ! rangeSelectionEnabled.get();
+    rangeSelectionEnabled.setValue(nowActive, nullptr);
 
     // Update range markers only if active
-    if (!currentActive) {
+    if (!nowActive) {
         rangeAnchorIndex.resetToDefault();
     } else {
         rangeAnchorIndex.setValue(getSelectedNoteIndex(), nullptr);
