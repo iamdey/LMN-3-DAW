@@ -56,7 +56,7 @@ StepSequencerViewModel::StepSequencerViewModel(tracktion::AudioTrack::Ptr t) :
 
     notesPerMeasure.referTo(state, IDs::notesPerMeasure, nullptr, 4);
 
-    std::function<int(int)> rangeStartIndexConstrainer = [this](int param) {
+    std::function<int(int)> rangeIndexConstrainer = [this](int param) {
         // rangeStartIndex cannot be less than 0
         // it also cannot be greater than the maximum number of notes allowed
         if (param <= 0)
@@ -68,23 +68,9 @@ StepSequencerViewModel::StepSequencerViewModel(tracktion::AudioTrack::Ptr t) :
         else
             return param;
     };
-    rangeStartIndex.setConstrainer(rangeStartIndexConstrainer);
-    rangeStartIndex.referTo(state, IDs::RANGE_START_INDEX, nullptr, 0);
 
-    std::function<int(int)> rangeEndIndexConstrainer = [this](int param) {
-        // rangeEndIndex cannot be less than 0
-        // it also cannot be greater than the maximum number of notes allowed
-        if (param <= 0)
-            return 0;
-        else if (param >= app_models::StepChannel::getMaxNumberOfNotes(
-                              notesPerMeasure.get()))
-            return app_models::StepChannel::getMaxNumberOfNotes(
-                notesPerMeasure.get());
-        else
-            return param;
-    };
-    rangeEndIndex.setConstrainer(rangeEndIndexConstrainer);
-    rangeEndIndex.referTo(state, IDs::RANGE_END_INDEX, nullptr, 0);
+    rangeAnchorIndex.setConstrainer(rangeIndexConstrainer);
+    rangeAnchorIndex.referTo(state, IDs::RANGE_ANCHOR_INDEX, nullptr, 0);
 
     rangeSelectionEnabled.referTo(state, IDs::RANGE_SELECTION_ENABLED, nullptr, 0);
 
@@ -175,14 +161,12 @@ int StepSequencerViewModel::getNumberOfNotes() { return numberOfNotes.get(); }
 void StepSequencerViewModel::incrementSelectedNoteIndex() {
     if (!track->edit.getTransport().isPlaying()) {
         selectedNoteIndex.setValue(selectedNoteIndex.get() + 1, nullptr);
-        onSelectedNoteIndexChanged(selectedNoteIndex.get());
     }
 }
 
 void StepSequencerViewModel::decrementSelectedNoteIndex() {
     if (!track->edit.getTransport().isPlaying()) {
         selectedNoteIndex.setValue(selectedNoteIndex.get() - 1, nullptr);
-        onSelectedNoteIndexChanged(selectedNoteIndex.get());
     }
 
 }
@@ -288,35 +272,9 @@ void StepSequencerViewModel::toggleRangeSelection() {
 
     // Update range markers only if active
     if (!currentActive) {
-        rangeStartIndex.resetToDefault();
-        rangeEndIndex.resetToDefault();
+        rangeAnchorIndex.resetToDefault();
     } else {
-        // Ensure both range indices are set to current selected note
-        int selected = getSelectedNoteIndex();
-        rangeStartIndex.setValue(selected, nullptr);
-        rangeEndIndex.setValue(selected, nullptr);
-    }
-}
-
-// Called when selectedNoteIndex changes — ensures range includes the new index
-void StepSequencerViewModel::onSelectedNoteIndexChanged(int newIndex) {
-    if (!rangeSelectionEnabled.get()) return;
-
-    int maxNotes = getNumberOfNotes();
-
-    // Clamp index if out of bounds
-    if (newIndex < 0 || newIndex >= maxNotes) return;
-
-    // Update range to include the new index
-    int start = rangeStartIndex.get();
-    int end = rangeEndIndex.get();
-
-    if (newIndex < start) {
-        rangeStartIndex.setValue(newIndex, nullptr);
-    } else if (newIndex > end) {
-        rangeEndIndex.setValue(newIndex, nullptr);
-    } else {
-        // Keep current range, but ensure consistency
+        rangeAnchorIndex.setValue(getSelectedNoteIndex(), nullptr);
     }
 }
 

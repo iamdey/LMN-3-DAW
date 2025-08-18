@@ -82,17 +82,25 @@ void StepSequencerGridComponent::paint(juce::Graphics &g) {
     }
 
     // draw index marker
-    if (viewModel.isRangeSelectionActive()) {
-      g.setColour(appLookAndFeel.colour4);
-    } else {
-      g.setColour(appLookAndFeel.colour3);
-    }
+    g.setColour(appLookAndFeel.colour3);
     float lineThickness = 3.0f;
     g.drawRect(float(startX - (lineThickness / 2) +
                      float(viewModel.getSelectedNoteIndex()) * colSpacing),
                float(startY) - (lineThickness / 2),
                float(colSpacing) + (lineThickness),
                float(endY - startY) + (lineThickness), lineThickness);
+
+    // draw range selection
+    if (viewModel.isRangeSelectionActive()) {
+      g.setColour(juce::Colour(0x80ffffff));
+      g.fillRect(float(startX - (lineThickness / 2) +
+                       float(viewModel.getRangeStartIndex()) * colSpacing),
+                 float(startY) - (lineThickness / 2),
+
+                float(startX - (lineThickness / 2) +
+                       float(viewModel.getRangeEndIndex() + 1) * colSpacing),
+                 float(endY - startY) + (lineThickness));
+    }
 }
 
 void StepSequencerGridComponent::resized() {}
