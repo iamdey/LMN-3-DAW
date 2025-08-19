@@ -92,7 +92,7 @@ void StepSequencerGridComponent::paint(juce::Graphics &g) {
 
     // draw range selection
     if (viewModel.isRangeSelectionActive()) {
-      g.setColour(juce::Colour(0x80ffffff));
+      g.setColour(appLookAndFeel.colour3.withAlpha(0.5f));
       g.fillRect(float(startX - (lineThickness / 2) +
                        float(viewModel.getRangeStartIndex()) * colSpacing),
                  float(startY) - (lineThickness / 2),

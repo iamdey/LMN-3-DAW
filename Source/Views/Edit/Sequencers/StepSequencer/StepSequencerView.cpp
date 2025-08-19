@@ -94,6 +94,14 @@ void StepSequencerView::minusButtonReleased() {
     viewModel.clearNotesAtSelectedIndex();
 }
 
+void StepSequencerView::cutButtonReleased() {
+    viewModel.copySelection();
+}
+void StepSequencerView::pasteButtonReleased() {
+    viewModel.pasteSelection();
+};
+
+
 void StepSequencerView::notesPerMeasureChanged(int /*newNotesPerMeasure*/) {
     notesPerMeasureLabel.setText(juce::String(viewModel.getNotesPerMeasure()),
                                  juce::dontSendNotification);

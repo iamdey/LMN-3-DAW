@@ -35,6 +35,9 @@ class StepSequencerView
 
     void minusButtonReleased() override;
 
+    void cutButtonReleased() override;
+    void pasteButtonReleased() override;
+
     void notesPerMeasureChanged(int newNotesPerMeasure) override;
 
     void rangeSelectionEnabledChanged(bool /*rangeSelectionEnabled*/) override;

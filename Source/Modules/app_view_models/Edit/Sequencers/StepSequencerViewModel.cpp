@@ -126,6 +126,8 @@ bool StepSequencerViewModel::hasNoteAt(int channel, int noteIndex) {
     return stepSequence.getChannel(channel)->getNote(noteIndex);
 }
 
+//TODO: refactor with toggleNote(index, channel) 
+
 void StepSequencerViewModel::toggleNoteNumberAtSelectedIndex(int noteNumber) {
     // FIXME: it crashes if octave is higher or lower than normal
     int channel = noteNumberToChannel(noteNumber);
@@ -275,6 +277,45 @@ void StepSequencerViewModel::toggleRangeSelection() {
         rangeAnchorIndex.resetToDefault();
     } else {
         rangeAnchorIndex.setValue(getSelectedNoteIndex(), nullptr);
+    }
+}
+
+void StepSequencerViewModel::copySelection() {
+  // copy all notes in the selected range to an internal buffer
+    if (!rangeSelectionEnabled.get()) {
+      return;
+    }
+
+    copiedNotes.clear();
+    int from = getRangeStartIndex();
+    int to = getRangeEndIndex();
+    DBG("Copying selection from " + std::to_string (from) + " to " + std::to_string (to));
+    for (int index = from; index <= to; index++) {
+        for (int channel = 0; channel < getNumNotesPerChannel(); channel++) {
+            if (hasNoteAt(channel, index)) {
+                Note note;
+                note.index = index;
+                note.channel = channel;
+                DBG("Copied note, index " + std::to_string(note.index) + " channel " + std::to_string(note.channel));
+                copiedNotes.push_back(note);
+            }
+        }
+    }
+}
+
+
+void StepSequencerViewModel::pasteSelection() {
+    // paste notes from our internal buffer at the current cursor pos
+    if (rangeSelectionEnabled.get() || copiedNotes.size() == 0) {
+      return;
+    }
+
+    DBG("Pasting selection");
+    int from = getSelectedNoteIndex();
+    for(int noteIndex = 0; noteIndex < copiedNotes.size(); noteIndex++) {
+        DBG("Pasted note, index " + std::to_string(from + noteIndex) + " channel " + std::to_string(copiedNotes[noteIndex].channel));
+        addNoteToSequence(copiedNotes[noteIndex].channel, from + noteIndex);
+        stepSequence.getChannel(copiedNotes[noteIndex].channel)->setNote(from + copiedNotes[noteIndex].index, true);
     }
 }
 
@@ -456,6 +497,7 @@ double StepSequencerViewModel::floorToFraction(double number,
     x = x / denominator;
     return x;
 }
+
 
 int StepSequencerViewModel::getZeroBasedOctave() {
     int currentOctave =

@@ -48,13 +48,16 @@ class StepSequencerViewModel : public juce::ValueTree::Listener,
     // Public toggle and accessor methods
     void toggleRangeSelection();
 
-    // Bind to state (using referTo for reactive updates)
-    void bindRangeStartIndex();
-    void bindRangeEndIndex();
-
     int getRangeStartIndex() { return std::min({rangeAnchorIndex.get(), getSelectedNoteIndex()}); }
     int getRangeEndIndex() { return std::max({rangeAnchorIndex.get(), getSelectedNoteIndex()}); }
     bool isRangeSelectionActive() const { return rangeSelectionEnabled.get(); }
+
+    struct Note {
+      int index;
+      int channel;
+    };
+    void copySelection();
+    void pasteSelection();
 
     class Listener {
       public:
@@ -100,7 +103,8 @@ class StepSequencerViewModel : public juce::ValueTree::Listener,
     // Range selection toggle
     tracktion::ConstrainedCachedValue<int> rangeAnchorIndex;
 
-    // Toggle: whether range selection is active
+    // clipboard
+    std::vector<Note> copiedNotes;
 
     juce::CachedValue<int> notesPerMeasure;
     juce::Array<int> notesPerMeasureOptions = juce::Array<int>({4, 8, 16});
