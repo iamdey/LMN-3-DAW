@@ -294,7 +294,7 @@ void StepSequencerViewModel::copySelection() {
         for (int channel = 0; channel < getNumNotesPerChannel(); channel++) {
             if (hasNoteAt(channel, index)) {
                 Note note;
-                note.index = index;
+                note.index = index - from;
                 note.channel = channel;
                 DBG("Copied note, index " + std::to_string(note.index) + " channel " + std::to_string(note.channel));
                 copiedNotes.push_back(note);
@@ -313,9 +313,9 @@ void StepSequencerViewModel::pasteSelection() {
     DBG("Pasting selection");
     int from = getSelectedNoteIndex();
     for(int noteIndex = 0; noteIndex < copiedNotes.size(); noteIndex++) {
-        DBG("Pasted note, index " + std::to_string(from + noteIndex) + " channel " + std::to_string(copiedNotes[noteIndex].channel));
-        addNoteToSequence(copiedNotes[noteIndex].channel, from + noteIndex);
+        addNoteToSequence(copiedNotes[noteIndex].channel, from + copiedNotes[noteIndex].index);
         stepSequence.getChannel(copiedNotes[noteIndex].channel)->setNote(from + copiedNotes[noteIndex].index, true);
+        DBG("Pasted note, index " + std::to_string(from + copiedNotes[noteIndex].index) + " channel " + std::to_string(copiedNotes[noteIndex].channel));
     }
 }
 
