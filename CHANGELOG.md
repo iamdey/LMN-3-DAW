@@ -8,6 +8,23 @@ and this project adheres to
 
 ## [Unreleased]
 
+## [0.4.1] - TBD
+
+### Added
+
+- Step Sequencer: Copy and paste. Press encoder 3 to enter range select mode.
+  Turn the encoder to select the range you want to copy. Press `Cut` to copy the notes
+  within the selected range. Press encoder 3 to disable range select mode. Rotate
+  encoder 3 to where you want to paste the previously copied notes, press `Paste`.
+
+
+### Changed
+
+- Step Sequencer: The cursor now wraps around when reaching the limits.
+- Drum Sampler: Show the list of drumkits sorted alphabetically.
+- Sampler: Show the list of samplers sorted alphabetically.
+
+
 ## [0.4.0] - 2025-05-22
 
 ### Fixed
