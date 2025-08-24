@@ -291,13 +291,13 @@ void StepSequencerViewModel::copySelection() {
     int to = getRangeEndIndex();
     DBG("Copying selection from " + std::to_string (from) + " to " + std::to_string (to));
     for (int index = from; index <= to; index++) {
-        for (int channel = 0; channel < getNumNotesPerChannel(); channel++) {
+        for (int channel = 0; channel < getNumChannels(); channel++) {
             if (hasNoteAt(channel, index)) {
                 Note note;
                 note.index = index - from;
                 note.channel = channel;
-                DBG("Copied note, index " + std::to_string(note.index) + " channel " + std::to_string(note.channel));
                 copiedNotes.push_back(note);
+                DBG("Copied note, index " + std::to_string(note.index) + " channel " + std::to_string(note.channel));
             }
         }
     }
