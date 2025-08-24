@@ -100,16 +100,15 @@ class StepSequencerViewModel : public juce::ValueTree::Listener,
     bool shouldUpdateNotesPerMeasure = false;
     bool shouldUpdateRangeSelectionEnabled = false;
 
-    // Range selection toggle
-    tracktion::ConstrainedCachedValue<int> rangeAnchorIndex;
 
     // clipboard
     std::vector<Note> copiedNotes;
+    juce::CachedValue<bool> rangeSelectionEnabled;
+    tracktion::ConstrainedCachedValue<int> rangeAnchorIndex;
 
     juce::CachedValue<int> notesPerMeasure;
     juce::Array<int> notesPerMeasureOptions = juce::Array<int>({4, 8, 16});
 
-    juce::CachedValue<bool> rangeSelectionEnabled;
 
     void handleAsyncUpdate() override;
     void valueTreePropertyChanged(juce::ValueTree &treeWhosePropertyHasChanged,
