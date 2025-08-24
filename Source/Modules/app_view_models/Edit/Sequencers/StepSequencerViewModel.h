@@ -6,6 +6,8 @@ const juce::Identifier STEP_SEQUENCER_STATE("STEP_SEQUENCER_VIEW_STATE");
 const juce::Identifier selectedNoteIndex("selectedNoteIndex");
 const juce::Identifier numberOfNotes("numberOfNotes");
 const juce::Identifier notesPerMeasure("notesPerMeasure");
+const juce::Identifier RANGE_ANCHOR_INDEX("RANGE_ANCHOR_INDEX");
+const juce::Identifier RANGE_SELECTION_ENABLED("RANGE_SELECTION_ENABLED");
 
 } // namespace IDs
 
@@ -43,6 +45,20 @@ class StepSequencerViewModel : public juce::ValueTree::Listener,
     void play();
     void stop();
 
+    // Public toggle and accessor methods
+    void toggleRangeSelection();
+
+    int getRangeStartIndex() { return std::min({rangeAnchorIndex.get(), getSelectedNoteIndex()}); }
+    int getRangeEndIndex() { return std::max({rangeAnchorIndex.get(), getSelectedNoteIndex()}); }
+    bool isRangeSelectionActive() const { return rangeSelectionEnabled.get(); }
+
+    struct Note {
+      int index;
+      int channel;
+    };
+    void copySelection();
+    void pasteSelection();
+
     class Listener {
       public:
         virtual ~Listener() = default;
@@ -51,6 +67,7 @@ class StepSequencerViewModel : public juce::ValueTree::Listener,
         virtual void selectedNoteIndexChanged(int /*newIndex*/) {}
         virtual void numberOfNotesChanged(int /*newNumberOfNotes*/) {}
         virtual void notesPerMeasureChanged(int /*newNotesPerMeasure*/) {}
+        virtual void rangeSelectionEnabledChanged(bool /*rangeSelectionEnabled*/) {}
     };
 
     void addListener(Listener *l);
@@ -81,9 +98,17 @@ class StepSequencerViewModel : public juce::ValueTree::Listener,
     bool shouldUpdateSelectedNoteIndex = false;
     bool shouldUpdateNumberOfNotes = false;
     bool shouldUpdateNotesPerMeasure = false;
+    bool shouldUpdateRangeSelectionEnabled = false;
+
+
+    // clipboard
+    std::vector<Note> copiedNotes;
+    juce::CachedValue<bool> rangeSelectionEnabled;
+    tracktion::ConstrainedCachedValue<int> rangeAnchorIndex;
 
     juce::CachedValue<int> notesPerMeasure;
     juce::Array<int> notesPerMeasureOptions = juce::Array<int>({4, 8, 16});
+
 
     void handleAsyncUpdate() override;
     void valueTreePropertyChanged(juce::ValueTree &treeWhosePropertyHasChanged,

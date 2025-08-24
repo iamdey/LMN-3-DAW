@@ -78,8 +78,13 @@ void StepSequencerView::encoder3Decreased() {
     if (midiCommandManager.isMinusDown)
         viewModel.clearNotesAtSelectedIndex();
 
-    viewModel.decrementSelectedNoteIndex();
+     viewModel.decrementSelectedNoteIndex();
 }
+
+void StepSequencerView::encoder3ButtonReleased() {
+    viewModel.toggleRangeSelection();
+}
+
 
 void StepSequencerView::playButtonReleased() { viewModel.play(); }
 
@@ -89,8 +94,18 @@ void StepSequencerView::minusButtonReleased() {
     viewModel.clearNotesAtSelectedIndex();
 }
 
+void StepSequencerView::cutButtonReleased() {
+    viewModel.copySelection();
+}
+void StepSequencerView::pasteButtonReleased() {
+    viewModel.pasteSelection();
+};
+
+
 void StepSequencerView::notesPerMeasureChanged(int /*newNotesPerMeasure*/) {
     notesPerMeasureLabel.setText(juce::String(viewModel.getNotesPerMeasure()),
                                  juce::dontSendNotification);
     resized();
 }
+
+void StepSequencerView::rangeSelectionEnabledChanged(bool /*rangeSelectionEnabled*/) {}

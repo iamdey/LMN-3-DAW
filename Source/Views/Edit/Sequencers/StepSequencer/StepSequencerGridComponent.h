@@ -19,6 +19,7 @@ class StepSequencerGridComponent
     void selectedNoteIndexChanged(int newIndex) override;
     void numberOfNotesChanged(int newNumberOfNotes) override;
     void notesPerMeasureChanged(int newNotesPerMeasure) override;
+    void rangeSelectionEnabledChanged(bool rangeSelectionEnabled) override;
 
   private:
     app_view_models::StepSequencerViewModel &viewModel;

@@ -28,13 +28,19 @@ class StepSequencerView
 
     void encoder3Increased() override;
     void encoder3Decreased() override;
+    void encoder3ButtonReleased() override;
 
     void playButtonReleased() override;
     void stopButtonReleased() override;
 
     void minusButtonReleased() override;
 
+    void cutButtonReleased() override;
+    void pasteButtonReleased() override;
+
     void notesPerMeasureChanged(int newNotesPerMeasure) override;
+
+    void rangeSelectionEnabledChanged(bool /*rangeSelectionEnabled*/) override;
 
   private:
     app_view_models::StepSequencerViewModel viewModel;
