@@ -12,17 +12,17 @@ int MixerTableListBoxModel::getNumRows() {
         return (listViewModel.getAdapter()->size() / numCols) + 1;
 }
 
-void MixerTableListBoxModel::paintRowBackground(juce::Graphics &g,
-                                                int rowNumber, int width,
-                                                int height,
-                                                bool rowIsSelected) {}
+void MixerTableListBoxModel::paintRowBackground(juce::Graphics &/*g*/,
+                                                int /*rowNumber*/, int /*width*/,
+                                                int /*height*/,
+                                                bool /*rowIsSelected*/) {}
 
-void MixerTableListBoxModel::paintCell(juce::Graphics &g, int rowNumber,
-                                       int columnId, int width, int height,
-                                       bool rowIsSelected) {}
+void MixerTableListBoxModel::paintCell(juce::Graphics &/*g*/, int /*rowNumber*/,
+                                       int /*columnId*/, int /*width*/, int /*height*/,
+                                       bool /*isRowSelected*/) {}
 
 juce::Component *MixerTableListBoxModel::refreshComponentForCell(
-    int rowNumber, int columnId, bool isRowSelected,
+    int rowNumber, int columnId, bool /*isRowSelected*/,
     juce::Component *existingComponentToUpdate) {
     // column id begins at 1!
     int itemIndex = (rowNumber * numCols) + (columnId - 1);

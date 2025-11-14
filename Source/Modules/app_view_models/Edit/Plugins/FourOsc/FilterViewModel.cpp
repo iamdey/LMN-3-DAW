@@ -53,74 +53,74 @@ int FilterViewModel::getFilterType() const {
 }
 
 void FilterViewModel::incrementAttack() {
-    plugin->filterAttack->setNormalisedParameter(getAttack() + .01,
+    plugin->filterAttack->setNormalisedParameter(getAttack() + 0.01f,
                                                  juce::dontSendNotification);
 }
 
 void FilterViewModel::decrementAttack() {
-    plugin->filterAttack->setNormalisedParameter(getAttack() - .01,
+    plugin->filterAttack->setNormalisedParameter(getAttack() - 0.01f,
                                                  juce::dontSendNotification);
 }
 
 void FilterViewModel::incrementDecay() {
-    plugin->filterDecay->setNormalisedParameter(getDecay() + .01,
+    plugin->filterDecay->setNormalisedParameter(getDecay() + 0.01f,
                                                 juce::dontSendNotification);
 }
 
 void FilterViewModel::decrementDecay() {
-    plugin->filterDecay->setNormalisedParameter(getDecay() - .01,
+    plugin->filterDecay->setNormalisedParameter(getDecay() - 0.01f,
                                                 juce::dontSendNotification);
 }
 
 void FilterViewModel::incrementSustain() {
-    plugin->filterSustain->setNormalisedParameter(getSustain() + .01,
+    plugin->filterSustain->setNormalisedParameter(getSustain() + 0.01f,
                                                   juce::dontSendNotification);
 }
 
 void FilterViewModel::decrementSustain() {
-    plugin->filterSustain->setNormalisedParameter(getSustain() - .01,
+    plugin->filterSustain->setNormalisedParameter(getSustain() - 0.01f,
                                                   juce::dontSendNotification);
 }
 
 void FilterViewModel::incrementRelease() {
-    plugin->filterRelease->setNormalisedParameter(getRelease() + .01,
+    plugin->filterRelease->setNormalisedParameter(getRelease() + 0.01f,
                                                   juce::dontSendNotification);
 }
 
 void FilterViewModel::decrementRelease() {
-    plugin->filterRelease->setNormalisedParameter(getRelease() - .01,
+    plugin->filterRelease->setNormalisedParameter(getRelease() - 0.01f,
                                                   juce::dontSendNotification);
 }
 
 void FilterViewModel::incrementFrequency() {
     plugin->filterFreq->setNormalisedParameter(
-        plugin->filterFreq->getCurrentNormalisedValue() + .01,
+        plugin->filterFreq->getCurrentNormalisedValue() + 0.01f,
         juce::dontSendNotification);
 }
 
 void FilterViewModel::decrementFrequency() {
     plugin->filterFreq->setNormalisedParameter(
-        plugin->filterFreq->getCurrentNormalisedValue() - .01,
+        plugin->filterFreq->getCurrentNormalisedValue() - 0.01f,
         juce::dontSendNotification);
 }
 
 void FilterViewModel::incrementResonance() {
-    plugin->filterResonance->setNormalisedParameter(getResonance() + .01,
+    plugin->filterResonance->setNormalisedParameter(getResonance() + 0.01f,
                                                     juce::dontSendNotification);
 }
 
 void FilterViewModel::decrementResonance() {
-    plugin->filterResonance->setNormalisedParameter(getResonance() - .01,
+    plugin->filterResonance->setNormalisedParameter(getResonance() -0.01f,
                                                     juce::dontSendNotification);
 }
 
 void FilterViewModel::incrementEnvelopeAmount() {
-    plugin->filterAmount->setNormalisedParameter(getEnvelopeAmount() + .01,
+    plugin->filterAmount->setNormalisedParameter(getEnvelopeAmount() +0.01f,
                                                  juce::dontSendNotification);
 }
 
 void FilterViewModel::decrementEnvelopeAmount() {
-    plugin->filterAmount->setNormalisedParameter(getEnvelopeAmount() - .01,
+    plugin->filterAmount->setNormalisedParameter(getEnvelopeAmount() -0.01f,
                                                  juce::dontSendNotification);
 }
 

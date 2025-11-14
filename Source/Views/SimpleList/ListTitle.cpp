@@ -4,7 +4,7 @@ ListTitle::ListTitle(const juce::String &titleString, IconType type,
                      const juce::String &iconString)
     : title(titleString), iconType(type), icon(iconString) {
     titleLabel.setFont(juce::Font(juce::Font::getDefaultMonospacedFontName(),
-                                  getHeight() * .1, juce::Font::plain));
+                                  getHeight() * 0.1f, juce::Font::plain));
     titleLabel.setText(title, juce::dontSendNotification);
     titleLabel.setJustificationType(juce::Justification::left);
     titleLabel.setAlwaysOnTop(true);
@@ -44,20 +44,20 @@ void ListTitle::paint(juce::Graphics &g) {
 }
 
 void ListTitle::resized() {
-    titleLabel.setBounds(0, 0, getWidth() * .9, getHeight());
-    iconLabel.setBounds(getWidth() * .9, 0, getWidth() * .1, getHeight());
+    titleLabel.setBounds(0, 0, (int)(getWidth() * .9), getHeight());
+    iconLabel.setBounds((int)(getWidth() * .9), 0, (int)(getWidth() * .1), getHeight());
 
     titleLabel.setFont(juce::Font(juce::Font::getDefaultMonospacedFontName(),
-                                  getHeight() * .7, juce::Font::plain));
+                                  getHeight() * 0.7f, juce::Font::plain));
 
     switch (iconType) {
     case IconType::FONT_AWESOME:
-        fontAwesomeFont.setHeight(getHeight() * .75 * .8);
+        fontAwesomeFont.setHeight(getHeight() * 0.75f * .8);
         iconLabel.setFont(fontAwesomeFont);
         break;
 
     default:
-        fontAwesomeFont.setHeight(getHeight() * .75 * .8);
+        fontAwesomeFont.setHeight(getHeight() * 0.75f * .8);
         iconLabel.setFont(fontAwesomeFont);
         break;
     }

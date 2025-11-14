@@ -12,7 +12,7 @@ class TrackView : public juce::Component,
                   private juce::Timer {
   public:
     TrackView(tracktion::AudioTrack::Ptr t, app_services::TimelineCamera &cam);
-    ~TrackView();
+    ~TrackView() override;
 
     void paint(juce::Graphics &g) override;
     void resized() override;

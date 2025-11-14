@@ -4,7 +4,7 @@ FilterADSRView::FilterADSRView(tracktion::FourOscPlugin *p,
                                app_services::MidiCommandManager &mcm)
     : viewModel(p), midiCommandManager(mcm) {
     titleLabel.setFont(juce::Font(juce::Font::getDefaultMonospacedFontName(),
-                                  getHeight() * .1, juce::Font::plain));
+                                  getHeight() * 0.1f, juce::Font::plain));
     titleLabel.setText("4OSC: Filter", juce::dontSendNotification);
     titleLabel.setJustificationType(juce::Justification::centred);
     addAndMakeVisible(titleLabel);
@@ -80,11 +80,11 @@ FilterADSRView::~FilterADSRView() {
     viewModel.removeListener(this);
 }
 
-void FilterADSRView::paint(juce::Graphics &g) {}
+void FilterADSRView::paint(juce::Graphics &/*g*/) {}
 
 void FilterADSRView::resized() {
     titleLabel.setFont(juce::Font(juce::Font::getDefaultMonospacedFontName(),
-                                  getHeight() * .1, juce::Font::plain));
+                                  getHeight() * 0.1f, juce::Font::plain));
     titleLabel.setBounds(0, getHeight() * .05, getWidth(), getHeight() * .1);
 
     int adsrPaddingWidth = getWidth() * .2;

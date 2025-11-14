@@ -37,7 +37,7 @@ void SamplerView::init() {
     addAndMakeVisible(sampleExcerptThumbnail);
 
     sampleLabel.setFont(juce::Font(juce::Font::getDefaultMonospacedFontName(),
-                                   getHeight() * .1, juce::Font::plain));
+                                   getHeight() * 0.1f, juce::Font::plain));
     sampleLabel.setText(viewModel->getSelectedItemName(),
                         juce::dontSendNotification);
     sampleLabel.setJustificationType(juce::Justification::centred);
@@ -45,7 +45,7 @@ void SamplerView::init() {
     addAndMakeVisible(sampleLabel);
 
     gainLabel.setFont(juce::Font(juce::Font::getDefaultMonospacedFontName(),
-                                 getHeight() * .1, juce::Font::plain));
+                                 getHeight() * 0.1f, juce::Font::plain));
     gainLabel.setText(juce::String(viewModel->getGain()),
                       juce::dontSendNotification);
     gainLabel.setJustificationType(juce::Justification::centredRight);
@@ -62,7 +62,7 @@ void SamplerView::init() {
     if (viewModel->getItemNames().size() <= 0) {
         emptyLabel.setFont(
             juce::Font(juce::Font::getDefaultMonospacedFontName(),
-                       getHeight() * .1, juce::Font::plain));
+                       getHeight() * 0.1f, juce::Font::plain));
         emptyLabel.setJustificationType(juce::Justification::centred);
         emptyLabel.setAlwaysOnTop(true);
         emptyLabel.setColour(juce::Label::textColourId, appLookAndFeel.colour1);
@@ -81,17 +81,17 @@ SamplerView::~SamplerView() {
     midiCommandManager.removeListener(this);
 }
 
-void SamplerView::paint(juce::Graphics &g) {}
+void SamplerView::paint(juce::Graphics &/*g*/) {}
 
 void SamplerView::resized() {
     titledList.setBounds(getLocalBounds());
 
     sampleLabel.setFont(juce::Font(juce::Font::getDefaultMonospacedFontName(),
-                                   getHeight() * .1, juce::Font::plain));
-    sampleLabel.setBounds(0, getHeight() * .1, getWidth(), getHeight() * .1);
+                                   getHeight() * 0.1f, juce::Font::plain));
+    sampleLabel.setBounds(0, getHeight() * 0.1f, getWidth(), getHeight() * 0.1f);
 
     gainLabel.setFont(juce::Font(juce::Font::getDefaultMonospacedFontName(),
-                                 getHeight() * .075, juce::Font::plain));
+                                 getHeight() * 0.075f, juce::Font::plain));
     int gainLabelWidth =
         gainLabel.getFont().getStringWidth(gainLabel.getText()) +
         getWidth() * .1;
@@ -124,15 +124,15 @@ void SamplerView::resized() {
             startX, startY, endX - startX, height);
         sampleExcerptThumbnail.setBounds(sampleExcerptThumbnailBounds);
 
-        juce::Point<float> topLeft(startX, startY);
+        juce::Point<float> topLeft((float)startX, (float)startY);
         juce::Point<float> topRight(startX + 2, startY);
         juce::Point<float> bottomLeft(startX, startY + height);
         juce::Parallelogram<float> markerBounds(topLeft, topRight, bottomLeft);
         startMarker.setRectangle(markerBounds);
 
-        topLeft = juce::Point<float>(endX - 2, startY);
-        topRight = juce::Point<float>(endX, startY);
-        bottomLeft = juce::Point<float>(endX - 2, startY + height);
+        topLeft = juce::Point<float>((float)(endX - 2.0f), (float)startY);
+        topRight = juce::Point<float>((float)endX, (float)startY);
+        bottomLeft = juce::Point<float>(endX - 2.0f, startY + height);
         markerBounds =
             juce::Parallelogram<float>(topLeft, topRight, bottomLeft);
 
@@ -140,7 +140,7 @@ void SamplerView::resized() {
     }
 
     emptyLabel.setFont(juce::Font(juce::Font::getDefaultMonospacedFontName(),
-                                  getHeight() * .1, juce::Font::plain));
+                                  getHeight() * 0.1f, juce::Font::plain));
     emptyLabel.setBounds(getBounds());
 }
 

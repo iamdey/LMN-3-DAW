@@ -13,7 +13,7 @@ SimpleListItemView::SimpleListItemView(juce::String title) {
     textColour = getLookAndFeel().findColour(unselectedTextColourId);
 
     titleLabel.setFont(juce::Font(juce::Font::getDefaultMonospacedFontName(),
-                                  getHeight() * .7, juce::Font::bold));
+                                  getHeight() * 0.7f, juce::Font::bold));
     titleLabel.setText(title, juce::dontSendNotification);
     titleLabel.setJustificationType(juce::Justification::left);
     titleLabel.setMinimumHorizontalScale(1.0);
@@ -26,7 +26,7 @@ void SimpleListItemView::paint(juce::Graphics &g) {
 
 void SimpleListItemView::resized() {
     juce::Font font(juce::Font::getDefaultMonospacedFontName(),
-                    getHeight() * .7, juce::Font::plain);
+                    getHeight() * 0.7f, juce::Font::plain);
     titleLabel.setFont(font);
     titleLabel.setBounds(0, 0, getWidth(), getHeight());
 }

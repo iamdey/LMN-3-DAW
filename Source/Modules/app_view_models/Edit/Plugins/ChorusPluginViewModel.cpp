@@ -43,16 +43,16 @@ double ChorusPluginViewModel::getParameterValue(int index) {
 void ChorusPluginViewModel::setParameterValue(int index, double value) {
     switch (index) {
     case 0:
-        chorusPlugin->depthMs.setValue(value, nullptr);
+        chorusPlugin->depthMs.setValue((float) value, nullptr);
         break;
     case 1:
-        chorusPlugin->speedHz.setValue(value, nullptr);
+        chorusPlugin->speedHz.setValue((float) value, nullptr);
         break;
     case 2:
-        chorusPlugin->width.setValue(value, nullptr);
+        chorusPlugin->width.setValue((float) value, nullptr);
         break;
     case 3:
-        chorusPlugin->mixProportion.setValue(value, nullptr);
+        chorusPlugin->mixProportion.setValue((float) value, nullptr);
         break;
     default:
         break;

@@ -44,7 +44,7 @@ void ADSRPlot::paint(juce::Graphics &g) {
     g.setColour(appLookAndFeel.colour3.withAlpha(.3f));
     g.drawLine(endX, startY, endX, endY);
 
-    float sectionWidth = (endX - startX) * .33333333;
+    float sectionWidth = (endX - startX) * 0.33333333f;
     float sectionHeight = getHeight() - paddingBottom - paddingTop;
     float markerRadius = 4;
     g.setColour(juce::Colours::limegreen);

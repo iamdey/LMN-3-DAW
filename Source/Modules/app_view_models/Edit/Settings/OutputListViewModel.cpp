@@ -47,5 +47,5 @@ void OutputListViewModel::updateOutput() {
     }
 }
 
-void OutputListViewModel::selectedIndexChanged(int newIndex) { updateOutput(); }
+void OutputListViewModel::selectedIndexChanged(int /*newIndex*/) { updateOutput(); }
 } // namespace app_view_models

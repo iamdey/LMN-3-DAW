@@ -36,7 +36,7 @@ void DeviceTypeListViewModel::updateDeviceManagerDeviceType() {
     deviceManager.setCurrentAudioDeviceType(getSelectedItem(), true);
 }
 
-void DeviceTypeListViewModel::selectedIndexChanged(int newIndex) {
+void DeviceTypeListViewModel::selectedIndexChanged(int /*newIndex*/) {
     updateDeviceManagerDeviceType();
 }
 } // namespace app_view_models

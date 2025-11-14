@@ -19,7 +19,7 @@ class TracksView : public juce::Component,
                    private juce::Timer {
   public:
     TracksView(tracktion::Edit &e, app_services::MidiCommandManager &mcm);
-    ~TracksView();
+    ~TracksView() override;
     void paint(juce::Graphics &) override;
     void resized() override;
 
@@ -73,7 +73,7 @@ class TracksView : public juce::Component,
     void soloStateChanged(bool solo) override;
     void muteStateChanged(bool mute) override;
 
-    app_view_models::TracksListViewModel &getViewModel() { return viewModel; };
+    app_view_models::TracksListViewModel &getViewModel() { return viewModel; }
 
   private:
     tracktion::Edit &edit;

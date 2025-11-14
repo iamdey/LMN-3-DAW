@@ -38,13 +38,13 @@ double PhaserPluginViewModel::getParameterValue(int index) {
 void PhaserPluginViewModel::setParameterValue(int index, double value) {
     switch (index) {
     case 0:
-        phaserPlugin->depth.setValue(value, nullptr);
+        phaserPlugin->depth.setValue((float)value, nullptr);
         break;
     case 1:
-        phaserPlugin->rate.setValue(value, nullptr);
+        phaserPlugin->rate.setValue((float)value, nullptr);
         break;
     case 2:
-        phaserPlugin->feedbackGain.setValue(value, nullptr);
+        phaserPlugin->feedbackGain.setValue((float)value, nullptr);
         break;
     default:
         break;

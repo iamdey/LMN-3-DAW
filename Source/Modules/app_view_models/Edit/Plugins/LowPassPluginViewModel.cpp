@@ -18,7 +18,7 @@ double LowPassPluginViewModel::getFrequency() {
 
 void LowPassPluginViewModel::setFrequency(double freq) {
     if (lowPassPlugin->frequency->getModifiers().size() == 0)
-        lowPassPlugin->frequencyValue.setValue(freq, nullptr);
+        lowPassPlugin->frequencyValue.setValue((float)freq, nullptr);
 }
 
 juce::Range<double> LowPassPluginViewModel::getFrequencyRange() {
@@ -56,7 +56,7 @@ bool LowPassPluginViewModel::getIsLowPass() {
 
 void LowPassPluginViewModel::valueTreePropertyChanged(
     juce::ValueTree &treeWhosePropertyHasChanged,
-    const juce::Identifier &property) {
+    const juce::Identifier &/*property*/) {
     if (treeWhosePropertyHasChanged == lowPassPlugin->state)
         markAndUpdate(shouldUpdateParameters);
 }

@@ -13,7 +13,7 @@ TrackModifiersListView::TrackModifiersListView(
     midiCommandManager.addListener(this);
 
     emptyListLabel.setFont(
-        juce::Font(juce::Font::getDefaultMonospacedFontName(), getHeight() * .1,
+        juce::Font(juce::Font::getDefaultMonospacedFontName(), getHeight() * 0.1f,
                    juce::Font::plain));
     emptyListLabel.setText("Press + to add a modifier!",
                            juce::dontSendNotification);
@@ -39,7 +39,7 @@ void TrackModifiersListView::paint(juce::Graphics &g) {
 
 void TrackModifiersListView::resized() {
     emptyListLabel.setFont(
-        juce::Font(juce::Font::getDefaultMonospacedFontName(), getHeight() * .1,
+        juce::Font(juce::Font::getDefaultMonospacedFontName(), getHeight() * 0.1f,
                    juce::Font::plain));
     emptyListLabel.setBounds(getLocalBounds());
 

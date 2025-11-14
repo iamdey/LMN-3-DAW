@@ -23,8 +23,8 @@ bool ConfigurationHelpers::writeBinarySamplesToDirectory(
     return f.replaceWithData(data, static_cast<size_t>(dataSizeInBytes));
 }
 
-void ConfigurationHelpers::initBinarySamples(const juce::File &tempSynthDir,
-                                             const juce::File &tempDrumDir) {
+void ConfigurationHelpers::initBinarySamples(const juce::File &/*tempSynthDir*/,
+                                             const juce::File &/*tempDrumDir*/) {
     //    NB: Binary samples are currently not used, so the sample data
     //    libraries do not get built which is why this is commented out for (int
     //    i = 0; i < SynthSampleData::namedResourceListSize; ++i) {
@@ -56,6 +56,46 @@ void ConfigurationHelpers::initBinarySamples(const juce::File &tempSynthDir,
     //    }
 }
 
+void syncUserFilesIfNeeded(const juce::File& sourceDir,
+                           const juce::File& targetDir,
+                           const juce::String& label) {
+    if (!sourceDir.exists()) {
+        juce::Logger::writeToLog("User " + label + " directory does not exist, creating it now.");
+        auto result = sourceDir.createDirectory();
+
+        if (result.failed()) {
+            juce::Logger::writeToLog("Failed to create user " + label + " directory: " + result.getErrorMessage());
+        }
+
+        return;
+    }
+
+    bool allSuccessful = true;
+    int filesCopied = 0;
+
+    for (const auto& srcFile : sourceDir.findChildFiles(juce::File::findFiles, true)) {
+        auto relativePath = srcFile.getRelativePathFrom(sourceDir);
+        juce::File destFile = targetDir.getChildFile(relativePath);
+
+        if (!destFile.existsAsFile() || srcFile.getLastModificationTime() > destFile.getLastModificationTime()) {
+            destFile.getParentDirectory().createDirectory();
+
+            if (!srcFile.copyFileTo(destFile)) {
+                juce::Logger::writeToLog("Failed to copy: " + srcFile.getFullPathName());
+                allSuccessful = false;
+            } else {
+                ++filesCopied;
+            }
+        }
+    }
+
+    if (allSuccessful) {
+        juce::Logger::writeToLog("User " + label + " files copied (modified only). Total: " + juce::String(filesCopied));
+    } else {
+        juce::Logger::writeToLog("Some user " + label + " files failed to copy.");
+    }
+}
+
 void ConfigurationHelpers::initUserSamples(const juce::File &userSynthSampleDir,
                                            const juce::File &userDrumDir,
                                            const juce::File &tempSynthDir,
@@ -63,39 +103,8 @@ void ConfigurationHelpers::initUserSamples(const juce::File &userSynthSampleDir,
     auto userAppDataDirectory = juce::File::getSpecialLocation(
         juce::File::userApplicationDataDirectory);
 
-    if (userSynthSampleDir.exists()) {
-        auto success = userSynthSampleDir.copyDirectoryTo(tempSynthDir);
-        if (!success)
-            juce::Logger::writeToLog(
-                "Attempt to copy user synth sample data failed!");
-        else
-            juce::Logger::writeToLog("User samples copied");
-    } else {
-        juce::Logger::writeToLog(
-            "User synth sample directory does not exist, creating it now.");
-        auto result = userSynthSampleDir.createDirectory();
-        if (result.failed())
-            juce::Logger::writeToLog(
-                "Attempt to create user synth sample directory failed!: " +
-                result.getErrorMessage());
-    }
-
-    if (userDrumDir.exists()) {
-        auto success = userDrumDir.copyDirectoryTo(tempDrumDir);
-        if (!success)
-            juce::Logger::writeToLog(
-                "Attempt to copy user drum kit data failed!");
-        else
-            juce::Logger::writeToLog("User drum kits copied");
-    } else {
-        juce::Logger::writeToLog(
-            "User drum kit directory does not exist, creating it now.");
-        auto result = userDrumDir.createDirectory();
-        if (result.failed())
-            juce::Logger::writeToLog(
-                "Attempt to create user drum kit directory failed!: " +
-                result.getErrorMessage());
-    }
+    syncUserFilesIfNeeded(userSynthSampleDir, tempSynthDir, "synth sample");
+    syncUserFilesIfNeeded(userDrumDir, tempDrumDir, "drum kit");
 }
 juce::File
 ConfigurationHelpers::createTempDirectory(tracktion::Engine &engine,

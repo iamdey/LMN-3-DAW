@@ -15,7 +15,7 @@ TrackPluginsListView::TrackPluginsListView(
     midiCommandManager.addListener(this);
 
     emptyListLabel.setFont(
-        juce::Font(juce::Font::getDefaultMonospacedFontName(), getHeight() * .1,
+        juce::Font(juce::Font::getDefaultMonospacedFontName(), getHeight() * 0.1f,
                    juce::Font::plain));
     emptyListLabel.setText("Press + to add a plugin!",
                            juce::dontSendNotification);
@@ -41,7 +41,7 @@ void TrackPluginsListView::paint(juce::Graphics &g) {
 
 void TrackPluginsListView::resized() {
     emptyListLabel.setFont(
-        juce::Font(juce::Font::getDefaultMonospacedFontName(), getHeight() * .1,
+        juce::Font(juce::Font::getDefaultMonospacedFontName(), getHeight() * 0.1f,
                    juce::Font::plain));
     emptyListLabel.setBounds(getLocalBounds());
 

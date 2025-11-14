@@ -6,11 +6,14 @@ SynthSamplerViewModel::SynthSamplerViewModel(tracktion::SamplerPlugin *sampler)
     auto curFile = juce::File(curFilePath);
 
     if (curFile == juce::String{""}) {
-        // fist time initialization
+        // first time initialization
         curDir = ConfigurationHelpers::getTempSamplesDirectory(
             samplerPlugin->edit.engine);
-        curFile = curDir.findChildFiles(
-            juce::File::TypesOfFileToFind::findFiles, false)[0];
+        juce::Array<juce::File> found_files = curDir.findChildFiles(
+            juce::File::TypesOfFileToFind::findFiles, false);
+        // Sort by file name (ascending)
+        found_files.sort();
+        curFile = found_files[0];
         curFilePath.setValue(curFile.getFullPathName(), nullptr);
     } else if (curFile.isDirectory()) {
         // curFile should never be a directory, but just in case
@@ -40,10 +43,16 @@ void SynthSamplerViewModel::updateFiles() {
         auto parent = curDir.getChildFile("..");
         files.add(parent);
     }
-    files.addArray(curDir.findChildFiles(
-        juce::File::TypesOfFileToFind::findDirectories, false));
-    files.addArray(
-        curDir.findChildFiles(juce::File::TypesOfFileToFind::findFiles, false));
+    juce::Array<juce::File> found_files = curDir.findChildFiles(
+        juce::File::TypesOfFileToFind::findFiles, false);
+    // Sort by file name (ascending)
+    found_files.sort();
+    juce::Array<juce::File> found_dirs = curDir.findChildFiles(
+        juce::File::TypesOfFileToFind::findDirectories, false);
+    // Sort by file name (ascending)
+    found_dirs.sort();
+    files.addArray(found_dirs);
+    files.addArray(found_files);
 }
 
 juce::StringArray SynthSamplerViewModel::getItemNames() {

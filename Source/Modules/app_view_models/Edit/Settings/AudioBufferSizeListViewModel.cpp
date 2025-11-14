@@ -50,7 +50,7 @@ void AudioBufferSizeListViewModel::updateAudioBufferSize() {
     }
 }
 
-void AudioBufferSizeListViewModel::selectedIndexChanged(int newIndex) {
+void AudioBufferSizeListViewModel::selectedIndexChanged(int /*newIndex*/) {
     updateAudioBufferSize();
 }
 

@@ -29,7 +29,7 @@ juce::String LoadSaveSongListViewModel::getSelectedItem() {
     return songNames[itemListState.getSelectedItemIndex()];
 }
 
-void LoadSaveSongListViewModel::selectedIndexChanged(int newIndex) {
+void LoadSaveSongListViewModel::selectedIndexChanged(int /*newIndex*/) {
     // Here you can add the logic you need when you change the index selected
 }
 

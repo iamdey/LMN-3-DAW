@@ -2,7 +2,7 @@
 
 BeatSettingsComponent::BeatSettingsComponent() {
     bpmLabel.setFont(juce::Font(juce::Font::getDefaultMonospacedFontName(),
-                                getHeight() * .3, juce::Font::plain));
+                                getHeight() * 0.3f, juce::Font::plain));
     bpmLabel.setText("BPM", juce::dontSendNotification);
     bpmLabel.setJustificationType(juce::Justification::centred);
     bpmLabel.setAlwaysOnTop(true);
@@ -10,7 +10,7 @@ BeatSettingsComponent::BeatSettingsComponent() {
     addAndMakeVisible(bpmLabel);
 
     currentBpmValueLabel.setFont(
-        juce::Font(juce::Font::getDefaultMonospacedFontName(), getHeight() * .3,
+        juce::Font(juce::Font::getDefaultMonospacedFontName(), getHeight() * 0.3f,
                    juce::Font::plain));
     currentBpmValueLabel.setText("120", juce::dontSendNotification);
     currentBpmValueLabel.setJustificationType(juce::Justification::centred);
@@ -31,14 +31,14 @@ void BeatSettingsComponent::paint(juce::Graphics &g) {
 
 void BeatSettingsComponent::resized() {
     bpmLabel.setFont(juce::Font(juce::Font::getDefaultMonospacedFontName(),
-                                getHeight() * .2, juce::Font::plain));
-    bpmLabel.setBounds(0, 0, getWidth(), getHeight() * .2);
+                                getHeight() * 0.2f, juce::Font::plain));
+    bpmLabel.setBounds(0, 0, getWidth(), (int)(getHeight() * .2));
 
     currentBpmValueLabel.setFont(
-        juce::Font(juce::Font::getDefaultMonospacedFontName(), getHeight() * .5,
+        juce::Font(juce::Font::getDefaultMonospacedFontName(), getHeight() * 0.5f,
                    juce::Font::plain));
     currentBpmValueLabel.setBounds(0, bpmLabel.getHeight(), getWidth(),
-                                   getHeight() * .5);
+                                   (int)(getHeight() * .5));
 }
 
 void BeatSettingsComponent::setBpm(double bpm) {

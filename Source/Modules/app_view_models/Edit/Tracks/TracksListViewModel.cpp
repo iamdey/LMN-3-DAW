@@ -503,7 +503,7 @@ juce::Colour TracksListViewModel::getSelectedTrackColour() {
 }
 
 void TracksListViewModel::setVideoPosition(tracktion::TimePosition timePosition,
-                                           bool forceJump) {
+                                           bool /*forceJump*/) {
     auto time = timePosition.inSeconds();
     if (time - camera.getCenter() > camera.getCenterOffsetLimit())
         camera.setCenter(time - camera.getCenterOffsetLimit());
@@ -547,7 +547,7 @@ void TracksListViewModel::handleAsyncUpdate() {
             });
 }
 
-void TracksListViewModel::selectedIndexChanged(int newIndex) {
+void TracksListViewModel::selectedIndexChanged(int /*newIndex*/) {
     for (auto instance : edit.getAllInputDevices()) {
         if (instance->getInputDevice().getDeviceType() ==
             tracktion::InputDevice::physicalMidiDevice) {

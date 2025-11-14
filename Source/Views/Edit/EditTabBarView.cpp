@@ -326,7 +326,7 @@ void EditTabBarView::sequencersButtonReleased() {
     }
 }
 
-void EditTabBarView::selectedIndexChanged(int newIndex) {
+void EditTabBarView::selectedIndexChanged(int /*newIndex*/) {
     resetTrackRelatedTabs();
 }
 
@@ -361,7 +361,7 @@ void EditTabBarView::timerCallback() {
     messageBox.setVisible(false);
 }
 
-void EditTabBarView::currentTabChanged(int newCurrentTabIndex,
+void EditTabBarView::currentTabChanged(int /*newCurrentTabIndex*/,
                                        const juce::String &newCurrentTabName) {
     // A bunch of stuff happens in the sequencer view constructor
     // that needs to happen everytime it comes on screen

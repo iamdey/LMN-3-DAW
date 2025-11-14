@@ -25,7 +25,7 @@ void ControlButtonIndicator::resized() {
     //    iconLabel.setBounds(getLocalBounds().reduced(20));
     //    fontAwesomeFont.setHeight(iconLabel.getHeight() * .8);
     iconLabel.setBounds(getLocalBounds());
-    fontAwesomeFont.setHeight(iconLabel.getWidth());
+    fontAwesomeFont.setHeight((float)iconLabel.getWidth());
     iconLabel.setFont(fontAwesomeFont);
 }
 

@@ -4,7 +4,7 @@ LowPassPluginView::LowPassPluginView(tracktion::LowPassPlugin *p,
                                      app_services::MidiCommandManager &mcm)
     : viewModel(p), midiCommandManager(mcm) {
     titleLabel.setFont(juce::Font(juce::Font::getDefaultMonospacedFontName(),
-                                  getHeight() * .1, juce::Font::plain));
+                                  getHeight() * 0.1f, juce::Font::plain));
     titleLabel.setText("LPF/HPF", juce::dontSendNotification);
     titleLabel.setJustificationType(juce::Justification::centred);
     addAndMakeVisible(titleLabel);
@@ -64,14 +64,14 @@ LowPassPluginView::~LowPassPluginView() {
     midiCommandManager.removeListener(this);
 }
 
-void LowPassPluginView::paint(juce::Graphics &g) {}
+void LowPassPluginView::paint(juce::Graphics &/*g*/) {}
 void LowPassPluginView::resized() {
     titleLabel.setFont(juce::Font(juce::Font::getDefaultMonospacedFontName(),
-                                  getHeight() * .1, juce::Font::plain));
+                                  getHeight() * 0.1f, juce::Font::plain));
     titleLabel.setBounds(0, getHeight() * .1, getWidth(), getHeight() * .1);
 
     modeLabel.setFont(juce::Font(juce::Font::getDefaultMonospacedFontName(),
-                                 getHeight() * .05, juce::Font::plain));
+                                 getHeight() * 0.05f, juce::Font::plain));
 
     gridSetup();
 }
