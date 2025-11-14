@@ -11,8 +11,9 @@ int TracksListBoxModel::getNumRows() {
     return listViewModel.getAdapter()->size();
 }
 
-void TracksListBoxModel::paintListBoxItem(int /*rowNumber*/, juce::Graphics &/*g*/,
-                                          int /*width*/, int /*height*/,
+void TracksListBoxModel::paintListBoxItem(int /*rowNumber*/,
+                                          juce::Graphics & /*g*/, int /*width*/,
+                                          int /*height*/,
                                           bool /*isRowSelected*/) {}
 
 juce::Component *TracksListBoxModel::refreshComponentForRow(

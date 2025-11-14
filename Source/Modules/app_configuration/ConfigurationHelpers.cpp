@@ -23,8 +23,8 @@ bool ConfigurationHelpers::writeBinarySamplesToDirectory(
     return f.replaceWithData(data, static_cast<size_t>(dataSizeInBytes));
 }
 
-void ConfigurationHelpers::initBinarySamples(const juce::File &/*tempSynthDir*/,
-                                             const juce::File &/*tempDrumDir*/) {
+void ConfigurationHelpers::initBinarySamples(
+    const juce::File & /*tempSynthDir*/, const juce::File & /*tempDrumDir*/) {
     //    NB: Binary samples are currently not used, so the sample data
     //    libraries do not get built which is why this is commented out for (int
     //    i = 0; i < SynthSampleData::namedResourceListSize; ++i) {
@@ -56,15 +56,17 @@ void ConfigurationHelpers::initBinarySamples(const juce::File &/*tempSynthDir*/,
     //    }
 }
 
-void syncUserFilesIfNeeded(const juce::File& sourceDir,
-                           const juce::File& targetDir,
-                           const juce::String& label) {
+void syncUserFilesIfNeeded(const juce::File &sourceDir,
+                           const juce::File &targetDir,
+                           const juce::String &label) {
     if (!sourceDir.exists()) {
-        juce::Logger::writeToLog("User " + label + " directory does not exist, creating it now.");
+        juce::Logger::writeToLog("User " + label +
+                                 " directory does not exist, creating it now.");
         auto result = sourceDir.createDirectory();
 
         if (result.failed()) {
-            juce::Logger::writeToLog("Failed to create user " + label + " directory: " + result.getErrorMessage());
+            juce::Logger::writeToLog("Failed to create user " + label +
+                                     " directory: " + result.getErrorMessage());
         }
 
         return;
@@ -73,15 +75,19 @@ void syncUserFilesIfNeeded(const juce::File& sourceDir,
     bool allSuccessful = true;
     int filesCopied = 0;
 
-    for (const auto& srcFile : sourceDir.findChildFiles(juce::File::findFiles, true)) {
+    for (const auto &srcFile :
+         sourceDir.findChildFiles(juce::File::findFiles, true)) {
         auto relativePath = srcFile.getRelativePathFrom(sourceDir);
         juce::File destFile = targetDir.getChildFile(relativePath);
 
-        if (!destFile.existsAsFile() || srcFile.getLastModificationTime() > destFile.getLastModificationTime()) {
+        if (!destFile.existsAsFile() ||
+            srcFile.getLastModificationTime() >
+                destFile.getLastModificationTime()) {
             destFile.getParentDirectory().createDirectory();
 
             if (!srcFile.copyFileTo(destFile)) {
-                juce::Logger::writeToLog("Failed to copy: " + srcFile.getFullPathName());
+                juce::Logger::writeToLog("Failed to copy: " +
+                                         srcFile.getFullPathName());
                 allSuccessful = false;
             } else {
                 ++filesCopied;
@@ -90,9 +96,12 @@ void syncUserFilesIfNeeded(const juce::File& sourceDir,
     }
 
     if (allSuccessful) {
-        juce::Logger::writeToLog("User " + label + " files copied (modified only). Total: " + juce::String(filesCopied));
+        juce::Logger::writeToLog("User " + label +
+                                 " files copied (modified only). Total: " +
+                                 juce::String(filesCopied));
     } else {
-        juce::Logger::writeToLog("Some user " + label + " files failed to copy.");
+        juce::Logger::writeToLog("Some user " + label +
+                                 " files failed to copy.");
     }
 }
 

@@ -80,7 +80,7 @@ ADSRView::~ADSRView() {
     viewModel.removeListener(this);
 }
 
-void ADSRView::paint(juce::Graphics &/*g*/) {}
+void ADSRView::paint(juce::Graphics & /*g*/) {}
 
 void ADSRView::resized() {
     titleLabel.setFont(juce::Font(juce::Font::getDefaultMonospacedFontName(),

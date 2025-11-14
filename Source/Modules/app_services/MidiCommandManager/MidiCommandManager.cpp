@@ -46,7 +46,7 @@ void MidiCommandManager::handleIncomingMidiMessage(
 }
 
 void MidiCommandManager::midiMessageReceived(const juce::MidiMessage &message,
-                                             const juce::String &/*source*/) {
+                                             const juce::String & /*source*/) {
     juce::Logger::writeToLog(getMidiMessageDescription(message));
 
     if (message.isNoteOn()) {

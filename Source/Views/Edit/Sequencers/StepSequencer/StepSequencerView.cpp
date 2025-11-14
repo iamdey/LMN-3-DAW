@@ -4,8 +4,8 @@ StepSequencerView::StepSequencerView(tracktion::AudioTrack::Ptr p,
                                      app_services::MidiCommandManager &mcm)
     : viewModel(p), midiCommandManager(mcm), grid(viewModel) {
     notesPerMeasureLabel.setFont(
-        juce::Font(juce::Font::getDefaultMonospacedFontName(), getHeight() * 0.1f,
-                   juce::Font::plain));
+        juce::Font(juce::Font::getDefaultMonospacedFontName(),
+                   getHeight() * 0.1f, juce::Font::plain));
     notesPerMeasureLabel.setText(juce::String(viewModel.getNotesPerMeasure()),
                                  juce::dontSendNotification);
     notesPerMeasureLabel.setJustificationType(juce::Justification::centred);
@@ -24,7 +24,7 @@ StepSequencerView::~StepSequencerView() {
     midiCommandManager.removeListener(this);
 }
 
-void StepSequencerView::paint(juce::Graphics &/*g*/) {}
+void StepSequencerView::paint(juce::Graphics & /*g*/) {}
 
 void StepSequencerView::resized() {
     int horizontalPadding = getWidth() / 10;
@@ -78,13 +78,12 @@ void StepSequencerView::encoder3Decreased() {
     if (midiCommandManager.isMinusDown)
         viewModel.clearNotesAtSelectedIndex();
 
-     viewModel.decrementSelectedNoteIndex();
+    viewModel.decrementSelectedNoteIndex();
 }
 
 void StepSequencerView::encoder3ButtonReleased() {
     viewModel.toggleRangeSelection();
 }
-
 
 void StepSequencerView::playButtonReleased() { viewModel.play(); }
 
@@ -94,13 +93,8 @@ void StepSequencerView::minusButtonReleased() {
     viewModel.clearNotesAtSelectedIndex();
 }
 
-void StepSequencerView::cutButtonReleased() {
-    viewModel.copySelection();
-}
-void StepSequencerView::pasteButtonReleased() {
-    viewModel.pasteSelection();
-};
-
+void StepSequencerView::cutButtonReleased() { viewModel.copySelection(); }
+void StepSequencerView::pasteButtonReleased() { viewModel.pasteSelection(); };
 
 void StepSequencerView::notesPerMeasureChanged(int /*newNotesPerMeasure*/) {
     notesPerMeasureLabel.setText(juce::String(viewModel.getNotesPerMeasure()),
@@ -108,4 +102,5 @@ void StepSequencerView::notesPerMeasureChanged(int /*newNotesPerMeasure*/) {
     resized();
 }
 
-void StepSequencerView::rangeSelectionEnabledChanged(bool /*rangeSelectionEnabled*/) {}
+void StepSequencerView::rangeSelectionEnabledChanged(
+    bool /*rangeSelectionEnabled*/) {}

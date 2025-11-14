@@ -383,8 +383,7 @@ void TracksView::buildBeats() {
         (1.0 / edit.tempoSequence.getBeatsPerSecondAt(
                    tracktion::TimePosition::fromSeconds(0.0)));
     // give a few extra beats per screen
-    int beatsPerScreen =
-        (int)((camera.getScope() / secondsPerBeat) + 2);
+    int beatsPerScreen = (int)((camera.getScope() / secondsPerBeat) + 2);
     double pxPerBeat = secondsPerBeat * pxPerSec;
     auto leftEdgeBeat = edit.tempoSequence
                             .toBeats(tracktion::TimePosition::fromSeconds(
@@ -404,18 +403,22 @@ void TracksView::buildBeats() {
         beats.add(new juce::DrawableRectangle());
         beats.getLast()->setFill(juce::FillType(beatColour));
         beats.getLast()->setStrokeFill(juce::FillType(beatColour));
-        juce::Point<float> topLeft((float)(beatX - 0.5f), (float)informationPanel.getHeight());
-        juce::Point<float> topRight((float)(beatX + 0.5f),(float)informationPanel.getHeight());
-        juce::Point<float> bottomLeft((float)(beatX - 0.5f), (float)getHeight());
+        juce::Point<float> topLeft((float)(beatX - 0.5f),
+                                   (float)informationPanel.getHeight());
+        juce::Point<float> topRight((float)(beatX + 0.5f),
+                                    (float)informationPanel.getHeight());
+        juce::Point<float> bottomLeft((float)(beatX - 0.5f),
+                                      (float)getHeight());
         juce::Parallelogram<float> bounds(topLeft, topRight, bottomLeft);
         beats.getLast()->setRectangle(bounds);
 
         if (beatNumber % 4 == 0) {
             topLeft = juce::Point<float>((float)(beatX - 1.5f),
-                                      (float)informationPanel.getHeight());
+                                         (float)informationPanel.getHeight());
             topRight = juce::Point<float>((float)(beatX + 1.5f),
-                                       (float)informationPanel.getHeight());
-            bottomLeft = juce::Point<float>((float)(beatX - 1.5f), (float)getHeight());
+                                          (float)informationPanel.getHeight());
+            bottomLeft =
+                juce::Point<float>((float)(beatX - 1.5f), (float)getHeight());
             bounds = juce::Parallelogram<float>(topLeft, topRight, bottomLeft);
             beats.getLast()->setRectangle(bounds);
         }
@@ -429,7 +432,7 @@ void TracksView::timerCallback() {
         edit.tempoSequence, edit.getTransport().getPosition(), false));
     playheadComponent.setBounds(
         (int)camera.timeToX(edit.getTransport().getPosition().inSeconds(),
-                       getWidth()),
+                            getWidth()),
         informationPanel.getHeight(), 2,
         getHeight() - informationPanel.getHeight());
 
@@ -441,7 +444,8 @@ void TracksView::timerCallback() {
     loopMarkerComponent.setBounds(
         (int)(loop1X - loopEndpointRadius),
         (int)(informationPanel.getHeight() - loopEndpointRadius),
-        (int)(loop2X - loop1X + 2 * loopEndpointRadius), (int) (2 * loopEndpointRadius));
+        (int)(loop2X - loop1X + 2 * loopEndpointRadius),
+        (int)(2 * loopEndpointRadius));
 
     buildBeats();
     repaint();

@@ -48,13 +48,17 @@ class StepSequencerViewModel : public juce::ValueTree::Listener,
     // Public toggle and accessor methods
     void toggleRangeSelection();
 
-    int getRangeStartIndex() { return std::min({rangeAnchorIndex.get(), getSelectedNoteIndex()}); }
-    int getRangeEndIndex() { return std::max({rangeAnchorIndex.get(), getSelectedNoteIndex()}); }
+    int getRangeStartIndex() {
+        return std::min({rangeAnchorIndex.get(), getSelectedNoteIndex()});
+    }
+    int getRangeEndIndex() {
+        return std::max({rangeAnchorIndex.get(), getSelectedNoteIndex()});
+    }
     bool isRangeSelectionActive() const { return rangeSelectionEnabled.get(); }
 
     struct Note {
-      int index;
-      int channel;
+        int index;
+        int channel;
     };
     void copySelection();
     void pasteSelection();
@@ -67,7 +71,8 @@ class StepSequencerViewModel : public juce::ValueTree::Listener,
         virtual void selectedNoteIndexChanged(int /*newIndex*/) {}
         virtual void numberOfNotesChanged(int /*newNumberOfNotes*/) {}
         virtual void notesPerMeasureChanged(int /*newNotesPerMeasure*/) {}
-        virtual void rangeSelectionEnabledChanged(bool /*rangeSelectionEnabled*/) {}
+        virtual void
+        rangeSelectionEnabledChanged(bool /*rangeSelectionEnabled*/) {}
     };
 
     void addListener(Listener *l);
@@ -100,7 +105,6 @@ class StepSequencerViewModel : public juce::ValueTree::Listener,
     bool shouldUpdateNotesPerMeasure = false;
     bool shouldUpdateRangeSelectionEnabled = false;
 
-
     // clipboard
     std::vector<Note> copiedNotes;
     juce::CachedValue<bool> rangeSelectionEnabled;
@@ -108,7 +112,6 @@ class StepSequencerViewModel : public juce::ValueTree::Listener,
 
     juce::CachedValue<int> notesPerMeasure;
     juce::Array<int> notesPerMeasureOptions = juce::Array<int>({4, 8, 16});
-
 
     void handleAsyncUpdate() override;
     void valueTreePropertyChanged(juce::ValueTree &treeWhosePropertyHasChanged,

@@ -64,7 +64,7 @@ LowPassPluginView::~LowPassPluginView() {
     midiCommandManager.removeListener(this);
 }
 
-void LowPassPluginView::paint(juce::Graphics &/*g*/) {}
+void LowPassPluginView::paint(juce::Graphics & /*g*/) {}
 void LowPassPluginView::resized() {
     titleLabel.setFont(juce::Font(juce::Font::getDefaultMonospacedFontName(),
                                   getHeight() * 0.1f, juce::Font::plain));

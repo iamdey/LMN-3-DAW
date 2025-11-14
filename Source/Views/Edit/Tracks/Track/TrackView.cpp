@@ -39,11 +39,11 @@ void TrackView::setSelected(bool selected) {
     selectedTrackMarker.setVisible(selected);
 }
 
-void TrackView::clipsChanged(const juce::Array<tracktion::Clip *> &/*clips*/) {
+void TrackView::clipsChanged(const juce::Array<tracktion::Clip *> & /*clips*/) {
     buildClips();
 }
 void TrackView::clipPositionsChanged(
-    const juce::Array<tracktion::Clip *> &/*clips*/) {
+    const juce::Array<tracktion::Clip *> & /*clips*/) {
     resized();
 }
 

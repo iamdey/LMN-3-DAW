@@ -14,7 +14,7 @@ void ModifierViewModel::handleAsyncUpdate() {
 
 void ModifierViewModel::valueTreePropertyChanged(
     juce::ValueTree &treeWhosePropertyHasChanged,
-    const juce::Identifier &/*property*/) {
+    const juce::Identifier & /*property*/) {
     if (treeWhosePropertyHasChanged == modifier->state)
         markAndUpdate(shouldUpdateParameters);
 }

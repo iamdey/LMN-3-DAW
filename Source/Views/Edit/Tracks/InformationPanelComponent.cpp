@@ -3,8 +3,8 @@
 
 InformationPanelComponent::InformationPanelComponent() {
     trackNumberLabel.setFont(
-        juce::Font(juce::Font::getDefaultMonospacedFontName(), getHeight() * 0.7f,
-                   juce::Font::plain));
+        juce::Font(juce::Font::getDefaultMonospacedFontName(),
+                   getHeight() * 0.7f, juce::Font::plain));
     trackNumberLabel.setText("1", juce::dontSendNotification);
     trackNumberLabel.setJustificationType(juce::Justification::centred);
     trackNumberLabel.setAlwaysOnTop(true);

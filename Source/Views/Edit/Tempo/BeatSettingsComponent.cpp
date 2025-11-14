@@ -10,8 +10,8 @@ BeatSettingsComponent::BeatSettingsComponent() {
     addAndMakeVisible(bpmLabel);
 
     currentBpmValueLabel.setFont(
-        juce::Font(juce::Font::getDefaultMonospacedFontName(), getHeight() * 0.3f,
-                   juce::Font::plain));
+        juce::Font(juce::Font::getDefaultMonospacedFontName(),
+                   getHeight() * 0.3f, juce::Font::plain));
     currentBpmValueLabel.setText("120", juce::dontSendNotification);
     currentBpmValueLabel.setJustificationType(juce::Justification::centred);
     currentBpmValueLabel.setAlwaysOnTop(true);
@@ -35,8 +35,8 @@ void BeatSettingsComponent::resized() {
     bpmLabel.setBounds(0, 0, getWidth(), (int)(getHeight() * .2));
 
     currentBpmValueLabel.setFont(
-        juce::Font(juce::Font::getDefaultMonospacedFontName(), getHeight() * 0.5f,
-                   juce::Font::plain));
+        juce::Font(juce::Font::getDefaultMonospacedFontName(),
+                   getHeight() * 0.5f, juce::Font::plain));
     currentBpmValueLabel.setBounds(0, bpmLabel.getHeight(), getWidth(),
                                    (int)(getHeight() * .5));
 }
