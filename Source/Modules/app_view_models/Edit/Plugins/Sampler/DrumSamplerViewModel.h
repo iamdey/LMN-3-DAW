@@ -9,11 +9,10 @@ struct DrumKitEntry {
     juce::File mappingFile;
 
     // Optional: Allow sorting by name
-    bool operator<(const DrumKitEntry& other) const {
+    bool operator<(const DrumKitEntry &other) const {
         return name.compareIgnoreCase(other.name) < 0;
     }
 };
-
 
 class DrumSamplerViewModel : public app_view_models::SamplerViewModel {
   public:

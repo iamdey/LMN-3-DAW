@@ -10,7 +10,8 @@ DrumSamplerViewModel::DrumSamplerViewModel(
     if (drumKits.size() > 0) {
         DBG("current kit index: " +
             std::to_string(itemListState.getSelectedItemIndex()));
-        juce::File currentMap = drumKits[itemListState.getSelectedItemIndex()].mappingFile;
+        juce::File currentMap =
+            drumKits[itemListState.getSelectedItemIndex()].mappingFile;
         readMappingFileIntoSampler(currentMap, true);
         DBG("updating thumb");
         updateThumb();
@@ -20,7 +21,7 @@ DrumSamplerViewModel::DrumSamplerViewModel(
 juce::StringArray DrumSamplerViewModel::getItemNames() {
     // extract names from DrumKits and return
     juce::StringArray names;
-    for (const auto& kit : drumKits)
+    for (const auto &kit : drumKits)
         names.add(kit.name);
     return names;
 }
@@ -120,7 +121,6 @@ void DrumSamplerViewModel::readMappingFileIntoSampler(
 }
 
 void DrumSamplerViewModel::updateDrumKits() {
-
     drumKits.clear();
     const auto sampleDir = ConfigurationHelpers::getTempDrumKitsDirectory(
         samplerPlugin->edit.engine);

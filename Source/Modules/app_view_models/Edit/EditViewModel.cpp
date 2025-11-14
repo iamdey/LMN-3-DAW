@@ -59,7 +59,7 @@ void EditViewModel::valueTreePropertyChanged(
 }
 
 void EditViewModel::valueTreeChildRemoved(
-    juce::ValueTree &/*parentTree*/, juce::ValueTree &childWhichHasBeenRemoved,
+    juce::ValueTree & /*parentTree*/, juce::ValueTree &childWhichHasBeenRemoved,
     int /*indexFromWhichChildWasRemoved*/) {
     if (tracktion::TrackList::isTrack(childWhichHasBeenRemoved)) {
         markAndUpdate(shouldUpdateTracks);

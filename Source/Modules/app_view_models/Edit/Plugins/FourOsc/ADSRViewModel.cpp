@@ -24,42 +24,42 @@ float ADSRViewModel::getRelease() const {
 }
 
 void ADSRViewModel::incrementAttack() {
-    plugin->ampAttack->setNormalisedParameter(getAttack() +0.01f,
+    plugin->ampAttack->setNormalisedParameter(getAttack() + 0.01f,
                                               juce::dontSendNotification);
 }
 
 void ADSRViewModel::decrementAttack() {
-    plugin->ampAttack->setNormalisedParameter(getAttack() -0.01f,
+    plugin->ampAttack->setNormalisedParameter(getAttack() - 0.01f,
                                               juce::dontSendNotification);
 }
 
 void ADSRViewModel::incrementDecay() {
-    plugin->ampDecay->setNormalisedParameter(getDecay() +0.01f,
+    plugin->ampDecay->setNormalisedParameter(getDecay() + 0.01f,
                                              juce::dontSendNotification);
 }
 
 void ADSRViewModel::decrementDecay() {
-    plugin->ampDecay->setNormalisedParameter(getDecay() -0.01f,
+    plugin->ampDecay->setNormalisedParameter(getDecay() - 0.01f,
                                              juce::dontSendNotification);
 }
 
 void ADSRViewModel::incrementSustain() {
-    plugin->ampSustain->setNormalisedParameter(getSustain() +0.01f,
+    plugin->ampSustain->setNormalisedParameter(getSustain() + 0.01f,
                                                juce::dontSendNotification);
 }
 
 void ADSRViewModel::decrementSustain() {
-    plugin->ampSustain->setNormalisedParameter(getSustain() -0.01f,
+    plugin->ampSustain->setNormalisedParameter(getSustain() - 0.01f,
                                                juce::dontSendNotification);
 }
 
 void ADSRViewModel::incrementRelease() {
-    plugin->ampRelease->setNormalisedParameter(getRelease() +0.01f,
+    plugin->ampRelease->setNormalisedParameter(getRelease() + 0.01f,
                                                juce::dontSendNotification);
 }
 
 void ADSRViewModel::decrementRelease() {
-    plugin->ampRelease->setNormalisedParameter(getRelease() -0.01f,
+    plugin->ampRelease->setNormalisedParameter(getRelease() - 0.01f,
                                                juce::dontSendNotification);
 }
 

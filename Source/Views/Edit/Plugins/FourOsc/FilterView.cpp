@@ -44,7 +44,7 @@ FilterView::~FilterView() {
     viewModel.removeListener(this);
 }
 
-void FilterView::paint(juce::Graphics &/*g*/) {}
+void FilterView::paint(juce::Graphics & /*g*/) {}
 
 void FilterView::resized() {
     titleLabel.setFont(juce::Font(juce::Font::getDefaultMonospacedFontName(),

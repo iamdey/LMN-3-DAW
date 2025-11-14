@@ -43,8 +43,8 @@ void SynthSamplerViewModel::updateFiles() {
         auto parent = curDir.getChildFile("..");
         files.add(parent);
     }
-    juce::Array<juce::File> found_files = curDir.findChildFiles(
-        juce::File::TypesOfFileToFind::findFiles, false);
+    juce::Array<juce::File> found_files =
+        curDir.findChildFiles(juce::File::TypesOfFileToFind::findFiles, false);
     // Sort by file name (ascending)
     found_files.sort();
     juce::Array<juce::File> found_dirs = curDir.findChildFiles(

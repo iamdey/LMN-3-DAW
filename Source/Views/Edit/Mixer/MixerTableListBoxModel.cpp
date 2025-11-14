@@ -12,13 +12,14 @@ int MixerTableListBoxModel::getNumRows() {
         return (listViewModel.getAdapter()->size() / numCols) + 1;
 }
 
-void MixerTableListBoxModel::paintRowBackground(juce::Graphics &/*g*/,
-                                                int /*rowNumber*/, int /*width*/,
-                                                int /*height*/,
+void MixerTableListBoxModel::paintRowBackground(juce::Graphics & /*g*/,
+                                                int /*rowNumber*/,
+                                                int /*width*/, int /*height*/,
                                                 bool /*rowIsSelected*/) {}
 
-void MixerTableListBoxModel::paintCell(juce::Graphics &/*g*/, int /*rowNumber*/,
-                                       int /*columnId*/, int /*width*/, int /*height*/,
+void MixerTableListBoxModel::paintCell(juce::Graphics & /*g*/,
+                                       int /*rowNumber*/, int /*columnId*/,
+                                       int /*width*/, int /*height*/,
                                        bool /*isRowSelected*/) {}
 
 juce::Component *MixerTableListBoxModel::refreshComponentForCell(

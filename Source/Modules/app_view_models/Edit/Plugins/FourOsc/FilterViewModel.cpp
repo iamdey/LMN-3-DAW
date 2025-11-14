@@ -110,17 +110,17 @@ void FilterViewModel::incrementResonance() {
 }
 
 void FilterViewModel::decrementResonance() {
-    plugin->filterResonance->setNormalisedParameter(getResonance() -0.01f,
+    plugin->filterResonance->setNormalisedParameter(getResonance() - 0.01f,
                                                     juce::dontSendNotification);
 }
 
 void FilterViewModel::incrementEnvelopeAmount() {
-    plugin->filterAmount->setNormalisedParameter(getEnvelopeAmount() +0.01f,
+    plugin->filterAmount->setNormalisedParameter(getEnvelopeAmount() + 0.01f,
                                                  juce::dontSendNotification);
 }
 
 void FilterViewModel::decrementEnvelopeAmount() {
-    plugin->filterAmount->setNormalisedParameter(getEnvelopeAmount() -0.01f,
+    plugin->filterAmount->setNormalisedParameter(getEnvelopeAmount() - 0.01f,
                                                  juce::dontSendNotification);
 }
 

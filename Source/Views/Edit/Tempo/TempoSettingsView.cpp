@@ -47,9 +47,9 @@ void TempoSettingsView::paint(juce::Graphics &g) {
 }
 
 void TempoSettingsView::resized() {
-    int padding =  (int) getHeight() * .08;
+    int padding = (int)getHeight() * .08;
 
-    int beatSettingsWidth = (int) getWidth() - 2 * padding;
+    int beatSettingsWidth = (int)getWidth() - 2 * padding;
     int beatSettingsX = (getWidth() / 2) - (beatSettingsWidth / 2);
     beatSettingsComponent.setBounds(beatSettingsX, 2 * padding,
                                     beatSettingsWidth,
@@ -58,7 +58,7 @@ void TempoSettingsView::resized() {
     fontAwesomeFont.setHeight(getHeight() * 0.1f);
     gainIcon.setFont(fontAwesomeFont);
     gainIcon.setBounds((int)(getWidth() - padding - getHeight() * .21), padding,
-                       (int)(getHeight() * .21),(int)(getHeight() * .2));
+                       (int)(getHeight() * .21), (int)(getHeight() * .2));
 
     int sliderWidth = 6;
     int gainSliderX =
@@ -68,7 +68,8 @@ void TempoSettingsView::resized() {
                          getHeight() - padding - gainSliderY);
 
     tapIcon.setFont(fontAwesomeFont);
-    tapIcon.setBounds(padding, padding, (int)(getHeight() * .11), (int)(getHeight() * .1));
+    tapIcon.setBounds(padding, padding, (int)(getHeight() * .11),
+                      (int)(getHeight() * .1));
 }
 
 void TempoSettingsView::encoder1Increased() {
@@ -99,7 +100,8 @@ void TempoSettingsView::tempoSettingsButtonPressed() {
     viewModel.enableTapMode();
 }
 
-void TempoSettingsView::bpmChanged(const double newBpm, const double /*newBps*/) {
+void TempoSettingsView::bpmChanged(const double newBpm,
+                                   const double /*newBps*/) {
     beatSettingsComponent.setBpm(newBpm);
 }
 

@@ -92,13 +92,15 @@ void StepSequencerGridComponent::paint(juce::Graphics &g) {
 
     // draw range selection
     if (viewModel.isRangeSelectionActive()) {
-      g.setColour(appLookAndFeel.colour3.withAlpha(0.5f));
-      g.fillRect(float(startX - (lineThickness / 2) +
-                       float(viewModel.getRangeStartIndex()) * colSpacing),
-                 float(startY) - (lineThickness / 2),
-                
-                 float(viewModel.getRangeEndIndex() - viewModel.getRangeStartIndex() + 1) * colSpacing,
-                 float(endY - startY + lineThickness));
+        g.setColour(appLookAndFeel.colour3.withAlpha(0.5f));
+        g.fillRect(float(startX - (lineThickness / 2) +
+                         float(viewModel.getRangeStartIndex()) * colSpacing),
+                   float(startY) - (lineThickness / 2),
+
+                   float(viewModel.getRangeEndIndex() -
+                         viewModel.getRangeStartIndex() + 1) *
+                       colSpacing,
+                   float(endY - startY + lineThickness));
     }
 }
 
@@ -114,7 +116,8 @@ void StepSequencerGridComponent::selectedNoteIndexChanged(int /*newIndex*/) {
     repaint();
 }
 
-void StepSequencerGridComponent::numberOfNotesChanged(int /*newNumberOfNotes*/) {
+void StepSequencerGridComponent::numberOfNotesChanged(
+    int /*newNumberOfNotes*/) {
     resized();
     repaint();
 }
@@ -125,8 +128,8 @@ void StepSequencerGridComponent::notesPerMeasureChanged(
     repaint();
 }
 
-
-void StepSequencerGridComponent::rangeSelectionEnabledChanged(bool /*rangeSelectionEnabled*/) {
+void StepSequencerGridComponent::rangeSelectionEnabledChanged(
+    bool /*rangeSelectionEnabled*/) {
     resized();
     repaint();
 }

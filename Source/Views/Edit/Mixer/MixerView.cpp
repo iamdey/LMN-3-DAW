@@ -27,7 +27,7 @@ MixerView::~MixerView() {
     viewModel.listViewModel.itemListState.removeListener(this);
 }
 
-void MixerView::paint(juce::Graphics &/*g*/) {}
+void MixerView::paint(juce::Graphics & /*g*/) {}
 
 void MixerView::resized() {
     tableListBox.setBounds(getLocalBounds());

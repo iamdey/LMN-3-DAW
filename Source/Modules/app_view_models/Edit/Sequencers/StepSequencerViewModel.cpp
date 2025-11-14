@@ -1,12 +1,12 @@
 namespace app_view_models {
 // For playing clip only!!
 // https://forum.juce.com/t/createeditforpreviewingclip-how-is-it-used/32757
-StepSequencerViewModel::StepSequencerViewModel(tracktion::AudioTrack::Ptr t) :
-    track(t),
-    state(track->state.getOrCreateChildWithName(IDs::STEP_SEQUENCER_STATE, nullptr)),
-    editState(track->edit.state.getChildWithName(IDs::EDIT_VIEW_STATE)),
-    stepSequence(state.getOrCreateChildWithName(app_models::IDs::STEP_SEQUENCE, nullptr)) {
-
+StepSequencerViewModel::StepSequencerViewModel(tracktion::AudioTrack::Ptr t)
+    : track(t), state(track->state.getOrCreateChildWithName(
+                    IDs::STEP_SEQUENCER_STATE, nullptr)),
+      editState(track->edit.state.getChildWithName(IDs::EDIT_VIEW_STATE)),
+      stepSequence(state.getOrCreateChildWithName(
+          app_models::IDs::STEP_SEQUENCE, nullptr)) {
     jassert(state.hasType(IDs::STEP_SEQUENCER_STATE));
     jassert(editState.hasType(IDs::EDIT_VIEW_STATE));
 
@@ -37,7 +37,6 @@ StepSequencerViewModel::StepSequencerViewModel(tracktion::AudioTrack::Ptr t) :
     numberOfNotes.referTo(
         state, IDs::numberOfNotes, nullptr,
         app_models::StepChannel::getMaxNumberOfNotes(notesPerMeasure.get()));
-
 
     std::function<int(int)> selectedNoteIndexConstrainer = [this](int param) {
         // selected index cannot be less than 0
@@ -72,7 +71,8 @@ StepSequencerViewModel::StepSequencerViewModel(tracktion::AudioTrack::Ptr t) :
     rangeAnchorIndex.setConstrainer(rangeIndexConstrainer);
     rangeAnchorIndex.referTo(state, IDs::RANGE_ANCHOR_INDEX, nullptr, 0);
 
-    rangeSelectionEnabled.referTo(state, IDs::RANGE_SELECTION_ENABLED, nullptr, false);
+    rangeSelectionEnabled.referTo(state, IDs::RANGE_SELECTION_ENABLED, nullptr,
+                                  false);
 
     double secondsPerBeat = 1.0 / track->edit.tempoSequence.getBeatsPerSecondAt(
                                       tracktion::TimePosition::fromSeconds(0));
@@ -126,7 +126,7 @@ bool StepSequencerViewModel::hasNoteAt(int channel, int noteIndex) {
     return stepSequence.getChannel(channel)->getNote(noteIndex);
 }
 
-//TODO: refactor with toggleNote(index, channel) 
+// TODO: refactor with toggleNote(index, channel)
 
 void StepSequencerViewModel::toggleNoteNumberAtSelectedIndex(int noteNumber) {
     // FIXME: it crashes if octave is higher or lower than normal
@@ -170,7 +170,6 @@ void StepSequencerViewModel::decrementSelectedNoteIndex() {
     if (!track->edit.getTransport().isPlaying()) {
         selectedNoteIndex.setValue(selectedNoteIndex.get() - 1, nullptr);
     }
-
 }
 
 void StepSequencerViewModel::incrementNumberOfNotes() {
@@ -258,7 +257,7 @@ void StepSequencerViewModel::stop() {
     if (transport.isPlaying()) {
         track->edit.clickTrackEnabled.setValue(true, nullptr);
         track->setSolo(false);
-       transport.stop(false, false);
+        transport.stop(false, false);
     } else {
         // if we try to stop while currently not playing
         // return transport to beginning
@@ -269,7 +268,7 @@ void StepSequencerViewModel::stop() {
 
 void StepSequencerViewModel::toggleRangeSelection() {
     // Toggle the state (using state or a dedicated field)
-    bool nowActive = ! rangeSelectionEnabled.get();
+    bool nowActive = !rangeSelectionEnabled.get();
     rangeSelectionEnabled.setValue(nowActive, nullptr);
 
     // Update range markers only if active
@@ -281,15 +280,16 @@ void StepSequencerViewModel::toggleRangeSelection() {
 }
 
 void StepSequencerViewModel::copySelection() {
-  // copy all notes in the selected range to an internal buffer
+    // copy all notes in the selected range to an internal buffer
     if (!rangeSelectionEnabled.get()) {
-      return;
+        return;
     }
 
     copiedNotes.clear();
     int from = getRangeStartIndex();
     int to = getRangeEndIndex();
-    DBG("Copying selection from " + std::to_string (from) + " to " + std::to_string (to));
+    DBG("Copying selection from " + std::to_string(from) + " to " +
+        std::to_string(to));
     for (int index = from; index <= to; index++) {
         for (int channel = 0; channel < getNumChannels(); channel++) {
             if (hasNoteAt(channel, index)) {
@@ -297,25 +297,29 @@ void StepSequencerViewModel::copySelection() {
                 note.index = index - from;
                 note.channel = channel;
                 copiedNotes.push_back(note);
-                DBG("Copied note, index " + std::to_string(note.index) + " channel " + std::to_string(note.channel));
+                DBG("Copied note, index " + std::to_string(note.index) +
+                    " channel " + std::to_string(note.channel));
             }
         }
     }
 }
 
-
 void StepSequencerViewModel::pasteSelection() {
     // paste notes from our internal buffer at the current cursor pos
     if (rangeSelectionEnabled.get() || copiedNotes.size() == 0) {
-      return;
+        return;
     }
 
     DBG("Pasting selection");
     int from = getSelectedNoteIndex();
-    for(int noteIndex = 0; noteIndex < copiedNotes.size(); noteIndex++) {
-        addNoteToSequence(copiedNotes[noteIndex].channel, from + copiedNotes[noteIndex].index);
-        stepSequence.getChannel(copiedNotes[noteIndex].channel)->setNote(from + copiedNotes[noteIndex].index, true);
-        DBG("Pasted note, index " + std::to_string(from + copiedNotes[noteIndex].index) + " channel " + std::to_string(copiedNotes[noteIndex].channel));
+    for (int noteIndex = 0; noteIndex < copiedNotes.size(); noteIndex++) {
+        addNoteToSequence(copiedNotes[noteIndex].channel,
+                          from + copiedNotes[noteIndex].index);
+        stepSequence.getChannel(copiedNotes[noteIndex].channel)
+            ->setNote(from + copiedNotes[noteIndex].index, true);
+        DBG("Pasted note, index " +
+            std::to_string(from + copiedNotes[noteIndex].index) + " channel " +
+            std::to_string(copiedNotes[noteIndex].channel));
     }
 }
 
@@ -346,7 +350,7 @@ void StepSequencerViewModel::handleAsyncUpdate() {
 
     if (compareAndReset(shouldUpdateRangeSelectionEnabled)) {
         listeners.call([this](Listener &l) {
-          l.rangeSelectionEnabledChanged(rangeSelectionEnabled.get());
+            l.rangeSelectionEnabledChanged(rangeSelectionEnabled.get());
         });
     }
 }
@@ -461,8 +465,9 @@ StepSequencerViewModel::findNoteInSequence(int channel, int noteIndex) {
         channel + (NOTES_PER_OCTAVE * getZeroBasedOctave()) + MIN_NOTE_NUMBER;
     auto startBeat = tracktion::BeatPosition::fromBeats(
         double(noteIndex * 4.0) / double(notesPerMeasure.get()));
-    //auto duration =
-    //    tracktion::BeatDuration::fromBeats(4.0 / double(notesPerMeasure.get()));
+    // auto duration =
+    //     tracktion::BeatDuration::fromBeats(4.0 /
+    //     double(notesPerMeasure.get()));
 
     // find the first node with matching pitch & startBeat
     for (auto note : sequence.getNotes()) {
@@ -497,7 +502,6 @@ double StepSequencerViewModel::floorToFraction(double number,
     x = x / denominator;
     return x;
 }
-
 
 int StepSequencerViewModel::getZeroBasedOctave() {
     int currentOctave =

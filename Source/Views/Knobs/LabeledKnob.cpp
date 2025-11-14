@@ -16,11 +16,12 @@ LabeledKnob::LabeledKnob() {
     addAndMakeVisible(label);
 }
 
-void LabeledKnob::paint(juce::Graphics &/*g*/) {}
+void LabeledKnob::paint(juce::Graphics & /*g*/) {}
 
 void LabeledKnob::resized() {
     knob.setTextBoxStyle(juce::Slider::TextEntryBoxPosition::TextBoxBelow, true,
-                         (int)(getWidth() * .5), (int)(getHeight() * labelHeight));
+                         (int)(getWidth() * .5),
+                         (int)(getHeight() * labelHeight));
     label.setFont(juce::Font(juce::Font::getDefaultMonospacedFontName(),
                              getHeight() * labelHeight * 0.7f,
                              juce::Font::plain));

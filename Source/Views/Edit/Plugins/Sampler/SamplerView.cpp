@@ -81,14 +81,15 @@ SamplerView::~SamplerView() {
     midiCommandManager.removeListener(this);
 }
 
-void SamplerView::paint(juce::Graphics &/*g*/) {}
+void SamplerView::paint(juce::Graphics & /*g*/) {}
 
 void SamplerView::resized() {
     titledList.setBounds(getLocalBounds());
 
     sampleLabel.setFont(juce::Font(juce::Font::getDefaultMonospacedFontName(),
                                    getHeight() * 0.1f, juce::Font::plain));
-    sampleLabel.setBounds(0, getHeight() * 0.1f, getWidth(), getHeight() * 0.1f);
+    sampleLabel.setBounds(0, getHeight() * 0.1f, getWidth(),
+                          getHeight() * 0.1f);
 
     gainLabel.setFont(juce::Font(juce::Font::getDefaultMonospacedFontName(),
                                  getHeight() * 0.075f, juce::Font::plain));

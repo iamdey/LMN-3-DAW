@@ -17,7 +17,8 @@ void OctaveDisplayComponent::paint(juce::Graphics &g) {
 
     g.setFont(fontAwesomeFont);
     g.setColour(appLookAndFeel.whiteColour);
-    g.drawText(icon, keyboardX, (int)((getHeight() - fontAwesomeFont.getHeight()) / 2),
+    g.drawText(icon, keyboardX,
+               (int)((getHeight() - fontAwesomeFont.getHeight()) / 2),
                fontAwesomeFont.getStringWidth(icon),
                fontAwesomeFont.getHeight(), juce::Justification::centred);
 
@@ -30,8 +31,8 @@ void OctaveDisplayComponent::paint(juce::Graphics &g) {
     }
 
     g.setFont(font);
-    g.drawText(octaveText, octaveX,(int)((getHeight() - font.getHeight()) / 2),
-               font.getStringWidth(octaveText), (int) font.getHeight(),
+    g.drawText(octaveText, octaveX, (int)((getHeight() - font.getHeight()) / 2),
+               font.getStringWidth(octaveText), (int)font.getHeight(),
                juce::Justification::centred);
 }
 void OctaveDisplayComponent::resized() {}
