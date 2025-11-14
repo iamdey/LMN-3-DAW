@@ -11,7 +11,7 @@ jobs:
         with:
           source: 'Source Tests Plugins'
           extensions: 'h,cpp'
-          clangFormatVersion: 10
+          clangFormatVersion: 14
 
   test:
     needs: linting
