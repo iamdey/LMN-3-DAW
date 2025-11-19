@@ -333,13 +333,16 @@ void StepSequencerViewModel::pasteSelection() {
     DBG("Pasting selection");
     int from = getSelectedNoteIndex();
     for (int noteIndex = 0; noteIndex < copiedNotes.size(); noteIndex++) {
+        int velocity = hasNoteAt(copiedNotes[noteIndex].channel, copiedNotes[noteIndex].index);
         addNoteToSequence(copiedNotes[noteIndex].channel,
-                          from + copiedNotes[noteIndex].index);
+                          from + copiedNotes[noteIndex].index, velocity);
+
         stepSequence.getChannel(copiedNotes[noteIndex].channel)
-            ->setNote(from + copiedNotes[noteIndex].index, true);
+            ->setNote(from + copiedNotes[noteIndex].index, velocity);
+
         DBG("Pasted note, index " +
             std::to_string(from + copiedNotes[noteIndex].index) + " channel " +
-            std::to_string(copiedNotes[noteIndex].channel));
+            std::to_string(copiedNotes[noteIndex].channel) + " velocity " + std::to_string(velocity));
     }
 }
 
