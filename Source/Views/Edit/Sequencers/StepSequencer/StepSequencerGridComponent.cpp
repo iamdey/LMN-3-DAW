@@ -45,7 +45,8 @@ void StepSequencerGridComponent::paint(juce::Graphics &g) {
         float noteX = startX;
         for (int noteIndex = 0; noteIndex < viewModel.getNumNotesPerChannel();
              noteIndex++) {
-            if (viewModel.hasNoteAt(channelNumber, noteIndex)) {
+            int velocity = viewModel.hasNoteAt(channelNumber, noteIndex);
+            if (velocity > 0) {
                 if (noteIndex < viewModel.getNumberOfNotes()) {
                     g.setColour(appLookAndFeel.yellowColour);
                     g.fillRect(noteX, channelY, colSpacing, rowSpacing);

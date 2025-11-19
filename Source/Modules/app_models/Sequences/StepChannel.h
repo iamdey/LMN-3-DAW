@@ -16,8 +16,14 @@ class StepChannel {
     int getIndex();
 
     juce::BigInteger getPattern();
-    void setNote(int noteIndex, bool value);
-    bool getNote(int noteIndex);
+    /**
+     * Set the note velocity between 0 & 7
+     */
+    void setNote(int noteIndex, int value);
+    /**
+     * Return the note velocity between 0 & 7
+     */
+    int getNote(int noteIndex);
     /**
      * Maximum of notes based on notes per measure
      * Initially we wanted 4 notes in 4 measures but with if we increase the
@@ -28,6 +34,7 @@ class StepChannel {
 
     static const int maxNumberOfChannels;
     static const int maxNumberOfMeasures;
+    static const int maxNumberOfVelocityBits;
 
     // State must be public for value tree object list
     juce::ValueTree state;
