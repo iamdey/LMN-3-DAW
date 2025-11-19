@@ -154,7 +154,8 @@ void StepSequencerViewModel::toggleNoteNumberAtSelectedIndex(int noteNumber) {
         nextVelo = 0;
     }
 
-    stepSequence.getChannel(channel)->setNote(selectedNoteIndex.get(), nextVelo);
+    stepSequence.getChannel(channel)->setNote(selectedNoteIndex.get(),
+                                              nextVelo);
 
     if (isPlaying) {
         // When looping also add or remove note from the midi sequence to hear
@@ -333,7 +334,8 @@ void StepSequencerViewModel::pasteSelection() {
     DBG("Pasting selection");
     int from = getSelectedNoteIndex();
     for (int noteIndex = 0; noteIndex < copiedNotes.size(); noteIndex++) {
-        int velocity = hasNoteAt(copiedNotes[noteIndex].channel, copiedNotes[noteIndex].index);
+        int velocity = hasNoteAt(copiedNotes[noteIndex].channel,
+                                 copiedNotes[noteIndex].index);
         addNoteToSequence(copiedNotes[noteIndex].channel,
                           from + copiedNotes[noteIndex].index, velocity);
 
@@ -342,7 +344,8 @@ void StepSequencerViewModel::pasteSelection() {
 
         DBG("Pasted note, index " +
             std::to_string(from + copiedNotes[noteIndex].index) + " channel " +
-            std::to_string(copiedNotes[noteIndex].channel) + " velocity " + std::to_string(velocity));
+            std::to_string(copiedNotes[noteIndex].channel) + " velocity " +
+            std::to_string(velocity));
     }
 }
 
@@ -457,7 +460,8 @@ void StepSequencerViewModel::generateMidiSequence() {
     }
 }
 
-void StepSequencerViewModel::addNoteToSequence(int channel, int noteIndex, int dumbVelocity) {
+void StepSequencerViewModel::addNoteToSequence(int channel, int noteIndex,
+                                               int dumbVelocity) {
     // dumbVelocity is an int between 0-7
     // velocity is an int between 0 and 127
     int velocity = dumbVelocity * 18;

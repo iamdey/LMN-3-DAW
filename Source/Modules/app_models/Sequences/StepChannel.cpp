@@ -3,8 +3,8 @@ namespace app_models {
 const int StepChannel::maxNumberOfChannels = 24;
 const int StepChannel::maxNumberOfMeasures = 4;
 /**
- * A maximum of bits for velocity dataset: 16 notes per measure × 4 measures × 3 bits (octal value for velocity)
- * 111 is 7 as maximum velocity
+ * A maximum of bits for velocity dataset: 16 notes per measure × 4 measures × 3
+ * bits (octal value for velocity) 111 is 7 as maximum velocity
  */
 const int StepChannel::maxNumberOfVelocityBits = 4 * 16 * 3;
 
