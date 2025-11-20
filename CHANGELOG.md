@@ -8,6 +8,10 @@ and this project adheres to
 
 ## [Unreleased]
 
+### Added
+- Step Sequencer: support 4 levels of velocity, 30%, 60%, 100% and 0% when pressing `+` and a note.
+  **BREAKING**: The sequence index is not incremented anymore after a being added.
+
 ## [0.5.0] - 2025-11-14
 
 ### Added

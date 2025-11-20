@@ -21,7 +21,7 @@ class StepSequencerViewModel : public juce::ValueTree::Listener,
     int getNumChannels();
     int getNumNotesPerChannel();
 
-    bool hasNoteAt(int channel, int noteIndex);
+    int hasNoteAt(int channel, int noteIndex);
 
     void toggleNoteNumberAtSelectedIndex(int noteNumber);
 
@@ -118,7 +118,7 @@ class StepSequencerViewModel : public juce::ValueTree::Listener,
                                   const juce::Identifier &property) override;
 
     void generateMidiSequence();
-    void addNoteToSequence(int channel, int noteIndex);
+    void addNoteToSequence(int channel, int noteIndex, int dumbVelocity);
     void removeNoteFromSequence(int channel, int noteIndex);
     std::optional<tracktion::MidiNote *> findNoteInSequence(int channel,
                                                             int noteIndex);

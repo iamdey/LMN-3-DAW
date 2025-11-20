@@ -2,6 +2,11 @@ namespace app_models {
 
 const int StepChannel::maxNumberOfChannels = 24;
 const int StepChannel::maxNumberOfMeasures = 4;
+/**
+ * A maximum of bits for velocity dataset: 16 notes per measure × 4 measures × 3
+ * bits (octal value for velocity) 111 is 7 as maximum velocity
+ */
+const int StepChannel::maxNumberOfVelocityBits = 4 * 16 * 3;
 
 StepChannel::StepChannel(juce::ValueTree v) : state(v) {
     jassert(state.hasType(IDs::STEP_CHANNEL));
@@ -12,14 +17,9 @@ StepChannel::StepChannel(juce::ValueTree v) : state(v) {
 
     std::function<juce::String(juce::String)> patternConstrainer =
         [this](juce::String param) {
-            // Idk how to compute maxNumberOfNotes dynamically in the
-            // constructor or in the pattern constrainer (and may be it's not
-            // important). Set a maximal initial value: 16 notes per measure × 4
-            // measures
-            const int maxNumberOfNotes = 64;
-            if (param.length() > maxNumberOfNotes)
+            if (param.length() > maxNumberOfVelocityBits)
                 return param.dropLastCharacters(param.length() -
-                                                maxNumberOfNotes);
+                                                maxNumberOfVelocityBits);
             else
                 return param;
         };
@@ -45,13 +45,24 @@ juce::BigInteger StepChannel::getPattern() {
     return b;
 }
 
-void StepChannel::setNote(int noteIndex, bool value) {
+/**
+ * Set the note velocity between 0-7
+ */
+void StepChannel::setNote(int noteIndex, int value) {
+    jassert(value >= 0 && value < 8);
+
     juce::BigInteger b(getPattern());
-    b.setBit(noteIndex, value);
+    // octal requires 3 bits
+    b.setBitRangeAsInt(noteIndex * 3, 3, value);
     setPattern(b);
 }
 
-bool StepChannel::getNote(int noteIndex) { return getPattern()[noteIndex]; }
+/**
+ * Get the note velocity between 0-7
+ */
+int StepChannel::getNote(int noteIndex) {
+    return getPattern().getBitRangeAsInt(noteIndex * 3, 3);
+}
 
 int StepChannel::getMaxNumberOfNotes(int notesPerMeasure) {
     return maxNumberOfMeasures * notesPerMeasure;
