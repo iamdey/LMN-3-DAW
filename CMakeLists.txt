@@ -71,6 +71,7 @@ target_sources(LMN-3  PRIVATE
     Source/Views/Edit/Plugins/FourOsc/ADSRPlot.cpp
     Source/Views/Edit/Plugins/FourOsc/FilterADSRView.cpp
     Source/Views/Edit/Plugins/FourOsc/FilterView.cpp
+    Source/Views/Edit/Plugins/FourOsc/ArpeggiatorView.cpp
     Source/Views/Edit/Modifiers/TrackModifiersListView.cpp
     Source/Views/Edit/Modifiers/AvailableModifiersListView.cpp
     Source/Views/Edit/Modifiers/ModifierPluginDestinationsListView.cpp

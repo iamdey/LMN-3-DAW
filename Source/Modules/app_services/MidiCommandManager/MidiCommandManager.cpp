@@ -54,6 +54,11 @@ void MidiCommandManager::midiMessageReceived(const juce::MidiMessage &message,
             listener->noteOnPressed(message.getNoteNumber());
     }
 
+    if (message.isNoteOff()) {
+        if (auto listener = dynamic_cast<Listener *>(focusedComponent))
+            listener->noteOffPressed(message.getNoteNumber());
+    }
+
     if (message.isController()) {
         listeners.call([message](Listener &l) {
             l.controllerEventReceived(message.getControllerNumber(),
