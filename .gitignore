@@ -10,3 +10,15 @@ cmake-build-release/
 
 *.vsidx
 .vs
+/.claude
+/ARPEGGIATOR-IMPLEMENTATION.md
+/BUILD-DOCKER.md
+/build-docker.ps1
+/build-docker.sh
+/build-local-simple.ps1
+/build-local.bat
+/build-release-aarch64.ps1
+/build-release.bat
+/docker-build.sh
+/raspi-build.log
+/INSTALL.md

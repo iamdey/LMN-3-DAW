@@ -49,6 +49,7 @@ namespace app_view_models {
     class OscillatorViewModel;
     class ADSRViewModel;
     class FilterViewModel;
+    class ArpeggiatorViewModel;
     class MixerViewModel;
     class MixerTrackViewModel;
     class SettingsListViewModel;
@@ -112,6 +113,7 @@ namespace app_view_models {
 #include "Edit/Plugins/FourOsc/OscillatorViewModel.h"
 #include "Edit/Plugins/FourOsc/ADSRViewModel.h"
 #include "Edit/Plugins/FourOsc/FilterViewModel.h"
+#include "Edit/Plugins/FourOsc/ArpeggiatorViewModel.h"
 
 // Modifiers
 #include "Edit/Modifiers/TrackModifiersListViewModel.h"

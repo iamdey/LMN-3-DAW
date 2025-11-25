@@ -6,3 +6,6 @@
 
 // TimelineCamera
 #include "TimelineCamera/TimelineCamera.cpp"
+
+// CrashLogger
+#include "CrashLogger/CrashLogger.cpp"

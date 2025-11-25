@@ -21,6 +21,7 @@ class MidiCommandManager : private juce::MidiInputCallback {
         virtual void controllerEventReceived(int, int) {}
 
         virtual void noteOnPressed(int /*noteNumber*/) {}
+        virtual void noteOffPressed(int /*noteNumber*/) {}
 
         virtual void encoder1Increased() {}
         virtual void encoder1Decreased() {}

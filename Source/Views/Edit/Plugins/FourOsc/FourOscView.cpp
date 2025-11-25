@@ -1,6 +1,7 @@
 #include "FourOscView.h"
 #include "ADSRPlot.h"
 #include "ADSRView.h"
+#include "ArpeggiatorView.h"
 #include "FilterView.h"
 #include "OscillatorView.h"
 
@@ -20,6 +21,8 @@ FourOscView::FourOscView(tracktion::FourOscPlugin *p,
            new ADSRView(plugin, midiCommandManager), true);
     addTab(filterTabName, juce::Colours::transparentBlack,
            new FilterView(plugin, midiCommandManager), true);
+    addTab(arpeggiatorTabName, juce::Colours::transparentBlack,
+           new ArpeggiatorView(plugin, midiCommandManager), true);
     midiCommandManager.addListener(this);
 
     // hide tab bar

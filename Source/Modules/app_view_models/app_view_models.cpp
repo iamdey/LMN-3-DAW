@@ -39,6 +39,7 @@
 #include "Edit/Plugins/FourOsc/OscillatorViewModel.cpp"
 #include "Edit/Plugins/FourOsc/ADSRViewModel.cpp"
 #include "Edit/Plugins/FourOsc/FilterViewModel.cpp"
+#include "Edit/Plugins/FourOsc/ArpeggiatorViewModel.cpp"
 
 // Modifiers
 #include "Edit/Modifiers/ModifierList.cpp"

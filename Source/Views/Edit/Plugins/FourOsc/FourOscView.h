@@ -29,6 +29,7 @@ class FourOscView : public juce::TabbedComponent,
     juce::String osc4TabName = "OSC4";
     juce::String adsrTabName = "ADSR";
     juce::String filterTabName = "FILTER";
+    juce::String arpeggiatorTabName = "ARP";
 
     AppLookAndFeel appLookAndFeel;
     juce::Label pageLabel;
