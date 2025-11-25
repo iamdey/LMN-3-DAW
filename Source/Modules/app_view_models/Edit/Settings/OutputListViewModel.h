@@ -13,6 +13,7 @@ class OutputListViewModel : private ItemListState::Listener {
     juce::StringArray getItemNames();
     juce::String getSelectedItem();
     void updateOutput();
+    void saveOutputDevicePreference(const juce::String& deviceName);
 
   private:
     juce::AudioDeviceManager &deviceManager;

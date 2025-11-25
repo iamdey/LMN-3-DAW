@@ -37,7 +37,7 @@ class ArpeggiatorViewModel : public juce::ValueTree::Listener,
     void incrementGate();
     void decrementGate();
 
-    // Note handling for arpeggio
+    // Note handling for arpeggio (delegates to plugin)
     void addNoteToBuffer(int noteNumber);
     void removeNoteFromBuffer(int noteNumber);
     void clearNoteBuffer();
@@ -58,16 +58,6 @@ class ArpeggiatorViewModel : public juce::ValueTree::Listener,
   private:
     tracktion::FourOscPlugin *plugin;
     juce::ListenerList<Listener> listeners;
-
-    // Arpeggiator state
-    bool enabled = false;
-    Mode mode = Mode::Up;
-    float rate = 8.0f;           // Default 8 Hz
-    int octaves = 1;             // Default 1 octave
-    float gate = 0.8f;           // Default 80% gate
-
-    // Note buffer for arpeggio
-    juce::Array<int> noteBuffer;
 
     void handleAsyncUpdate() override;
     bool shouldUpdateParameters = false;

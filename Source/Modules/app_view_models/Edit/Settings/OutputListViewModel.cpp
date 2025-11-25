@@ -44,7 +44,29 @@ void OutputListViewModel::updateOutput() {
     if (result != "") {
         juce::Logger::writeToLog("Error setting output device to " +
                                  getSelectedItem() + ": " + result);
+    } else {
+        // Save the selected output device to PropertiesFile for persistence
+        saveOutputDevicePreference(getSelectedItem());
     }
+}
+
+void OutputListViewModel::saveOutputDevicePreference(const juce::String& deviceName) {
+    auto userAppDataDirectory = juce::File::getSpecialLocation(
+        juce::File::userApplicationDataDirectory);
+    auto settingsFile = userAppDataDirectory
+        .getChildFile(juce::JUCEApplication::getInstance()->getApplicationName())
+        .getChildFile("audio_settings.xml");
+
+    juce::PropertiesFile::Options options;
+    options.applicationName = juce::JUCEApplication::getInstance()->getApplicationName();
+    options.filenameSuffix = ".xml";
+    options.osxLibrarySubFolder = "Application Support";
+
+    juce::PropertiesFile props(settingsFile, options);
+    props.setValue("outputDevice", deviceName);
+    props.saveIfNeeded();
+
+    juce::Logger::writeToLog("Saved output device preference: " + deviceName);
 }
 
 void OutputListViewModel::selectedIndexChanged(int /*newIndex*/) {

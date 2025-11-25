@@ -2,21 +2,8 @@
 
 ArpeggiatorView::ArpeggiatorView(tracktion::FourOscPlugin *p,
                                  app_services::MidiCommandManager &mcm)
-    : plugin(p), viewModel(p), midiCommandManager(mcm), pluginKnobs(mcm, 4),
-      midiSourceID(tracktion::createUniqueMPESourceID()) {
+    : plugin(p), viewModel(p), midiCommandManager(mcm), pluginKnobs(mcm, 4) {
 
-    // Find the AudioTrack that contains this plugin
-    for (auto at : tracktion::getAudioTracks(plugin->edit)) {
-        // Check if this track contains our plugin
-        for (int i = 0; i < at->pluginList.size(); ++i) {
-            if (at->pluginList[i] == plugin) {
-                audioTrack = at;
-                break;
-            }
-        }
-        if (audioTrack != nullptr)
-            break;
-    }
     titleLabel.setFont(juce::Font(juce::Font::getDefaultMonospacedFontName(),
                                   getHeight() * 0.1f, juce::Font::plain));
     titleLabel.setText("4OSC: ARPEGGIATOR", juce::dontSendNotification);
@@ -48,7 +35,6 @@ ArpeggiatorView::ArpeggiatorView(tracktion::FourOscPlugin *p,
 }
 
 ArpeggiatorView::~ArpeggiatorView() {
-    stopArpeggio();
     midiCommandManager.removeListener(this);
     viewModel.removeListener(this);
 }
@@ -151,48 +137,9 @@ void ArpeggiatorView::encoder4Decreased() {
     }
 }
 
-void ArpeggiatorView::noteOnPressed(int noteNumber) {
-    if (isShowing()) {
-        if (midiCommandManager.getFocusedComponent() == this) {
-            // Add note to buffer when pressed
-            viewModel.addNoteToBuffer(noteNumber);
-
-            // Start arpeggio if enabled and this is the first note
-            if (viewModel.isEnabled()) {
-                startArpeggio();
-            }
-
-            repaint();
-        }
-    }
-}
-
-void ArpeggiatorView::noteOffPressed(int noteNumber) {
-    if (isShowing()) {
-        if (midiCommandManager.getFocusedComponent() == this) {
-            // Remove note from buffer when released
-            viewModel.removeNoteFromBuffer(noteNumber);
-
-            // Stop arpeggio if no notes left
-            if (viewModel.getCurrentNotes().isEmpty()) {
-                stopArpeggio();
-            }
-
-            repaint();
-        }
-    }
-}
-
 void ArpeggiatorView::controlButtonPressed() {
     // Toggle arpeggiator on/off with control button
     viewModel.toggleEnabled();
-
-    if (viewModel.isEnabled() && !viewModel.getCurrentNotes().isEmpty()) {
-        startArpeggio();
-    } else {
-        stopArpeggio();
-    }
-
     repaint();
 }
 
@@ -210,139 +157,7 @@ void ArpeggiatorView::parametersChanged() {
     pluginKnobs.getKnob(3)->getSlider().setValue(
         viewModel.getGate(), juce::dontSendNotification);
 
-    // Update timer interval based on rate
-    if (isTimerRunning()) {
-        int intervalMs = static_cast<int>(1000.0f / viewModel.getRate());
-        startTimer(intervalMs);
-    }
-
     repaint();
-}
-
-void ArpeggiatorView::timerCallback() {
-    if (viewModel.isEnabled() && !viewModel.getCurrentNotes().isEmpty()) {
-        playNextNote();
-    } else {
-        // If no notes or disabled, ensure we stop any playing note
-        stopArpeggio();
-    }
-}
-
-void ArpeggiatorView::startArpeggio() {
-    if (!isTimerRunning() && viewModel.isEnabled()) {
-        currentNoteIndex = 0;
-        currentOctave = 0;
-        int intervalMs = static_cast<int>(1000.0f / viewModel.getRate());
-        startTimer(intervalMs);
-    }
-}
-
-void ArpeggiatorView::stopArpeggio() {
-    stopTimer();
-    stopCurrentNote();
-    currentNoteIndex = 0;
-    currentOctave = 0;
-}
-
-void ArpeggiatorView::playNextNote() {
-    auto notes = viewModel.getCurrentNotes();
-    if (notes.isEmpty()) {
-        stopArpeggio();
-        return;
-    }
-
-    // Stop previous note
-    stopCurrentNote();
-
-    auto mode = viewModel.getMode();
-    int octaves = viewModel.getOctaves();
-
-    // Calculate next note based on mode
-    int noteToPlay = -1;
-
-    switch (mode) {
-        case app_view_models::ArpeggiatorViewModel::Mode::Off:
-            stopArpeggio();
-            return;
-
-        case app_view_models::ArpeggiatorViewModel::Mode::Up:
-            noteToPlay = notes[currentNoteIndex] + (currentOctave * 12);
-            currentNoteIndex++;
-            if (currentNoteIndex >= notes.size()) {
-                currentNoteIndex = 0;
-                currentOctave++;
-                if (currentOctave >= octaves) {
-                    currentOctave = 0;
-                }
-            }
-            break;
-
-        case app_view_models::ArpeggiatorViewModel::Mode::Down:
-            noteToPlay = notes[currentNoteIndex] + ((octaves - 1 - currentOctave) * 12);
-            currentNoteIndex++;
-            if (currentNoteIndex >= notes.size()) {
-                currentNoteIndex = 0;
-                currentOctave++;
-                if (currentOctave >= octaves) {
-                    currentOctave = 0;
-                }
-            }
-            break;
-
-        case app_view_models::ArpeggiatorViewModel::Mode::UpDown: {
-            int totalSteps = (notes.size() * octaves * 2) - 2;
-            int step = (currentNoteIndex + currentOctave * notes.size());
-
-            if (step < notes.size() * octaves) {
-                // Going up
-                int octaveOffset = step / notes.size();
-                int noteIndex = step % notes.size();
-                noteToPlay = notes[noteIndex] + (octaveOffset * 12);
-            } else {
-                // Going down
-                int downStep = step - (notes.size() * octaves);
-                int octaveOffset = (octaves - 1) - (downStep / notes.size());
-                int noteIndex = notes.size() - 1 - (downStep % notes.size());
-                noteToPlay = notes[noteIndex] + (octaveOffset * 12);
-            }
-
-            currentNoteIndex++;
-            if (currentNoteIndex >= totalSteps) {
-                currentNoteIndex = 0;
-            }
-            break;
-        }
-
-        case app_view_models::ArpeggiatorViewModel::Mode::Random: {
-            juce::Random random;
-            int randomNoteIndex = random.nextInt(notes.size());
-            int randomOctave = random.nextInt(octaves);
-            noteToPlay = notes[randomNoteIndex] + (randomOctave * 12);
-            break;
-        }
-    }
-
-    // Play the note
-    if (noteToPlay >= 0 && noteToPlay < 128 && audioTrack != nullptr) {
-        lastPlayedNote = noteToPlay;
-        noteIsPlaying = true;
-
-        // Inject MIDI note-on message to the track containing FourOsc
-        // This uses Tracktion Engine's real-time MIDI injection system
-        auto noteOnMessage = juce::MidiMessage::noteOn(1, noteToPlay, (juce::uint8)100);
-        audioTrack->injectLiveMidiMessage(noteOnMessage, midiSourceID);
-    }
-}
-
-void ArpeggiatorView::stopCurrentNote() {
-    if (noteIsPlaying && lastPlayedNote >= 0 && audioTrack != nullptr) {
-        // Inject MIDI note-off message
-        auto noteOffMessage = juce::MidiMessage::noteOff(1, lastPlayedNote);
-        audioTrack->injectLiveMidiMessage(noteOffMessage, midiSourceID);
-
-        noteIsPlaying = false;
-        lastPlayedNote = -1;
-    }
 }
 
 juce::String ArpeggiatorView::getModeString() const {

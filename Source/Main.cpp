@@ -166,10 +166,46 @@ class GuiAppApplication : public juce::JUCEApplication {
     void initialiseAudioDevices() {
         auto &deviceManager = engine.getDeviceManager().deviceManager;
         deviceManager.getCurrentDeviceTypeObject()->scanForDevices();
+
+        // Try to load saved audio device preference
+        auto userAppDataDirectory = juce::File::getSpecialLocation(
+            juce::File::userApplicationDataDirectory);
+        auto settingsFile = userAppDataDirectory
+            .getChildFile(getApplicationName())
+            .getChildFile("audio_settings.xml");
+
+        juce::String savedOutputDevice;
+        if (settingsFile.existsAsFile()) {
+            juce::PropertiesFile::Options options;
+            options.applicationName = getApplicationName();
+            options.filenameSuffix = ".xml";
+            options.osxLibrarySubFolder = "Application Support";
+
+            juce::PropertiesFile props(settingsFile, options);
+            savedOutputDevice = props.getValue("outputDevice", "");
+
+            if (savedOutputDevice.isNotEmpty()) {
+                juce::Logger::writeToLog("Found saved output device: " + savedOutputDevice);
+            }
+        }
+
+        // Initialize with default devices first
         auto result = deviceManager.initialiseWithDefaultDevices(0, 2);
         if (result != "") {
             juce::Logger::writeToLog(
                 "Attempt to initialise default devices failed!");
+        }
+
+        // If we have a saved device, try to set it
+        if (savedOutputDevice.isNotEmpty()) {
+            auto setup = deviceManager.getAudioDeviceSetup();
+            setup.outputDeviceName = savedOutputDevice;
+            auto setResult = deviceManager.setAudioDeviceSetup(setup, true);
+            if (setResult == "") {
+                juce::Logger::writeToLog("Successfully restored output device: " + savedOutputDevice);
+            } else {
+                juce::Logger::writeToLog("Failed to restore output device: " + setResult);
+            }
         }
     }
     void shutdown() override {

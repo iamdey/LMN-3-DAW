@@ -7,8 +7,7 @@
 
 class ArpeggiatorView : public juce::Component,
                          public app_services::MidiCommandManager::Listener,
-                         public app_view_models::ArpeggiatorViewModel::Listener,
-                         private juce::Timer {
+                         public app_view_models::ArpeggiatorViewModel::Listener {
   public:
     ArpeggiatorView(tracktion::FourOscPlugin *p,
                     app_services::MidiCommandManager &mcm);
@@ -31,9 +30,9 @@ class ArpeggiatorView : public juce::Component,
     void encoder4Increased() override;
     void encoder4Decreased() override;
 
-    // MIDI note handlers
-    void noteOnPressed(int noteNumber) override;
-    void noteOffPressed(int noteNumber) override;
+    // MIDI note handlers (no longer needed for arpeggio processing)
+    void noteOnPressed(int noteNumber) override {}
+    void noteOffPressed(int noteNumber) override {}
 
     void controlButtonPressed() override;
     void controlButtonReleased() override;
@@ -50,24 +49,7 @@ class ArpeggiatorView : public juce::Component,
     Knobs pluginKnobs;
     AppLookAndFeel appLookAndFeel;
 
-    // MIDI injection
-    tracktion::AudioTrack *audioTrack = nullptr;
-    tracktion::MPESourceID midiSourceID;
-
-    // Arpeggiator state
-    int currentNoteIndex = 0;
-    int currentOctave = 0;
-    bool noteIsPlaying = false;
-    int lastPlayedNote = -1;
-
-    // Timer callback for arpeggio
-    void timerCallback() override;
-
-    // Helper methods
-    void startArpeggio();
-    void stopArpeggio();
-    void playNextNote();
-    void stopCurrentNote();
+    // Helper method
     juce::String getModeString() const;
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(ArpeggiatorView)

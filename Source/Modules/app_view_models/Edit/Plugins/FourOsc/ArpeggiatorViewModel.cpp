@@ -12,100 +12,104 @@ ArpeggiatorViewModel::~ArpeggiatorViewModel() {
 }
 
 bool ArpeggiatorViewModel::isEnabled() const {
-    return enabled;
+    return plugin->arpParams->enabledValue.get();
 }
 
 ArpeggiatorViewModel::Mode ArpeggiatorViewModel::getMode() const {
-    return mode;
+    return static_cast<Mode>(plugin->arpParams->modeValue.get());
 }
 
 float ArpeggiatorViewModel::getRate() const {
-    return rate;
+    return plugin->arpParams->rateValue.get();
 }
 
 int ArpeggiatorViewModel::getOctaves() const {
-    return octaves;
+    return plugin->arpParams->octavesValue.get();
 }
 
 float ArpeggiatorViewModel::getGate() const {
-    return gate;
+    return plugin->arpParams->gateValue.get();
 }
 
 void ArpeggiatorViewModel::toggleEnabled() {
-    enabled = !enabled;
-    if (!enabled) {
+    bool currentEnabled = plugin->arpParams->enabledValue.get();
+    plugin->arpParams->enabledValue.setValue(!currentEnabled, nullptr);
+    if (!plugin->arpParams->enabledValue.get()) {
         clearNoteBuffer();
     }
     markAndUpdate(shouldUpdateParameters);
 }
 
 void ArpeggiatorViewModel::incrementMode() {
-    int modeValue = static_cast<int>(mode);
-    if (modeValue < static_cast<int>(Mode::Random)) {
-        mode = static_cast<Mode>(modeValue + 1);
+    int currentMode = plugin->arpParams->modeValue.get();
+    if (currentMode < static_cast<int>(Mode::Random)) {
+        plugin->arpParams->modeValue.setValue(currentMode + 1, nullptr);
         markAndUpdate(shouldUpdateParameters);
     }
 }
 
 void ArpeggiatorViewModel::decrementMode() {
-    int modeValue = static_cast<int>(mode);
-    if (modeValue > static_cast<int>(Mode::Off)) {
-        mode = static_cast<Mode>(modeValue - 1);
+    int currentMode = plugin->arpParams->modeValue.get();
+    if (currentMode > static_cast<int>(Mode::Off)) {
+        plugin->arpParams->modeValue.setValue(currentMode - 1, nullptr);
         markAndUpdate(shouldUpdateParameters);
     }
 }
 
 void ArpeggiatorViewModel::incrementRate() {
-    rate = juce::jmin(rate + 0.5f, 16.0f);
+    float currentRate = plugin->arpParams->rateValue.get();
+    plugin->arpParams->rateValue.setValue(juce::jmin(currentRate + 0.5f, 16.0f), nullptr);
     markAndUpdate(shouldUpdateParameters);
 }
 
 void ArpeggiatorViewModel::decrementRate() {
-    rate = juce::jmax(rate - 0.5f, 1.0f);
+    float currentRate = plugin->arpParams->rateValue.get();
+    plugin->arpParams->rateValue.setValue(juce::jmax(currentRate - 0.5f, 1.0f), nullptr);
     markAndUpdate(shouldUpdateParameters);
 }
 
 void ArpeggiatorViewModel::incrementOctaves() {
-    if (octaves < 4) {
-        octaves++;
+    int currentOctaves = plugin->arpParams->octavesValue.get();
+    if (currentOctaves < 4) {
+        plugin->arpParams->octavesValue.setValue(currentOctaves + 1, nullptr);
         markAndUpdate(shouldUpdateParameters);
     }
 }
 
 void ArpeggiatorViewModel::decrementOctaves() {
-    if (octaves > 1) {
-        octaves--;
+    int currentOctaves = plugin->arpParams->octavesValue.get();
+    if (currentOctaves > 1) {
+        plugin->arpParams->octavesValue.setValue(currentOctaves - 1, nullptr);
         markAndUpdate(shouldUpdateParameters);
     }
 }
 
 void ArpeggiatorViewModel::incrementGate() {
-    gate = juce::jmin(gate + 0.05f, 1.0f);
+    float currentGate = plugin->arpParams->gateValue.get();
+    plugin->arpParams->gateValue.setValue(juce::jmin(currentGate + 0.05f, 1.0f), nullptr);
     markAndUpdate(shouldUpdateParameters);
 }
 
 void ArpeggiatorViewModel::decrementGate() {
-    gate = juce::jmax(gate - 0.05f, 0.05f);
+    float currentGate = plugin->arpParams->gateValue.get();
+    plugin->arpParams->gateValue.setValue(juce::jmax(currentGate - 0.05f, 0.05f), nullptr);
     markAndUpdate(shouldUpdateParameters);
 }
 
 void ArpeggiatorViewModel::addNoteToBuffer(int noteNumber) {
-    if (!noteBuffer.contains(noteNumber)) {
-        noteBuffer.add(noteNumber);
-        noteBuffer.sort();
-    }
+    plugin->addNoteToArpeggiator(noteNumber);
 }
 
 void ArpeggiatorViewModel::removeNoteFromBuffer(int noteNumber) {
-    noteBuffer.removeAllInstancesOf(noteNumber);
+    plugin->removeNoteFromArpeggiator(noteNumber);
 }
 
 void ArpeggiatorViewModel::clearNoteBuffer() {
-    noteBuffer.clear();
+    plugin->clearArpeggiatorNotes();
 }
 
 juce::Array<int> ArpeggiatorViewModel::getCurrentNotes() const {
-    return noteBuffer;
+    return plugin->getArpeggiatorNotes();
 }
 
 void ArpeggiatorViewModel::handleAsyncUpdate() {
@@ -116,9 +120,11 @@ void ArpeggiatorViewModel::handleAsyncUpdate() {
 void ArpeggiatorViewModel::valueTreePropertyChanged(
     juce::ValueTree &treeWhosePropertyHasChanged,
     const juce::Identifier &property) {
-    // Listen for changes if needed in the future
     if (treeWhosePropertyHasChanged == plugin->state) {
-        // Handle plugin state changes if needed
+        // Check if any arpeggiator property changed
+        if (property.toString().contains("arp")) {
+            markAndUpdate(shouldUpdateParameters);
+        }
     }
 }
 
