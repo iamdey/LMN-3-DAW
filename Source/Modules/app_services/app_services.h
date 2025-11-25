@@ -18,6 +18,7 @@ namespace app_services {
 
     class MidiCommandManager;
     class TimelineCamera;
+    class CrashLogger;
 
 }
 
@@ -34,3 +35,6 @@ namespace app_services {
 
 // TimelineCamera
 #include "TimelineCamera/TimelineCamera.h"
+
+// CrashLogger
+#include "CrashLogger/CrashLogger.h"

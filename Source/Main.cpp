@@ -42,6 +42,12 @@ class GuiAppApplication : public juce::JUCEApplication {
                 getApplicationName() + " Logs"));
         juce::Logger::setCurrentLogger(logger.get());
 
+        // Initialize CrashLogger with crash detection and resource monitoring
+        crashLogger = std::make_unique<app_services::CrashLogger>(getApplicationName());
+        crashLogger->enableCrashDetection(true);
+        crashLogger->enableResourceMonitoring(true, 2000);  // Check every 2 seconds
+        crashLogger->setResourceThresholds(85.0, 400);  // 85% CPU, 400MB RAM for Raspberry Pi
+
         // we need to add the app internal plugins to the cache:
         engine.getPluginManager()
             .createBuiltInType<internal_plugins::DrumSamplerPlugin>();
@@ -321,6 +327,7 @@ class GuiAppApplication : public juce::JUCEApplication {
 
   private:
     std::unique_ptr<juce::FileLogger> logger;
+    std::unique_ptr<app_services::CrashLogger> crashLogger;
     std::unique_ptr<MainWindow> mainWindow;
     tracktion::Engine engine{getApplicationName(),
                              std::make_unique<ExtendedUIBehaviour>(), nullptr};
