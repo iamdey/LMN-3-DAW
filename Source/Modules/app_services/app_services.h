@@ -26,6 +26,7 @@ namespace app_services {
 #include <juce_core/juce_core.h>
 #include <juce_graphics/juce_graphics.h>
 #include <tracktion_engine/tracktion_engine.h>
+#include <atomic>
 #include <functional>
 
 // MidiCommandManager

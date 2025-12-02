@@ -1,0 +1,20 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(cat:*)",
+      "Bash(cmake:*)",
+      "Bash(git submodule update:*)",
+      "Bash(docker:*)",
+      "Bash(powershell.exe:*)",
+      "Bash(cmd.exe /c \"D:\\DEV\\LMN-3-DAW-iamdey-repo\\build-release.bat\")",
+      "Bash(chmod:*)",
+      "Bash(bash docker-build.sh:*)",
+      "Bash(export MSYS_NO_PATHCONV=1)",
+      "Bash(git checkout:*)",
+      "Bash(/dev/null)",
+      "Bash(git stash:*)"
+    ],
+    "deny": [],
+    "ask": []
+  }
+}

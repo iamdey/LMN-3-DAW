@@ -142,24 +142,9 @@ class MidiCommandManager : private juce::MidiInputCallback {
     tracktion::Engine &engine;
     juce::Component *focusedComponent;
     juce::ListenerList<Listener> listeners;
+    std::atomic<int> pendingAsyncMessages{0};
 
     // This is used to dispach an incoming message to the message thread
-    class IncomingMessageCallback : public juce::CallbackMessage {
-      public:
-        IncomingMessageCallback(MidiCommandManager &o,
-                                const juce::MidiMessage &m,
-                                const juce::String &s)
-            : owner(o), message(m), source(s) {}
-
-        void messageCallback() override {
-            owner.midiMessageReceived(message, source);
-        }
-
-        MidiCommandManager &owner;
-        juce::MidiMessage message;
-        juce::String source;
-    };
-
     void handleIncomingMidiMessage(juce::MidiInput *source,
                                    const juce::MidiMessage &message) override;
 
