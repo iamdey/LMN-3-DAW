@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.16)
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
-project(LMN-3 VERSION 0.4.0)
+project(LMN-3 VERSION 0.6.2)
 
 add_subdirectory(yaml-cpp)
 add_subdirectory(tracktion_engine/modules/juce)
@@ -71,6 +71,7 @@ target_sources(LMN-3  PRIVATE
     Source/Views/Edit/Plugins/FourOsc/ADSRPlot.cpp
     Source/Views/Edit/Plugins/FourOsc/FilterADSRView.cpp
     Source/Views/Edit/Plugins/FourOsc/FilterView.cpp
+    Source/Views/Edit/Plugins/FourOsc/ArpeggiatorView.cpp
     Source/Views/Edit/Modifiers/TrackModifiersListView.cpp
     Source/Views/Edit/Modifiers/AvailableModifiersListView.cpp
     Source/Views/Edit/Modifiers/ModifierPluginDestinationsListView.cpp

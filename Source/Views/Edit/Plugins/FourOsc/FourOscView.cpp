@@ -20,6 +20,8 @@ FourOscView::FourOscView(tracktion::FourOscPlugin *p,
            new ADSRView(plugin, midiCommandManager), true);
     addTab(filterTabName, juce::Colours::transparentBlack,
            new FilterView(plugin, midiCommandManager), true);
+    addTab(arpTabName, juce::Colours::transparentBlack,
+           new ArpeggiatorView(plugin, midiCommandManager), true);
     midiCommandManager.addListener(this);
 
     // hide tab bar

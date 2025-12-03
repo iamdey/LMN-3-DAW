@@ -20,6 +20,8 @@ class ConfigurationHelpers {
     static void setSavedTrackName(const juce::File &newValue);
     static juce::File getSavedTrackName();
     static juce::String getApplicationName();
+    static juce::String getSavedOutputDevice();
+    static void setSavedOutputDevice(const juce::String &deviceName);
 
   private:
     static bool writeBinarySamplesToDirectory(const juce::File &destDir,
