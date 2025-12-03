@@ -63,6 +63,12 @@ void MidiCommandManager::midiMessageReceived(const juce::MidiMessage &message,
     // Logging every MIDI message can starve the device; uncomment for debugging
     // juce::Logger::writeToLog(getMidiMessageDescription(message));
 
+    if (message.isNoteOff()) {
+        if (auto listener = dynamic_cast<Listener *>(focusedComponent))
+            listener->noteOffPressed(message.getNoteNumber());
+        return;
+    }
+
     if (message.isNoteOn()) {
         if (auto listener = dynamic_cast<Listener *>(focusedComponent))
             listener->noteOnPressed(message.getNoteNumber());
