@@ -1,8 +1,8 @@
 @echo off
 REM Build script for LMN-3-DAW aarch64 Release
-REM Generates: LMN-3-aarch64-linux-gnu_0.7.0.zip
+REM Generates: LMN-3-aarch64-linux-gnu_0.6.2.zip
 
-set VERSION=0.7.0
+set VERSION=0.6.2
 set ZIP_NAME=LMN-3-aarch64-linux-gnu_%VERSION%.zip
 
 echo ========================================

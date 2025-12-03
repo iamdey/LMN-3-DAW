@@ -7,7 +7,6 @@
 #include <tracktion_engine/tracktion_engine.h>
 
 class ArpeggiatorView : public juce::Component,
-                        private juce::Timer,
                         public app_services::MidiCommandManager::Listener,
                         public app_view_models::ArpeggiatorViewModel::Listener {
   public:
@@ -28,11 +27,7 @@ class ArpeggiatorView : public juce::Component,
     void encoder4Decreased() override;
     void controlButtonPressed() override;
 
-    void noteOnPressed(int noteNumber) override;
-    void noteOffPressed(int noteNumber) override;
-
     void parametersChanged() override;
-    void notesChanged() override;
 
   private:
     app_view_models::ArpeggiatorViewModel viewModel;
@@ -42,14 +37,5 @@ class ArpeggiatorView : public juce::Component,
     juce::Label titleLabel;
     juce::Label statusLabel;
 
-    tracktion::AudioTrack *targetTrack{nullptr};
-    tracktion::MPESourceID sourceId{tracktion::createUniqueMPESourceID()};
-    int lastNote{-1};
-
-    void timerCallback() override;
-    void startIfNeeded();
-    void stopCurrentNote();
-    void playNextNote();
     void updateStatusLabel();
-    tracktion::AudioTrack *findTrackForPlugin(tracktion::FourOscPlugin *plugin);
 };

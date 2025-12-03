@@ -3,8 +3,6 @@
 ArpeggiatorView::ArpeggiatorView(tracktion::FourOscPlugin *p,
                                  app_services::MidiCommandManager &mcm)
     : viewModel(p), midiCommandManager(mcm), knobs(mcm, 4) {
-    targetTrack = findTrackForPlugin(p);
-
     titleLabel.setFont(juce::Font(juce::Font::getDefaultMonospacedFontName(),
                                   getHeight() * 0.1f, juce::Font::plain));
     titleLabel.setText("4OSC: Arpeggiator", juce::dontSendNotification);
@@ -40,8 +38,6 @@ ArpeggiatorView::ArpeggiatorView(tracktion::FourOscPlugin *p,
 }
 
 ArpeggiatorView::~ArpeggiatorView() {
-    stopTimer();
-    stopCurrentNote();
     midiCommandManager.removeListener(this);
     viewModel.removeListener(this);
 }
@@ -71,31 +67,23 @@ void ArpeggiatorView::resized() {
 }
 
 void ArpeggiatorView::encoder1Increased() {
-    if (isShowing() && midiCommandManager.getFocusedComponent() == this) {
+    if (isShowing() && midiCommandManager.getFocusedComponent() == this)
         viewModel.incrementMode();
-        startIfNeeded();
-    }
 }
 
 void ArpeggiatorView::encoder1Decreased() {
-    if (isShowing() && midiCommandManager.getFocusedComponent() == this) {
+    if (isShowing() && midiCommandManager.getFocusedComponent() == this)
         viewModel.decrementMode();
-        startIfNeeded();
-    }
 }
 
 void ArpeggiatorView::encoder2Increased() {
-    if (isShowing() && midiCommandManager.getFocusedComponent() == this) {
+    if (isShowing() && midiCommandManager.getFocusedComponent() == this)
         viewModel.incrementRate();
-        startIfNeeded();
-    }
 }
 
 void ArpeggiatorView::encoder2Decreased() {
-    if (isShowing() && midiCommandManager.getFocusedComponent() == this) {
+    if (isShowing() && midiCommandManager.getFocusedComponent() == this)
         viewModel.decrementRate();
-        startIfNeeded();
-    }
 }
 
 void ArpeggiatorView::encoder3Increased() {
@@ -124,25 +112,6 @@ void ArpeggiatorView::encoder4Decreased() {
 
 void ArpeggiatorView::controlButtonPressed() { viewModel.toggleEnabled(); }
 
-void ArpeggiatorView::noteOnPressed(int noteNumber) {
-    if (isShowing() && midiCommandManager.getFocusedComponent() == this) {
-        viewModel.addNote(noteNumber);
-        startIfNeeded();
-    }
-}
-
-void ArpeggiatorView::noteOffPressed(int noteNumber) {
-    if (isShowing() && midiCommandManager.getFocusedComponent() == this) {
-        viewModel.removeNote(noteNumber);
-        if (viewModel.getCurrentNotes().isEmpty()) {
-            stopTimer();
-            stopCurrentNote();
-        } else {
-            startIfNeeded();
-        }
-    }
-}
-
 void ArpeggiatorView::parametersChanged() {
     knobs.getKnob(0)->getSlider().setValue(static_cast<int>(viewModel.getMode()),
                                            juce::dontSendNotification);
@@ -155,75 +124,11 @@ void ArpeggiatorView::parametersChanged() {
     updateStatusLabel();
 }
 
-void ArpeggiatorView::notesChanged() { startIfNeeded(); }
-
-void ArpeggiatorView::timerCallback() { playNextNote(); }
-
-void ArpeggiatorView::startIfNeeded() {
-    if (viewModel.isEnabled() && !viewModel.getCurrentNotes().isEmpty() &&
-        viewModel.getMode() != app_view_models::ArpeggiatorViewModel::Mode::off) {
-        startTimer(viewModel.getIntervalMs());
-    } else {
-        stopTimer();
-        stopCurrentNote();
-    }
-    updateStatusLabel();
-}
-
-void ArpeggiatorView::stopCurrentNote() {
-    if (lastNote < 0 || targetTrack == nullptr)
-        return;
-
-    auto noteOff = juce::MidiMessage::noteOff(1, lastNote);
-    targetTrack->injectLiveMidiMessage(noteOff, sourceId);
-    lastNote = -1;
-}
-
-void ArpeggiatorView::playNextNote() {
-    if (targetTrack == nullptr) {
-        stopTimer();
-        return;
-    }
-
-    stopCurrentNote();
-
-    auto nextNote = viewModel.getNextNote();
-    if (nextNote < 0)
-        return;
-
-    auto noteOn = juce::MidiMessage::noteOn(1, nextNote, (juce::uint8)100);
-    targetTrack->injectLiveMidiMessage(noteOn, sourceId);
-    lastNote = nextNote;
-
-    auto gateMs =
-        static_cast<int>(viewModel.getIntervalMs() * viewModel.getGate());
-    juce::Component::SafePointer<ArpeggiatorView> safeThis(this);
-    juce::Timer::callAfterDelay(gateMs, [safeThis, nextNote]() {
-        if (safeThis == nullptr)
-            return;
-        if (safeThis->targetTrack != nullptr && safeThis->lastNote == nextNote) {
-            auto noteOff = juce::MidiMessage::noteOff(1, nextNote);
-            safeThis->targetTrack->injectLiveMidiMessage(noteOff,
-                                                         safeThis->sourceId);
-            safeThis->lastNote = -1;
-        }
-    });
-}
-
 void ArpeggiatorView::updateStatusLabel() {
     juce::String status = viewModel.isEnabled() ? "ON" : "OFF";
+    juce::String rate = juce::String(viewModel.getRate(), 1);
     statusLabel.setText("Status: " + status + " | Mode: " +
-                            viewModel.getModeName() + " | Notes: " +
-                            juce::String(viewModel.getCurrentNotes().size()),
+                            viewModel.getModeName() + " | Rate: " + rate +
+                            " Hz",
                         juce::dontSendNotification);
-}
-
-tracktion::AudioTrack *
-ArpeggiatorView::findTrackForPlugin(tracktion::FourOscPlugin *plugin) {
-    auto &edit = plugin->edit;
-    for (auto track : tracktion::getAudioTracks(edit)) {
-        if (track->pluginList.contains(plugin))
-            return track;
-    }
-    return nullptr;
 }

@@ -12,97 +12,109 @@ void ArpeggiatorViewModel::addListener(Listener *l) {
 void ArpeggiatorViewModel::removeListener(Listener *l) { listeners.remove(l); }
 
 ArpeggiatorViewModel::Mode ArpeggiatorViewModel::getMode() const {
-    return mode;
+    if (plugin == nullptr)
+        return Mode::off;
+
+    auto raw = juce::jlimit(0, static_cast<int>(Mode::random),
+                            plugin->getArpeggiatorMode());
+    return static_cast<Mode>(raw);
 }
 
 void ArpeggiatorViewModel::incrementMode() {
-    auto next = static_cast<int>(mode) + 1;
+    auto next = static_cast<int>(getMode()) + 1;
     if (next > static_cast<int>(Mode::random))
         next = static_cast<int>(Mode::off);
-    mode = static_cast<Mode>(next);
+    if (plugin != nullptr)
+        plugin->setArpeggiatorMode(next);
     notifyParametersChanged();
 }
 
 void ArpeggiatorViewModel::decrementMode() {
-    auto next = static_cast<int>(mode) - 1;
+    auto next = static_cast<int>(getMode()) - 1;
     if (next < static_cast<int>(Mode::off))
         next = static_cast<int>(Mode::random);
-    mode = static_cast<Mode>(next);
+    if (plugin != nullptr)
+        plugin->setArpeggiatorMode(next);
     notifyParametersChanged();
 }
 
-double ArpeggiatorViewModel::getRate() const { return rateHz; }
+double ArpeggiatorViewModel::getRate() const {
+    if (plugin == nullptr)
+        return 4.0;
+
+    return plugin->getArpeggiatorRate();
+}
 
 void ArpeggiatorViewModel::incrementRate() {
-    rateHz = std::min(16.0, rateHz + 0.5);
+    auto newRate = juce::jlimit(1.0, 16.0, getRate() + 0.5);
+    if (plugin != nullptr)
+        plugin->setArpeggiatorRate(static_cast<float>(newRate));
     notifyParametersChanged();
 }
 
 void ArpeggiatorViewModel::decrementRate() {
-    rateHz = std::max(1.0, rateHz - 0.5);
+    auto newRate = juce::jlimit(1.0, 16.0, getRate() - 0.5);
+    if (plugin != nullptr)
+        plugin->setArpeggiatorRate(static_cast<float>(newRate));
     notifyParametersChanged();
 }
 
-int ArpeggiatorViewModel::getOctaves() const { return octaves; }
+int ArpeggiatorViewModel::getOctaves() const {
+    if (plugin == nullptr)
+        return 1;
+
+    return plugin->getArpeggiatorOctaves();
+}
 
 void ArpeggiatorViewModel::incrementOctaves() {
-    octaves = std::min(4, octaves + 1);
+    auto newValue = juce::jlimit(1, 4, getOctaves() + 1);
+    if (plugin != nullptr)
+        plugin->setArpeggiatorOctaves(newValue);
     notifyParametersChanged();
 }
 
 void ArpeggiatorViewModel::decrementOctaves() {
-    octaves = std::max(1, octaves - 1);
+    auto newValue = juce::jlimit(1, 4, getOctaves() - 1);
+    if (plugin != nullptr)
+        plugin->setArpeggiatorOctaves(newValue);
     notifyParametersChanged();
 }
 
-double ArpeggiatorViewModel::getGate() const { return gate; }
+double ArpeggiatorViewModel::getGate() const {
+    if (plugin == nullptr)
+        return 0.5;
+
+    return plugin->getArpeggiatorGate();
+}
 
 void ArpeggiatorViewModel::incrementGate() {
-    gate = std::min(1.0, gate + 0.05);
+    auto newGate = juce::jlimit(0.05, 1.0, getGate() + 0.05);
+    if (plugin != nullptr)
+        plugin->setArpeggiatorGate(static_cast<float>(newGate));
     notifyParametersChanged();
 }
 
 void ArpeggiatorViewModel::decrementGate() {
-    gate = std::max(0.05, gate - 0.05);
+    auto newGate = juce::jlimit(0.05, 1.0, getGate() - 0.05);
+    if (plugin != nullptr)
+        plugin->setArpeggiatorGate(static_cast<float>(newGate));
     notifyParametersChanged();
 }
 
-bool ArpeggiatorViewModel::isEnabled() const { return enabled; }
+bool ArpeggiatorViewModel::isEnabled() const {
+    return plugin != nullptr && plugin->isArpeggiatorEnabled();
+}
 
 void ArpeggiatorViewModel::toggleEnabled() {
-    enabled = !enabled;
+    if (plugin == nullptr)
+        return;
+
+    plugin->setArpeggiatorEnabled(!isEnabled());
     notifyParametersChanged();
-}
-
-const juce::Array<int> &ArpeggiatorViewModel::getCurrentNotes() const {
-    return noteBuffer;
-}
-
-void ArpeggiatorViewModel::addNote(int noteNumber) {
-    if (!noteBuffer.contains(noteNumber)) {
-        noteBuffer.add(noteNumber);
-        noteBuffer.sort();
-    }
-    currentNoteIndex = 0;
-    direction = 1;
-    notifyNotesChanged();
-}
-
-void ArpeggiatorViewModel::removeNote(int noteNumber) {
-    if (noteBuffer.contains(noteNumber)) {
-        noteBuffer.removeAllInstancesOf(noteNumber);
-        currentNoteIndex = 0;
-        direction = 1;
-        notifyNotesChanged();
-    }
-}
-
-int ArpeggiatorViewModel::getIntervalMs() const {
-    return static_cast<int>(1000.0 / rateHz);
 }
 
 juce::String ArpeggiatorViewModel::getModeName() const {
-    switch (mode) {
+    switch (getMode()) {
     case Mode::off:
         return "Off";
     case Mode::up:
@@ -118,56 +130,8 @@ juce::String ArpeggiatorViewModel::getModeName() const {
     }
 }
 
-int ArpeggiatorViewModel::getNextNote() {
-    if (noteBuffer.isEmpty())
-        return -1;
-
-    int baseNote = 0;
-    switch (mode) {
-    case Mode::off:
-        return -1;
-    case Mode::up:
-        baseNote = noteBuffer[(currentNoteIndex++) % noteBuffer.size()];
-        break;
-    case Mode::down:
-        baseNote = noteBuffer[(currentNoteIndex--) % noteBuffer.size()];
-        if (currentNoteIndex < 0)
-            currentNoteIndex = noteBuffer.size() - 1;
-        break;
-    case Mode::upDown: {
-        baseNote = noteBuffer[currentNoteIndex];
-        currentNoteIndex += direction;
-        if (currentNoteIndex >= noteBuffer.size()) {
-            direction = -1;
-            currentNoteIndex = noteBuffer.size() - 2;
-        } else if (currentNoteIndex < 0) {
-            direction = 1;
-            currentNoteIndex = 1;
-        }
-        break;
-    }
-    case Mode::random:
-        baseNote = noteBuffer[random.nextInt(noteBuffer.size())];
-        break;
-    }
-
-    int octaveOffset = 12 * (random.nextInt(juce::jmax(1, octaves)) + 0);
-    return baseNote + octaveOffset;
-}
-
 void ArpeggiatorViewModel::notifyParametersChanged() {
-    clampSettings();
     listeners.call([](Listener &l) { l.parametersChanged(); });
-}
-
-void ArpeggiatorViewModel::notifyNotesChanged() {
-    listeners.call([](Listener &l) { l.notesChanged(); });
-}
-
-void ArpeggiatorViewModel::clampSettings() {
-    rateHz = juce::jlimit(1.0, 16.0, rateHz);
-    octaves = juce::jlimit(1, 4, octaves);
-    gate = juce::jlimit(0.05, 1.0, gate);
 }
 
 } // namespace app_view_models

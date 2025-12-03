@@ -122,41 +122,19 @@ Source/
 
 ### Timer-based Sequencing
 
-The arpeggiator uses `juce::Timer` for precise timing:
-
-```cpp
-class ArpeggiatorView : private juce::Timer {
-    void timerCallback() override {
-        if (viewModel.isEnabled() && !viewModel.getCurrentNotes().isEmpty()) {
-            playNextNote();  // Generates next note in sequence
-        }
-    }
-
-    void startArpeggio() {
-        int intervalMs = static_cast<int>(1000.0f / viewModel.getRate());
-        startTimer(intervalMs);
-    }
-};
-```
+Sequencing now happens fully inside `FourOscPlugin::processArpeggiator()`.
+Instead of relying on a `juce::Timer` owned by the ARP tab, the plugin counts
+audio samples (`arpSampleCounter`) and injects MIDI events directly in the audio
+thread. This keeps the arpeggiator running even if the UI tab is hidden, just
+like the ADSR, Filter, or Osc pages whose logic already lives alongside the DSP.
 
 ### Note Buffer Management
 
-Notes are stored in the ViewModel:
-
-```cpp
-// Add note when pressed
-void ArpeggiatorViewModel::addNoteToBuffer(int noteNumber) {
-    if (!noteBuffer.contains(noteNumber)) {
-        noteBuffer.add(noteNumber);
-        noteBuffer.sort();  // Keep sorted for Up/Down modes
-    }
-}
-
-// Remove when released (or toggle)
-void ArpeggiatorViewModel::removeNoteFromBuffer(int noteNumber) {
-    noteBuffer.removeAllInstancesOf(noteNumber);
-}
-```
+`FourOscPlugin` owns the note buffer via `arpNoteBuffer`. Incoming MIDI from
+clips or the LMN-3 controller is captured during processing, so the arpeggiator
+always reflects the live note state without needing the view to mirror it. The
+view model now limits itself to mutating plugin parameters (mode, rate, octaves,
+gate, enabled) and lets the engine generate the MIDI pattern.
 
 ### Thread Safety
 
@@ -183,7 +161,7 @@ MIDI injection is **thread-safe**:
 │   Up      8Hz       1        80%       │
 │    ○      ○         ○         ○        │
 │                                         │
-│ Status: ON | Mode: UP | Notes: 3       │
+│ Status: ON | Mode: UP | Rate: 8Hz       │
 └─────────────────────────────────────────┘
 ```
 

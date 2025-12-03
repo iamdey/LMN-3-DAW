@@ -4,12 +4,12 @@
 
 ### 1. Copiar el archivo a la Raspberry Pi
 ```bash
-scp LMN-3-aarch64-linux-gnu_0.7.0.zip pi@raspberrypi:~
+scp LMN-3-aarch64-linux-gnu_0.6.2.zip pi@raspberrypi:~
 ```
 
 ### 2. En la Raspberry Pi, descomprimir
 ```bash
-unzip LMN-3-aarch64-linux-gnu_0.7.0.zip
+unzip LMN-3-aarch64-linux-gnu_0.6.2.zip
 ```
 
 ### 3. Dar permisos de ejecución
@@ -61,7 +61,7 @@ docker run --rm -v "/d/DEV/LMN-3-DAW-iamdey-repo:/workspace" -w /workspace iamde
 #### 5. Crear el archivo ZIP
 ```bash
 cd build/LMN-3_artefacts/Release
-zip -r ../../../LMN-3-aarch64-linux-gnu_0.7.0.zip LMN-3 ../../../LICENSE
+zip -r ../../../LMN-3-aarch64-linux-gnu_0.6.2.zip LMN-3 ../../../LICENSE
 cd ../../..
 ```
 
@@ -108,7 +108,7 @@ bash docker-build.sh
 
 ---
 
-## Cambios en esta versión (0.7.0)
+## Cambios en esta versión (0.6.2)
 
 ### Arpeggiator para FourOsc
 - Añadido arpeggiator con 5 modos: Off, Up, Down, Up-Down, Random

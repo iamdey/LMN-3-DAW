@@ -1,8 +1,8 @@
 #!/bin/bash
 # LMN-3 Docker Build Script for Windows Git Bash
-# Generates: LMN-3-aarch64-linux-gnu_0.7.0.zip
+# Generates: LMN-3-aarch64-linux-gnu_0.6.2.zip
 
-VERSION="0.7.0"
+VERSION="0.6.2"
 ZIP_NAME="LMN-3-aarch64-linux-gnu_${VERSION}.zip"
 
 echo "========================================"

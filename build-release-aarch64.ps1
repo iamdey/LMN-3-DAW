@@ -2,7 +2,7 @@
 # Generates: LMN-3-aarch64-linux-gnu_X.X.X.zip
 
 param(
-    [string]$Version = "0.7.0"
+    [string]$Version = "0.6.2"
 )
 
 Write-Host "========================================" -ForegroundColor Cyan
@@ -13,6 +13,7 @@ Write-Host ""
 
 $workspace = Get-Location
 $zipName = "LMN-3-aarch64-linux-gnu_$Version.zip"
+$dockerImage = "iamdey/lmn-3-daw-docker-compiler:arm64"
 
 Write-Host "Workspace: $workspace" -ForegroundColor Yellow
 Write-Host "Output: $zipName" -ForegroundColor Yellow
@@ -58,7 +59,7 @@ Write-Host ""
 
 # Run Docker build
 Write-Host "[4/5] Building with Docker (this may take 5-15 minutes)..." -ForegroundColor Green
-Write-Host "Container: lmn3-builder" -ForegroundColor Gray
+Write-Host "Container: $dockerImage" -ForegroundColor Gray
 Write-Host "Target: aarch64 (Raspberry Pi 64-bit)" -ForegroundColor Gray
 Write-Host ""
 
@@ -86,7 +87,9 @@ echo ''
 echo '==> Build complete!'
 "@
 
-docker run --rm -v "${workspace}:/workspace" -w /workspace lmn3-builder bash -c $buildCommand
+$buildCommand = $buildCommand -replace "`r", ""
+
+docker run --rm -v "${workspace}:/workspace" -w /workspace $dockerImage bash -c $buildCommand
 
 if ($LASTEXITCODE -ne 0) {
     Write-Host ""
@@ -108,7 +111,7 @@ if (Test-Path $zipName) {
 
     Write-Host ""
     Write-Host "Checking ZIP contents..." -ForegroundColor Gray
-    docker run --rm -v "${workspace}:/workspace" -w /workspace lmn3-builder bash -c "unzip -l $zipName"
+    docker run --rm -v "${workspace}:/workspace" -w /workspace $dockerImage bash -c "unzip -l $zipName"
 } else {
     Write-Host "ERROR: ZIP file was not created!" -ForegroundColor Red
     exit 1
