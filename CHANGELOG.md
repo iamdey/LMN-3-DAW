@@ -8,6 +8,10 @@ and this project adheres to
 
 ## [Unreleased]
 
+### Changed
+
+- Step Sequencer: Edit current clip instead of creating a new one.
+
 ## [0.6.0] - 2025-11-20
 
 ### Added
