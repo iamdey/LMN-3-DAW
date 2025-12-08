@@ -12,6 +12,13 @@ Set manually the version and the date of the release in the CHANGELOG file. e.g.
 ## 0.4.3 - 1970/1/1
 ```
 
+Update the version in `CMakeLists.txt` e.g.
+
+```diff
+- project(LMN-3 VERSION 0.4.0)
++ project(LMN-3 VERSION 0.4.3)
+```
+
 Create a tag for the version:
 
 
