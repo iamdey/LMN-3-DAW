@@ -10,3 +10,10 @@ cmake-build-release/
 
 *.vsidx
 .vs
+*.ps1
+/ARPEGGIATOR_INSTABILITY_ANALYSIS.md
+/ARPEGGIATOR-IMPLEMENTATION.md
+/BUILD-DOCKER.md
+/docker-build.sh
+/build-docker.sh
+/raspi-build.log
