@@ -18,3 +18,4 @@ cmake-build-release/
 /docker-build.sh
 /build-docker.sh
 /raspi-build.log
+/INSTALL.md
