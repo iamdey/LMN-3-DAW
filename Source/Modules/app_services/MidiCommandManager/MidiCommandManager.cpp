@@ -42,12 +42,32 @@ juce::Component *MidiCommandManager::getFocusedComponent() {
 
 void MidiCommandManager::handleIncomingMidiMessage(
     juce::MidiInput *source, const juce::MidiMessage &message) {
-    (new IncomingMessageCallback(*this, message, source->getName()))->post();
+    // Avoid unbounded flooding of the message thread: drop messages when the
+    // queue is too backed up.
+    constexpr int maxPending = 200;
+    if (pendingAsyncMessages.load(std::memory_order_relaxed) > maxPending)
+        return;
+
+    pendingAsyncMessages.fetch_add(1, std::memory_order_relaxed);
+    auto msgCopy = juce::MidiMessage(message);
+    auto sourceName = source->getName();
+
+    juce::MessageManager::callAsync([this, msgCopy, sourceName]() {
+        midiMessageReceived(msgCopy, sourceName);
+        pendingAsyncMessages.fetch_sub(1, std::memory_order_relaxed);
+    });
 }
 
 void MidiCommandManager::midiMessageReceived(const juce::MidiMessage &message,
                                              const juce::String & /*source*/) {
-    juce::Logger::writeToLog(getMidiMessageDescription(message));
+    // Logging every MIDI message can starve the device; uncomment for debugging
+    // juce::Logger::writeToLog(getMidiMessageDescription(message));
+
+    if (message.isNoteOff()) {
+        if (auto listener = dynamic_cast<Listener *>(focusedComponent))
+            listener->noteOffPressed(message.getNoteNumber());
+        return;
+    }
 
     if (message.isNoteOn()) {
         if (auto listener = dynamic_cast<Listener *>(focusedComponent))
