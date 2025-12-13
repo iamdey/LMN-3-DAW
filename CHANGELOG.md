@@ -12,6 +12,10 @@ and this project adheres to
 
 - Step Sequencer: Edit current clip instead of creating a new one.
 
+### Fixed
+
+- Sequencer had a length of 0 on loading. It's now filled by default: 4 measures of 4 notes.
+
 ## [0.6.0] - 2025-11-20
 
 ### Added
