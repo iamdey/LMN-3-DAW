@@ -20,6 +20,9 @@ StepSequencerViewModel::StepSequencerViewModel(tracktion::AudioTrack::Ptr t)
     // listening for that, and listen to the state directly here
     editState.addListener(this);
 
+    // set a default before introducing numberOfNotesConstrainer because it relies on it
+    notesPerMeasure.referTo(state, IDs::notesPerMeasure, nullptr, 4);
+
     std::function<int(int)> numberOfNotesConstrainer = [this](int param) {
         // numberOfNotes cannot be less than 1
         // it also cannot be greater than the maximum number of notes allowed
@@ -52,8 +55,6 @@ StepSequencerViewModel::StepSequencerViewModel(tracktion::AudioTrack::Ptr t)
 
     selectedNoteIndex.setConstrainer(selectedNoteIndexConstrainer);
     selectedNoteIndex.referTo(state, IDs::selectedNoteIndex, nullptr, 0);
-
-    notesPerMeasure.referTo(state, IDs::notesPerMeasure, nullptr, 4);
 
     std::function<int(int)> rangeIndexConstrainer = [this](int param) {
         // rangeStartIndex cannot be less than 0
