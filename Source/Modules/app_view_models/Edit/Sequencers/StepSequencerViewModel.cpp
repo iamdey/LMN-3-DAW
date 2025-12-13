@@ -78,9 +78,9 @@ StepSequencerViewModel::StepSequencerViewModel(tracktion::AudioTrack::Ptr t)
     //Clear channels before init clip and fill them
     stepSequence.clear();
 
-    try {
-        midiClip = editCurrentMidiClip();
-    } catch (const std::domain_error &e) {
+    midiClip = editCurrentMidiClip();
+
+    if (midiClip == nullptr) {
         midiClip = insertMidiClip();
     }
 
@@ -137,6 +137,12 @@ tracktion::MidiClip *StepSequencerViewModel::editCurrentMidiClip() {
     DBG("Edit Current clip");
     if (auto trackItem = track->getNextTrackItemAt(
             track->edit.getTransport().getPosition())) {
+        // only keep the clip if it starts before current pos
+        if (track->edit.getTransport().getPosition() < trackItem->getPosition().getStart()) {
+            // nothing to return
+            return nullptr;
+        }
+
         if (strcmp(trackItem->typeToString(trackItem->type), "midi") == 0) {
             if (auto clip = dynamic_cast<tracktion::MidiClip *>(trackItem)) {
                 if (track->edit.getTransport().getPosition() >=
@@ -168,8 +174,7 @@ tracktion::MidiClip *StepSequencerViewModel::editCurrentMidiClip() {
                         }
 
                         // nothing to return, split has failed
-                        throw std::domain_error(
-                            "Unable to split the midi clip");
+                        return nullptr;
                 }
 
                 DBG("Return initial clip");
@@ -181,7 +186,7 @@ tracktion::MidiClip *StepSequencerViewModel::editCurrentMidiClip() {
     }
     // nothing to return, no clip or not midi clip or unable to get the
     // trackItem as clip.
-    throw std::domain_error("Unable get the midi clip");
+    return nullptr;
 }
 
 tracktion::MidiClip *StepSequencerViewModel::insertMidiClip() {
