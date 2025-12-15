@@ -20,26 +20,10 @@ StepSequencerViewModel::StepSequencerViewModel(tracktion::AudioTrack::Ptr t)
     // listening for that, and listen to the state directly here
     editState.addListener(this);
 
-    // set a default before introducing numberOfNotesConstrainer because it relies on it
-    notesPerMeasure.referTo(state, IDs::notesPerMeasure, nullptr, 4);
-
-    std::function<int(int)> numberOfNotesConstrainer = [this](int param) {
-        // numberOfNotes cannot be less than 1
-        // it also cannot be greater than the maximum number of notes allowed
-        if (param <= 1)
-            return 1;
-        else if (param >= app_models::StepChannel::getMaxNumberOfNotes(
-                              notesPerMeasure.get()))
-            return app_models::StepChannel::getMaxNumberOfNotes(
-                notesPerMeasure.get());
-        else
-            return param;
-    };
-
-    numberOfNotes.setConstrainer(numberOfNotesConstrainer);
-    numberOfNotes.referTo(
-        state, IDs::numberOfNotes, nullptr,
-        app_models::StepChannel::getMaxNumberOfNotes(notesPerMeasure.get()));
+    // set a default before introducing numberOfNotesConstrainer because it
+    // relies on it
+    notesPerMeasure.referTo(state, IDs::notesPerMeasure, nullptr,
+                            MAX_NOTES_PER_MEASURE);
 
     std::function<int(int)> selectedNoteIndexConstrainer = [this](int param) {
         // selected index cannot be less than 0
@@ -75,7 +59,7 @@ StepSequencerViewModel::StepSequencerViewModel(tracktion::AudioTrack::Ptr t)
     rangeSelectionEnabled.referTo(state, IDs::RANGE_SELECTION_ENABLED, nullptr,
                                   false);
 
-    //Clear channels before init clip and fill them
+    // Clear channels before init clip and fill them
     stepSequence.clear();
 
     midiClip = editCurrentMidiClip();
@@ -84,27 +68,61 @@ StepSequencerViewModel::StepSequencerViewModel(tracktion::AudioTrack::Ptr t)
         midiClip = insertMidiClip();
     }
 
-
     auto &sequence = midiClip->getSequence();
 
     // Fill channels
-    if(!sequence.isEmpty()) {
+    if (!sequence.isEmpty()) {
         DBG("Start fill patterns");
         for (auto note : sequence.getNotes()) {
             auto pos = note->getBeatPosition();
             auto velocity = note->getVelocity();
             auto noteNumber = note->getNoteNumber();
-            /* get the closest index of the beat position e.g. `beatsPos * (16/4)` */
-            long index = std::lround(pos.inBeats() * notesPerMeasure.get() / NB_BEATS_PER_MEASURE);
-            jassert(index > 0);
+            /* get the closest index of the beat position e.g. `beatsPos *
+             * (16/4)` */
+            long index = std::lround(pos.inBeats() * notesPerMeasure.get() /
+                                     NB_BEATS_PER_MEASURE);
+            jassert(index >= 0);
             int intensity = computeNoteIntensity(note);
 
-            stepSequence.getChannel(noteNumberToChannel(noteNumber))->setNote(index, intensity);
+            stepSequence.getChannel(noteNumberToChannel(noteNumber))
+                ->setNote(index, intensity);
         }
     }
 
     DBG("clip starts at " + std::to_string(midiClipStart.inSeconds()));
     DBG("clip ends at " + std::to_string(midiClipEnd.inSeconds()));
+
+    // --------------------------
+    // compute numberOfNotes for the saved clip
+    const tracktion::TimeRange midiClipTimeRange =
+        tracktion::TimeRange(midiClipStart, midiClipEnd);
+
+    auto duration = midiClipTimeRange.getLength();
+    double nbBeatsPerSecond = track->edit.tempoSequence.getBeatsPerSecondAt(
+        tracktion::TimePosition::fromSeconds(0));
+
+    int nbBeats = juce::roundToInt(duration.inSeconds() * nbBeatsPerSecond);
+
+    std::function<int(int)> numberOfNotesConstrainer = [this](int param) {
+        // numberOfNotes cannot be less than 1
+        // it also cannot be greater than the maximum number of notes allowed
+        if (param <= 1)
+            return 1;
+        else if (param >= app_models::StepChannel::getMaxNumberOfNotes(
+                              notesPerMeasure.get()))
+            return app_models::StepChannel::getMaxNumberOfNotes(
+                notesPerMeasure.get());
+        else
+            return param;
+    };
+
+    numberOfNotes.setConstrainer(numberOfNotesConstrainer);
+    // compute default total notes according to the duration in beats
+    numberOfNotes.referTo(state, IDs::numberOfNotes, nullptr,
+                          juce::roundToInt(nbBeats * notesPerMeasure.get() /
+                                           NB_BEATS_PER_MEASURE));
+
+    // --------------------------
 
     // resync midi clip sequence with patterns
     generateMidiSequence();
@@ -138,7 +156,8 @@ tracktion::MidiClip *StepSequencerViewModel::editCurrentMidiClip() {
     if (auto trackItem = track->getNextTrackItemAt(
             track->edit.getTransport().getPosition())) {
         // only keep the clip if it starts before current pos
-        if (track->edit.getTransport().getPosition() < trackItem->getPosition().getStart()) {
+        if (track->edit.getTransport().getPosition() <
+            trackItem->getPosition().getStart()) {
             // nothing to return
             return nullptr;
         }
@@ -147,34 +166,33 @@ tracktion::MidiClip *StepSequencerViewModel::editCurrentMidiClip() {
             if (auto clip = dynamic_cast<tracktion::MidiClip *>(trackItem)) {
                 if (track->edit.getTransport().getPosition() >=
                         trackItem->getPosition().getStart() &&
-                        // TODO: compute to fit the actual place before next trackItem
-                    trackItem->getLengthInBeats().inBeats() > MAX_NOTES_PER_MEASURE) {
-                        std::to_string(
-                            trackItem->getLengthInBeats().inBeats());
-                        if (auto clipTrack = clip->getClipTrack()) {
-                            double secondsPerBeat =
-                                1.0 /
-                                track->edit.tempoSequence.getBeatsPerSecondAt(
-                                    tracktion::TimePosition::fromSeconds(0));
+                    // TODO: compute to fit the actual place before next
+                    // trackItem
+                    trackItem->getLengthInBeats().inBeats() >
+                        MAX_NOTES_PER_MEASURE) {
+                    std::to_string(trackItem->getLengthInBeats().inBeats());
+                    if (auto clipTrack = clip->getClipTrack()) {
+                        double secondsPerBeat =
+                            1.0 / track->edit.tempoSequence.getBeatsPerSecondAt(
+                                      tracktion::TimePosition::fromSeconds(0));
 
-                            midiClipStart = clip->getPosition().getStart();
-                            midiClipEnd = tracktion::TimePosition::fromSeconds(
-                                midiClipStart.inSeconds() +
-                                MAX_NOTES_PER_MEASURE * secondsPerBeat);
+                        midiClipStart = clip->getPosition().getStart();
+                        midiClipEnd = tracktion::TimePosition::fromSeconds(
+                            midiClipStart.inSeconds() +
+                            MAX_NOTES_PER_MEASURE * secondsPerBeat);
 
-                            // TODO: support cancel
-                            if (auto splittedClip =
-                                    clipTrack->splitClip(*clip, midiClipEnd)) {
-                                DBG("return 1st part of the clip");
-                                // splittedClip is the 2nd part of the clip.
-                                // We need the 1st part.
-                                return dynamic_cast<tracktion::MidiClip *>(
-                                    clip);
-                            }
+                        // TODO: support cancel
+                        if (auto splittedClip =
+                                clipTrack->splitClip(*clip, midiClipEnd)) {
+                            DBG("return 1st part of the clip");
+                            // splittedClip is the 2nd part of the clip.
+                            // We need the 1st part.
+                            return dynamic_cast<tracktion::MidiClip *>(clip);
                         }
+                    }
 
-                        // nothing to return, split has failed
-                        return nullptr;
+                    // nothing to return, split has failed
+                    return nullptr;
                 }
 
                 DBG("Return initial clip");
@@ -193,11 +211,27 @@ tracktion::MidiClip *StepSequencerViewModel::insertMidiClip() {
     DBG("Create new clip");
     double secondsPerBeat = 1.0 / track->edit.tempoSequence.getBeatsPerSecondAt(
                                       tracktion::TimePosition::fromSeconds(0));
+    //   note: actually there is a BeatDuration class, I'm not sure if it can be
+    //   used here
+    auto beatDuration = tracktion::TimeDuration::fromSeconds(secondsPerBeat);
+
+    // compute the available place before next clip
+    auto nextClip =
+        track->getNextTrackItemAt(track->edit.getTransport().getPosition());
 
     midiClipStart = track->edit.getTransport().getPosition();
-    // TODO: compute to fit the actual place before next trackItem
-    midiClipEnd = tracktion::TimePosition::fromSeconds(
-        midiClipStart.inSeconds() + NB_BEATS_PER_MEASURE * secondsPerBeat);
+
+    // hardcoded 4 measures cf. `StepChannel::maxNumberOfMeasures`
+    auto maxEnd = tracktion::TimePosition::fromSeconds(
+        midiClipStart.inSeconds() + NB_BEATS_PER_MEASURE * secondsPerBeat * 4);
+
+    if (nextClip && nextClip->getPosition().getStart() <= maxEnd) {
+        midiClipEnd = nextClip->getPosition().getStart();
+    } else {
+        // no next clip or empty track until max length of the clip
+        midiClipEnd = maxEnd;
+    }
+
     const tracktion::TimeRange midiClipTimeRange =
         tracktion::TimeRange(midiClipStart, midiClipEnd);
 
