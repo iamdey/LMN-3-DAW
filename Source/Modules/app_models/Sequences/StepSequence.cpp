@@ -13,8 +13,7 @@ void StepSequence::init() {
     for (int i = 0; i < StepChannel::maxNumberOfChannels; i++) {
         juce::ValueTree channelTree(IDs::STEP_CHANNEL);
         channelTree.setProperty(IDs::stepChannelIndex, i, nullptr);
-        channelTree.setProperty(IDs::stepPattern, "0000000000000000",
-                                nullptr);
+        channelTree.setProperty(IDs::stepPattern, "0000000000000000", nullptr);
 
         state.addChild(channelTree, -1, nullptr);
     }
