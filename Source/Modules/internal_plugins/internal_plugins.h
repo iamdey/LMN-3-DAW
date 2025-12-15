@@ -16,7 +16,7 @@
 namespace internal_plugins {
 
     class DrumSamplerPlugin;
-
+    class CustomFourOscPlugin;
 }
 
 #include <juce_data_structures/juce_data_structures.h>

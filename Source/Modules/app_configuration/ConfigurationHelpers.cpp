@@ -217,3 +217,62 @@ ConfigurationHelpers::getTempDrumKitsDirectory(tracktion::Engine &engine) {
     return engine.getTemporaryFileManager().getTempFile(
         DRUM_KITS_DIRECTORY_NAME);
 }
+juce::String ConfigurationHelpers::getSavedOutputDevice() {
+    auto userAppDataDirectory = juce::File::getSpecialLocation(
+        juce::File::userApplicationDataDirectory);
+    auto configFile = userAppDataDirectory.getChildFile(ROOT_DIRECTORY_NAME)
+                          .getChildFile("config.yaml");
+    if (!configFile.existsAsFile())
+        return {};
+
+    try {
+        YAML::Node rootNode =
+            YAML::LoadFile(configFile.getFullPathName().toStdString());
+        if (rootNode) {
+            auto config = rootNode["config"];
+            if (config && config["output-device"])
+                return config["output-device"].as<std::string>();
+        }
+    } catch (const std::exception &ex) {
+        juce::Logger::writeToLog(
+            "Failed to read saved output device from config: " +
+            juce::String(ex.what()));
+    }
+
+    return {};
+}
+
+void ConfigurationHelpers::setSavedOutputDevice(
+    const juce::String &deviceName) {
+    auto userAppDataDirectory = juce::File::getSpecialLocation(
+        juce::File::userApplicationDataDirectory);
+    auto configDir = userAppDataDirectory.getChildFile(ROOT_DIRECTORY_NAME);
+    auto result = configDir.createDirectory();
+    if (result.failed()) {
+        juce::Logger::writeToLog("Failed to create config directory: " +
+                                 result.getErrorMessage());
+        return;
+    }
+
+    auto configFile = configDir.getChildFile("config.yaml");
+    YAML::Node rootNode;
+    if (configFile.existsAsFile()) {
+        try {
+            rootNode =
+                YAML::LoadFile(configFile.getFullPathName().toStdString());
+        } catch (const std::exception &ex) {
+            juce::Logger::writeToLog(
+                "Failed to parse existing config when saving output: " +
+                juce::String(ex.what()));
+        }
+    }
+
+    if (!rootNode["config"])
+        rootNode["config"] = YAML::Node(YAML::NodeType::Map);
+
+    rootNode["config"]["output-device"] = deviceName.toStdString();
+
+    YAML::Emitter emitter;
+    emitter << rootNode;
+    configFile.replaceWithText(emitter.c_str());
+}

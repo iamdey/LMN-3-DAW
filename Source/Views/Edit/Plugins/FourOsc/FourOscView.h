@@ -4,6 +4,7 @@
 #include <app_services/app_services.h>
 #include <app_view_models/app_view_models.h>
 #include <juce_gui_basics/juce_gui_basics.h>
+#include "ArpeggiatorView.h"
 
 class FourOscView : public juce::TabbedComponent,
                     public app_services::MidiCommandManager::Listener {
@@ -29,6 +30,7 @@ class FourOscView : public juce::TabbedComponent,
     juce::String osc4TabName = "OSC4";
     juce::String adsrTabName = "ADSR";
     juce::String filterTabName = "FILTER";
+    juce::String arpTabName = "ARP";
 
     AppLookAndFeel appLookAndFeel;
     juce::Label pageLabel;

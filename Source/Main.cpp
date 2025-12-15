@@ -170,6 +170,30 @@ class GuiAppApplication : public juce::JUCEApplication {
         if (result != "") {
             juce::Logger::writeToLog(
                 "Attempt to initialise default devices failed!");
+            return;
+        }
+
+        auto savedOutput = ConfigurationHelpers::getSavedOutputDevice();
+        if (savedOutput.isNotEmpty()) {
+            auto availableOutputs =
+                deviceManager.getCurrentDeviceTypeObject()->getDeviceNames();
+            if (availableOutputs.contains(savedOutput)) {
+                auto setup = deviceManager.getAudioDeviceSetup();
+                setup.outputDeviceName = savedOutput;
+                auto setResult = deviceManager.setAudioDeviceSetup(setup, true);
+                if (setResult != "") {
+                    juce::Logger::writeToLog(
+                        "Failed to apply saved output device '" + savedOutput +
+                        "': " + setResult);
+                } else {
+                    juce::Logger::writeToLog("Applied saved output device: " +
+                                             savedOutput);
+                }
+            } else {
+                juce::Logger::writeToLog(
+                    "Saved output device not found, using default: " +
+                    savedOutput);
+            }
         }
     }
     void shutdown() override {
