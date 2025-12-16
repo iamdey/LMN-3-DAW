@@ -10,3 +10,4 @@ cmake-build-release/
 
 *.vsidx
 .vs
+/out/install/x64-Debug

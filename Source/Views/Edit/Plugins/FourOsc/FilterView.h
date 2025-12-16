@@ -34,14 +34,18 @@ class FilterView : public juce::Component,
     void controlButtonReleased() override;
 
     void parametersChanged() override;
+    void visibilityChanged() override;
 
   private:
+    void attachSliderCallbacks();
+
     app_view_models::FilterViewModel viewModel;
     app_services::MidiCommandManager &midiCommandManager;
     juce::Label titleLabel;
     Knobs knobs;
     FilterADSRView filterAdsrView;
     AppLookAndFeel appLookAndFeel;
+    bool sliderUpdateInProgress = false;
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(FilterView)
 };

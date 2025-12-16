@@ -62,7 +62,7 @@ void addInternalPlugin(PluginTreeBase &item, int &num, bool synth = false,
 }
 
 void PluginTreeGroup::populateBuiltInInstruments(int &num) {
-    addInternalPlugin<tracktion::FourOscPlugin>(*this, num, true);
+    addInternalPlugin<internal_plugins::CustomFourOscPlugin>(*this, num, true);
     addInternalPlugin<tracktion::SamplerPlugin>(*this, num, true);
     addInternalPlugin<internal_plugins::DrumSamplerPlugin>(*this, num, true);
 }

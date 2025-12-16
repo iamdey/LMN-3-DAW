@@ -1,4 +1,5 @@
 #include "OscillatorView.h"
+#include <cmath>
 
 OscillatorView::OscillatorView(tracktion::FourOscPlugin *p, int oscIndex,
                                app_services::MidiCommandManager &mcm)
@@ -52,6 +53,7 @@ OscillatorView::OscillatorView(tracktion::FourOscPlugin *p, int oscIndex,
 
     midiCommandManager.addListener(this);
     viewModel.addListener(this);
+    attachSliderCallbacks();
 }
 
 OscillatorView::~OscillatorView() {
@@ -181,6 +183,7 @@ void OscillatorView::controlButtonPressed() {
 void OscillatorView::controlButtonReleased() { pluginKnobs.showPrimaryKnobs(); }
 
 void OscillatorView::parametersChanged() {
+    const juce::ScopedValueSetter<bool> updating(sliderUpdateInProgress, true);
     pluginKnobs.getKnob(0)->getSlider().setValue(viewModel.getWaveShape(),
                                                  juce::dontSendNotification);
     pluginKnobs.getKnob(1)->getSlider().setValue(viewModel.getVoices(),
@@ -197,4 +200,77 @@ void OscillatorView::parametersChanged() {
                                                  juce::dontSendNotification);
     pluginKnobs.getKnob(7)->getSlider().setValue(viewModel.getSpread(),
                                                  juce::dontSendNotification);
+}
+
+void OscillatorView::attachSliderCallbacks() {
+    auto bindDiscrete =
+        [this](int knobIndex, auto getter, auto inc, auto dec, int maxIters) {
+            auto &slider = pluginKnobs.getKnob(knobIndex)->getSlider();
+            slider.onValueChange = [this, getter, inc, dec, maxIters,
+                                    &slider]() {
+                if (sliderUpdateInProgress)
+                    return;
+                int target = juce::roundToInt(slider.getValue());
+                int current = (viewModel.*getter)();
+                int iterations = 0;
+                while (current != target && iterations++ < maxIters) {
+                    if (target > current)
+                        (viewModel.*inc)();
+                    else
+                        (viewModel.*dec)();
+                    current = (viewModel.*getter)();
+                }
+            };
+        };
+
+    auto bindContinuous = [this](int knobIndex, auto getter, auto inc,
+                                 auto dec, double tolerance) {
+        auto &slider = pluginKnobs.getKnob(knobIndex)->getSlider();
+        slider.onValueChange = [this, getter, inc, dec, tolerance,
+                                &slider]() {
+            if (sliderUpdateInProgress)
+                return;
+            double target = slider.getValue();
+            double current = (viewModel.*getter)();
+            int iterations = 0;
+            while (std::abs(target - current) > tolerance && iterations++ < 200) {
+                if (target > current)
+                    (viewModel.*inc)();
+                else
+                    (viewModel.*dec)();
+                current = (viewModel.*getter)();
+            }
+        };
+    };
+
+    bindDiscrete(0, &app_view_models::OscillatorViewModel::getWaveShape,
+                 &app_view_models::OscillatorViewModel::incrementWaveShape,
+                 &app_view_models::OscillatorViewModel::decrementWaveShape, 16);
+    bindDiscrete(1, &app_view_models::OscillatorViewModel::getVoices,
+                 &app_view_models::OscillatorViewModel::incrementVoices,
+                 &app_view_models::OscillatorViewModel::decrementVoices, 16);
+
+    bindContinuous(2, &app_view_models::OscillatorViewModel::getTune,
+                   &app_view_models::OscillatorViewModel::incrementTune,
+                   &app_view_models::OscillatorViewModel::decrementTune, 0.005);
+    bindContinuous(3, &app_view_models::OscillatorViewModel::getFineTune,
+                   &app_view_models::OscillatorViewModel::incrementFineTune,
+                   &app_view_models::OscillatorViewModel::decrementFineTune,
+                   0.005);
+    bindContinuous(4, &app_view_models::OscillatorViewModel::getDetune,
+                   &app_view_models::OscillatorViewModel::incrementDetune,
+                   &app_view_models::OscillatorViewModel::decrementDetune,
+                   0.005);
+    bindContinuous(5, &app_view_models::OscillatorViewModel::getLevel,
+                   &app_view_models::OscillatorViewModel::incrementLevel,
+                   &app_view_models::OscillatorViewModel::decrementLevel,
+                   0.005);
+    bindContinuous(6, &app_view_models::OscillatorViewModel::getPulseWidth,
+                   &app_view_models::OscillatorViewModel::incrementPulseWidth,
+                   &app_view_models::OscillatorViewModel::decrementPulseWidth,
+                   0.005);
+    bindContinuous(7, &app_view_models::OscillatorViewModel::getSpread,
+                   &app_view_models::OscillatorViewModel::incrementSpread,
+                   &app_view_models::OscillatorViewModel::decrementSpread,
+                   0.005);
 }

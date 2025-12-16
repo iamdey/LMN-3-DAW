@@ -23,6 +23,14 @@ juce_add_gui_app(LMN-3
     # COMPANY_NAME ...                  # Specify the name of the app's author
     PRODUCT_NAME LMN-3         # The name of the final executable, which can differ from the target name
 )
+if (WIN32)
+  add_custom_command(TARGET LMN-3 POST_BUILD
+    COMMAND ${CMAKE_COMMAND} -E copy_if_different
+      $<TARGET_RUNTIME_DLLS:LMN-3>
+      $<TARGET_FILE_DIR:LMN-3>
+    COMMAND_EXPAND_LISTS
+  )
+endif()
 
 target_compile_features(LMN-3  PRIVATE cxx_std_20)
 
@@ -93,7 +101,7 @@ target_sources(LMN-3  PRIVATE
     Source/Views/Edit/Mixer/MixerTableListBoxModel.cpp
     Source/Views/Edit/Mixer/MixerTrackView.cpp
     Source/Views/Edit/Mixer/LevelMeterComponent.cpp
-)
+ "Source/Modules/app_view_models/Edit/Plugins/FourOsc/ArpeggiatorViewModel.h" "Source/Views/Edit/Plugins/FourOsc/ArpeggiatorView.cpp" "Source/Views/Edit/Plugins/FourOsc/ArpeggiatorView.h")
 
 target_include_directories(LMN-3  PUBLIC
     Source/
@@ -193,10 +201,14 @@ target_link_libraries(LMN-3
         FontData
     #    SynthSampleData
     #    DrumSampleData
-        atomic
+    #    atomic
         yaml-cpp
     PUBLIC
         juce::juce_recommended_config_flags
         juce::juce_recommended_lto_flags
         juce::juce_recommended_warning_flags
 )
+if (NOT MSVC)
+  target_link_libraries(LMN-3 PRIVATE atomic)
+endif()
+

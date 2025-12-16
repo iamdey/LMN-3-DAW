@@ -33,6 +33,8 @@ class FilterADSRView : public juce::Component,
     void parametersChanged() override;
 
   private:
+    void attachSliderCallbacks();
+
     app_view_models::FilterViewModel viewModel;
     app_services::MidiCommandManager &midiCommandManager;
     juce::Label titleLabel;
@@ -42,6 +44,7 @@ class FilterADSRView : public juce::Component,
 
     juce::Grid grid;
     void gridSetup();
+    bool sliderUpdateInProgress = false;
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(FilterADSRView)
 };

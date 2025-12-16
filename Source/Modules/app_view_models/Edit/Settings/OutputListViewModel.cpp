@@ -12,14 +12,21 @@ OutputListViewModel::OutputListViewModel(tracktion::Edit &e,
     }
     itemListState.listSize = outputs.size();
 
+    auto savedOutput = ConfigurationHelpers::getSavedOutputDevice();
     auto currentDevice = deviceManager.getAudioDeviceSetup().outputDeviceName;
     int currentOutputIndex = 0;
-    if (currentDevice != "") {
-        currentOutputIndex =
-            outputs.indexOf(deviceManager.getCurrentAudioDevice()->getName());
+    if (savedOutput.isNotEmpty()) {
+        currentOutputIndex = outputs.indexOf(savedOutput);
         if (currentOutputIndex == -1) {
+            juce::Logger::writeToLog("Saved output device not available, using "
+                                     "current device instead: " +
+                                     savedOutput);
             currentOutputIndex = 0;
         }
+    } else if (currentDevice != "") {
+        currentOutputIndex = outputs.indexOf(currentDevice);
+        if (currentOutputIndex == -1)
+            currentOutputIndex = 0;
     } else {
         juce::Logger::writeToLog("current output device name is empty");
     }
@@ -34,6 +41,8 @@ OutputListViewModel::~OutputListViewModel() {
 juce::StringArray OutputListViewModel::getItemNames() { return outputs; }
 
 juce::String OutputListViewModel::getSelectedItem() {
+    if (outputs.isEmpty())
+        return {};
     return outputs[itemListState.getSelectedItemIndex()];
 }
 
@@ -44,6 +53,8 @@ void OutputListViewModel::updateOutput() {
     if (result != "") {
         juce::Logger::writeToLog("Error setting output device to " +
                                  getSelectedItem() + ": " + result);
+    } else {
+        ConfigurationHelpers::setSavedOutputDevice(getSelectedItem());
     }
 }
 

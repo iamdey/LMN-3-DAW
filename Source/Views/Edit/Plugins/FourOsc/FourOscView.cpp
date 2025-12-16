@@ -20,6 +20,8 @@ FourOscView::FourOscView(tracktion::FourOscPlugin *p,
            new ADSRView(plugin, midiCommandManager), true);
     addTab(filterTabName, juce::Colours::transparentBlack,
            new FilterView(plugin, midiCommandManager), true);
+    addTab(arpTabName, juce::Colours::transparentBlack,
+           new ArpeggiatorView(plugin, midiCommandManager), true);
     midiCommandManager.addListener(this);
 
     // hide tab bar
@@ -28,6 +30,7 @@ FourOscView::FourOscView(tracktion::FourOscPlugin *p,
     juce::StringArray tabNames = getTabNames();
     int osc1Index = tabNames.indexOf(osc1TabName);
     setCurrentTabIndex(osc1Index);
+    focusCurrentTab();
 
     pageLabel.setFont(juce::Font(juce::Font::getDefaultMonospacedFontName(),
                                  getHeight() * 0.2f, juce::Font::plain));
@@ -62,11 +65,7 @@ void FourOscView::plusButtonReleased() {
     if (isShowing()) {
         if (getCurrentTabIndex() < getNumTabs() - 1) {
             setCurrentTabIndex(getCurrentTabIndex() + 1);
-            midiCommandManager.setFocusedComponent(
-                getCurrentContentComponent());
-            pageLabel.setText(juce::String(getCurrentTabIndex() + 1) + "/" +
-                                  juce::String(getNumTabs()),
-                              juce::dontSendNotification);
+            focusCurrentTab();
         }
     }
 }
@@ -75,11 +74,30 @@ void FourOscView::minusButtonReleased() {
     if (isShowing()) {
         if (getCurrentTabIndex() > 0) {
             setCurrentTabIndex(getCurrentTabIndex() - 1);
-            midiCommandManager.setFocusedComponent(
-                getCurrentContentComponent());
-            pageLabel.setText(juce::String(getCurrentTabIndex() + 1) + "/" +
-                                  juce::String(getNumTabs()),
-                              juce::dontSendNotification);
+            focusCurrentTab();
         }
     }
+}
+
+void FourOscView::currentTabChanged(int newCurrentTabIndex,
+                                    const juce::String &newCurrentTabName) {
+    juce::TabbedComponent::currentTabChanged(newCurrentTabIndex,
+                                             newCurrentTabName);
+    focusCurrentTab();
+
+    pageLabel.setText(juce::String(newCurrentTabIndex + 1) + "/" +
+                          juce::String(getNumTabs()),
+                      juce::dontSendNotification);
+}
+
+void FourOscView::visibilityChanged() {
+    juce::TabbedComponent::visibilityChanged();
+    focusCurrentTab();
+}
+
+void FourOscView::focusCurrentTab() {
+    if (!isShowing())
+        return;
+    if (auto *component = getCurrentContentComponent())
+        midiCommandManager.setFocusedComponent(component);
 }

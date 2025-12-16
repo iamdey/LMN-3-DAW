@@ -18,6 +18,16 @@ set_target_properties(gmock_main PROPERTIES FOLDER extern)
 juce_add_console_app(Tests)
 set_target_properties(Tests PROPERTIES FOLDER Tests)
 
+if (WIN32)
+  add_custom_command(TARGET Tests POST_BUILD
+    COMMAND ${CMAKE_COMMAND} -E copy_if_different
+      $<TARGET_RUNTIME_DLLS:Tests>
+      $<TARGET_FILE_DIR:Tests>
+    COMMAND_EXPAND_LISTS
+  )
+endif()
+
+
 target_sources(Tests PRIVATE
         Main.cpp
         app_view_models/Edit/ItemList/ListAdapters/TracksListAdapterTest.cpp
@@ -51,7 +61,7 @@ target_link_libraries(Tests PRIVATE
         app_models
         app_view_models
         app_configuration
-        atomic
+        #atomic
         yaml-cpp
 )
 
@@ -59,4 +69,6 @@ gtest_discover_tests(Tests
         WORKING_DIRECTORY ${PROJECT_DIR}
         PROPERTIES VS_DEBUGGER_WORKING_DIRECTORY "${PROJECT_DIR}"
 )
-
+if (NOT MSVC)
+  target_link_libraries(LMN-3 PRIVATE atomic)
+endif()
