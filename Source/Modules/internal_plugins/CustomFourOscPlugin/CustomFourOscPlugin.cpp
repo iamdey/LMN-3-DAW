@@ -2,7 +2,7 @@
 
 namespace internal_plugins {
 
-const char *CustomFourOscPlugin::xmlTypeName = "custom4osc";
+const char *CustomFourOscPlugin::xmlTypeName = "4OSC";
 
 CustomFourOscPlugin::ArpParams::ArpParams(CustomFourOscPlugin &plugin) {
     auto um = plugin.getUndoManager();
@@ -48,6 +48,10 @@ CustomFourOscPlugin::~CustomFourOscPlugin() {
 
 void CustomFourOscPlugin::applyToBuffer(
     const tracktion::PluginRenderContext &fc) {
+    if (wasTransportPlaying && !fc.isPlaying)
+        stopArpeggiator(fc.bufferForMidiMessages, fc.bufferStartSample);
+    wasTransportPlaying = fc.isPlaying;
+
     if (arpParams != nullptr && fc.bufferForMidiMessages != nullptr) {
         arpTempoPosition.set(fc.editTime.getStart());
         arpCurrentTempo = float(arpTempoPosition.getTempo());
@@ -257,14 +261,30 @@ void CustomFourOscPlugin::processArpeggiator(tracktion::MidiMessageArray &midi,
         for (int i = sortedNotes.size() - 2; i > 0; --i)
             upDown.add(sortedNotes[i]);
         sortedNotes = upDown;
-    } else if (mode == 3) {
+    } else if (mode >= 3) {
         sortedNotes.sort();
-        juce::Random random;
-        for (int i = 0; i < sortedNotes.size(); ++i) {
-            const int j = random.nextInt(sortedNotes.size());
-            std::swap(sortedNotes.getReference(i), sortedNotes.getReference(j));
+    }
+
+    const int octaves = juce::jlimit(1, 4, arpParams->octavesValue.get());
+    juce::Array<int> noteSequence;
+    noteSequence.ensureStorageAllocated(sortedNotes.size() * octaves);
+    for (int octave = 0; octave < octaves; ++octave) {
+        const int octaveOffset = octave * 12;
+        for (auto note : sortedNotes) {
+            noteSequence.add(juce::jlimit(0, 127, note + octaveOffset));
         }
     }
+
+    if (mode >= 3) {
+        juce::Random random;
+        for (int i = noteSequence.size() - 1; i > 0; --i) {
+            const int j = random.nextInt(i + 1);
+            std::swap(noteSequence.getReference(i),
+                      noteSequence.getReference(j));
+        }
+    }
+
+    const int totalSteps = noteSequence.size();
 
     for (int sample = 0; sample < numSamples; ++sample) {
         const int absoluteSample = bufferStartSample + sample;
@@ -286,17 +306,9 @@ void CustomFourOscPlugin::processArpeggiator(tracktion::MidiMessageArray &midi,
                 arpNoteIsOn = false;
             }
 
-            if (!sortedNotes.isEmpty()) {
-                arpCurrentStep = (arpCurrentStep + 1) % sortedNotes.size();
-                int baseNote = sortedNotes[arpCurrentStep];
-
-                int octaves = juce::jlimit(1, 4, arpParams->octavesValue.get());
-                int octaveOffset =
-                    (arpCurrentStep / sortedNotes.size()) % octaves;
-
-                arpCurrentNoteNumber =
-                    juce::jlimit(0, 127, baseNote + octaveOffset * 12);
-
+            if (totalSteps > 0) {
+                arpCurrentStep = (arpCurrentStep + 1) % totalSteps;
+                arpCurrentNoteNumber = noteSequence[arpCurrentStep];
                 processedMidi.addMidiMessage(
                     juce::MidiMessage::noteOn(1, arpCurrentNoteNumber, 1.0f),
                     absoluteSample, arpSourceID);
@@ -308,6 +320,25 @@ void CustomFourOscPlugin::processArpeggiator(tracktion::MidiMessageArray &midi,
     }
 
     midi.swapWith(processedMidi);
+}
+
+void CustomFourOscPlugin::stopArpeggiator(tracktion::MidiMessageArray *midi,
+                                          int bufferStartSample) {
+    if (arpNoteIsOn && arpCurrentNoteNumber >= 0) {
+        if (midi != nullptr) {
+            midi->addMidiMessage(
+                juce::MidiMessage::noteOff(1, arpCurrentNoteNumber),
+                bufferStartSample, arpSourceID);
+        } else {
+            this->tracktion::FourOscPlugin::midiPanic();
+        }
+    }
+
+    arpNoteIsOn = false;
+    arpCurrentNoteNumber = -1;
+    arpSampleCounter = 0;
+    arpCurrentStep = 0;
+    arpNoteBuffer.clear();
 }
 
 } // namespace internal_plugins

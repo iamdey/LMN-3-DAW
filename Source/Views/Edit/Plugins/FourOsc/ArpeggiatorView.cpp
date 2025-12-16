@@ -39,6 +39,7 @@ ArpeggiatorView::ArpeggiatorView(tracktion::FourOscPlugin *p,
     knobs.getKnob(3)->getSlider().setNumDecimalPlacesToDisplay(2);
 
     addAndMakeVisible(knobs);
+    attachSliderCallbacks();
 
     midiCommandManager.addListener(this);
     viewModel.addListener(this);
@@ -134,6 +135,7 @@ void ArpeggiatorView::encoder4Decreased() {
 void ArpeggiatorView::controlButtonPressed() { viewModel.toggleEnabled(); }
 
 void ArpeggiatorView::parametersChanged() {
+    const juce::ScopedValueSetter<bool> updating(sliderUpdateInProgress, true);
     knobs.getKnob(0)->getSlider().setValue(static_cast<int>(viewModel.getMode()),
                                            juce::dontSendNotification);
     knobs.getKnob(1)->getSlider().setValue(viewModel.getRate(),
@@ -157,4 +159,42 @@ void ArpeggiatorView::updateStatusLabel() {
         "Status: " + status + " | Mode: " + viewModel.getModeName() +
             " | Rate: " + rateValue + rateSuffix + " | Sync: " + syncStatus,
         juce::dontSendNotification);
+}
+
+void ArpeggiatorView::attachSliderCallbacks() {
+    auto &modeSlider = knobs.getKnob(0)->getSlider();
+    modeSlider.onValueChange = [this, &modeSlider]() {
+        if (sliderUpdateInProgress)
+            return;
+        auto modeValue = juce::roundToInt(modeSlider.getValue());
+        viewModel.setMode(static_cast<app_view_models::ArpeggiatorViewModel::Mode>(
+            modeValue));
+    };
+
+    auto &rateSlider = knobs.getKnob(1)->getSlider();
+    rateSlider.onValueChange = [this, &rateSlider]() {
+        if (sliderUpdateInProgress)
+            return;
+        viewModel.setRate(rateSlider.getValue());
+    };
+
+    auto &octavesSlider = knobs.getKnob(2)->getSlider();
+    octavesSlider.onValueChange = [this, &octavesSlider]() {
+        if (sliderUpdateInProgress)
+            return;
+        viewModel.setOctaves(juce::roundToInt(octavesSlider.getValue()));
+    };
+
+    auto &gateSlider = knobs.getKnob(3)->getSlider();
+    gateSlider.onValueChange = [this, &gateSlider]() {
+        if (sliderUpdateInProgress)
+            return;
+        viewModel.setGate(gateSlider.getValue());
+    };
+}
+
+void ArpeggiatorView::visibilityChanged() {
+    juce::Component::visibilityChanged();
+    if (isShowing())
+        midiCommandManager.setFocusedComponent(this);
 }

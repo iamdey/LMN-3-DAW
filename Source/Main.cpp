@@ -45,6 +45,8 @@ class GuiAppApplication : public juce::JUCEApplication {
         // we need to add the app internal plugins to the cache:
         engine.getPluginManager()
             .createBuiltInType<internal_plugins::DrumSamplerPlugin>();
+        engine.getPluginManager()
+            .createBuiltInType<internal_plugins::CustomFourOscPlugin>();
 
         // this can cache all your plugins.
         /* auto &knownPluginList = engine.getPluginManager().knownPluginList;

@@ -27,18 +27,22 @@ class ArpeggiatorViewModel {
     Mode getMode() const;
     void incrementMode();
     void decrementMode();
+    void setMode(Mode newMode);
 
     double getRate() const;
     void incrementRate();
     void decrementRate();
+    void setRate(double newRate);
 
     int getOctaves() const;
     void incrementOctaves();
     void decrementOctaves();
+    void setOctaves(int newOctaves);
 
     double getGate() const;
     void incrementGate();
     void decrementGate();
+    void setGate(double newGate);
 
     bool isEnabled() const;
     void toggleEnabled();

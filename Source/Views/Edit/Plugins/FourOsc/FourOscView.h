@@ -19,8 +19,13 @@ class FourOscView : public juce::TabbedComponent,
 
     void plusButtonReleased() override;
     void minusButtonReleased() override;
+    void currentTabChanged(int newCurrentTabIndex,
+                           const juce::String &newCurrentTabName) override;
+    void visibilityChanged() override;
 
   private:
+    void focusCurrentTab();
+
     tracktion::FourOscPlugin *plugin;
     app_services::MidiCommandManager &midiCommandManager;
 

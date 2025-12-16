@@ -4,7 +4,8 @@ namespace app_view_models {
 StepSequencerViewModel::StepSequencerViewModel(tracktion::AudioTrack::Ptr t)
     : track(t), state(track->state.getOrCreateChildWithName(
                     IDs::STEP_SEQUENCER_STATE, nullptr)),
-      editState(track->edit.state.getChildWithName(IDs::EDIT_VIEW_STATE)),
+      editState(track->edit.state.getOrCreateChildWithName(
+          IDs::EDIT_VIEW_STATE, nullptr)),
       stepSequence(state.getOrCreateChildWithName(
           app_models::IDs::STEP_SEQUENCE, nullptr)) {
     jassert(state.hasType(IDs::STEP_SEQUENCER_STATE));

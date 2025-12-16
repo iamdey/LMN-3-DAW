@@ -1,4 +1,6 @@
 #include "ADSRView.h"
+#include <cmath>
+#include <functional>
 
 ADSRView::ADSRView(tracktion::FourOscPlugin *p,
                    app_services::MidiCommandManager &mcm)
@@ -73,6 +75,7 @@ ADSRView::ADSRView(tracktion::FourOscPlugin *p,
 
     midiCommandManager.addListener(this);
     viewModel.addListener(this);
+    attachSliderCallbacks();
 }
 
 ADSRView::~ADSRView() {
@@ -161,6 +164,7 @@ void ADSRView::encoder4Decreased() {
 }
 
 void ADSRView::parametersChanged() {
+    const juce::ScopedValueSetter<bool> updating(sliderUpdateInProgress, true);
     knobs[0]->getSlider().setValue(viewModel.getAttack(),
                                    juce::dontSendNotification);
     knobs[1]->getSlider().setValue(viewModel.getDecay(),
@@ -175,4 +179,46 @@ void ADSRView::parametersChanged() {
     adsrPlot.sustainValue = viewModel.getSustain();
     adsrPlot.releaseValue = viewModel.getRelease();
     adsrPlot.repaint();
+}
+
+void ADSRView::visibilityChanged() {
+    juce::Component::visibilityChanged();
+    if (isShowing())
+        midiCommandManager.setFocusedComponent(this);
+}
+
+void ADSRView::attachSliderCallbacks() {
+    auto attach = [this](int index,
+                         void (app_view_models::ADSRViewModel::*inc)(),
+                         void (app_view_models::ADSRViewModel::*dec)(),
+                         std::function<double()> getter) {
+        auto &slider = knobs[index]->getSlider();
+        slider.onValueChange = [this, inc, dec, getter, &slider]() {
+            if (sliderUpdateInProgress)
+                return;
+            double target = slider.getValue();
+            double current = getter();
+            int iterations = 0;
+            while (std::abs(target - current) > 0.005 && iterations++ < 200) {
+                if (target > current)
+                    (viewModel.*inc)();
+                else
+                    (viewModel.*dec)();
+                current = getter();
+            }
+        };
+    };
+
+    attach(0, &app_view_models::ADSRViewModel::incrementAttack,
+           &app_view_models::ADSRViewModel::decrementAttack,
+           [this]() { return viewModel.getAttack(); });
+    attach(1, &app_view_models::ADSRViewModel::incrementDecay,
+           &app_view_models::ADSRViewModel::decrementDecay,
+           [this]() { return viewModel.getDecay(); });
+    attach(2, &app_view_models::ADSRViewModel::incrementSustain,
+           &app_view_models::ADSRViewModel::decrementSustain,
+           [this]() { return viewModel.getSustain(); });
+    attach(3, &app_view_models::ADSRViewModel::incrementRelease,
+           &app_view_models::ADSRViewModel::decrementRelease,
+           [this]() { return viewModel.getRelease(); });
 }

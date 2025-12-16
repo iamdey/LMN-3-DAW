@@ -17,10 +17,10 @@ class CustomFourOscPlugin : public tracktion::FourOscPlugin {
     explicit CustomFourOscPlugin(tracktion::PluginCreationInfo info);
     ~CustomFourOscPlugin() override;
 
-    static const char *getPluginName() { return NEEDS_TRANS("Custom4OSC"); }
+    static const char *getPluginName() { return NEEDS_TRANS("4OSC"); }
     static const char *xmlTypeName;
 
-    juce::String getName() const override { return TRANS("Custom 4OSC"); }
+    juce::String getName() const override { return TRANS("4OSC"); }
     juce::String getPluginType() override { return xmlTypeName; }
     juce::String getShortName(int) override { return "C4OSC"; }
     juce::String getSelectableDescription() override {
@@ -81,6 +81,8 @@ class CustomFourOscPlugin : public tracktion::FourOscPlugin {
 
     void processArpeggiator(tracktion::MidiMessageArray &midi, int numSamples,
                             int bufferStartSample);
+    void stopArpeggiator(tracktion::MidiMessageArray *midi,
+                         int bufferStartSample);
 
     // Arpeggiator state
     juce::Array<int> arpNoteBuffer;
@@ -88,6 +90,7 @@ class CustomFourOscPlugin : public tracktion::FourOscPlugin {
     int arpSampleCounter = 0;
     int arpCurrentNoteNumber = -1;
     bool arpNoteIsOn = false;
+    bool wasTransportPlaying = false;
     tracktion::MPESourceID arpSourceID{tracktion::createUniqueMPESourceID()};
     tracktion::tempo::Sequence::Position arpTempoPosition{
         tracktion::createPosition(edit.tempoSequence)};

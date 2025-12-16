@@ -31,8 +31,11 @@ class ADSRView : public juce::Component,
     void encoder4Decreased() override;
 
     void parametersChanged() override;
+    void visibilityChanged() override;
 
   private:
+    void attachSliderCallbacks();
+
     app_view_models::ADSRViewModel viewModel;
     app_services::MidiCommandManager &midiCommandManager;
     juce::Label titleLabel;
@@ -42,6 +45,7 @@ class ADSRView : public juce::Component,
 
     juce::Grid grid;
     void gridSetup();
+    bool sliderUpdateInProgress = false;
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(ADSRView)
 };

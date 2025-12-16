@@ -1,4 +1,6 @@
 #include "FilterView.h"
+#include <cmath>
+#include <functional>
 
 FilterView::FilterView(tracktion::FourOscPlugin *p,
                        app_services::MidiCommandManager &mcm)
@@ -37,6 +39,7 @@ FilterView::FilterView(tracktion::FourOscPlugin *p,
 
     midiCommandManager.addListener(this);
     viewModel.addListener(this);
+    attachSliderCallbacks();
 }
 
 FilterView::~FilterView() {
@@ -164,6 +167,7 @@ void FilterView::controlButtonReleased() {
 }
 
 void FilterView::parametersChanged() {
+    const juce::ScopedValueSetter<bool> updating(sliderUpdateInProgress, true);
     knobs.getKnob(0)->getSlider().setValue(viewModel.getFrequency(),
                                            juce::dontSendNotification);
     knobs.getKnob(1)->getSlider().setValue(viewModel.getResonance(),
@@ -172,4 +176,75 @@ void FilterView::parametersChanged() {
                                            juce::dontSendNotification);
     knobs.getKnob(3)->getSlider().setValue(viewModel.getFilterType(),
                                            juce::dontSendNotification);
+}
+
+void FilterView::visibilityChanged() {
+    juce::Component::visibilityChanged();
+    if (isShowing())
+        midiCommandManager.setFocusedComponent(this);
+}
+
+void FilterView::attachSliderCallbacks() {
+    auto &frequencySlider = knobs.getKnob(0)->getSlider();
+    frequencySlider.onValueChange = [this, &frequencySlider]() {
+        if (sliderUpdateInProgress)
+            return;
+        double target = frequencySlider.getValue();
+        double current = viewModel.getFrequency();
+        int iterations = 0;
+        while (std::abs(target - current) > 1.0 && iterations++ < 400) {
+            if (target > current)
+                viewModel.incrementFrequency();
+            else
+                viewModel.decrementFrequency();
+            current = viewModel.getFrequency();
+        }
+    };
+
+    auto bindNormalised =
+        [this](int knobIndex,
+               void (app_view_models::FilterViewModel::*inc)(),
+               void (app_view_models::FilterViewModel::*dec)(),
+               std::function<double()> getter) {
+            auto &slider = knobs.getKnob(knobIndex)->getSlider();
+            slider.onValueChange = [this, inc, dec, getter, &slider]() {
+                if (sliderUpdateInProgress)
+                    return;
+                double target = slider.getValue();
+                double current = getter();
+                int iterations = 0;
+                while (std::abs(target - current) > 0.005 &&
+                       iterations++ < 200) {
+                    if (target > current)
+                        (viewModel.*inc)();
+                    else
+                        (viewModel.*dec)();
+                    current = getter();
+                }
+            };
+        };
+
+    bindNormalised(1, &app_view_models::FilterViewModel::incrementResonance,
+                   &app_view_models::FilterViewModel::decrementResonance,
+                   [this]() { return viewModel.getResonance(); });
+    bindNormalised(
+        2, &app_view_models::FilterViewModel::incrementEnvelopeAmount,
+        &app_view_models::FilterViewModel::decrementEnvelopeAmount,
+        [this]() { return viewModel.getEnvelopeAmount(); });
+
+    auto &filterTypeSlider = knobs.getKnob(3)->getSlider();
+    filterTypeSlider.onValueChange = [this, &filterTypeSlider]() {
+        if (sliderUpdateInProgress)
+            return;
+        int target = juce::roundToInt(filterTypeSlider.getValue());
+        int current = viewModel.getFilterType();
+        int iterations = 0;
+        while (current != target && iterations++ < 16) {
+            if (target > current)
+                viewModel.incrementFilterType();
+            else
+                viewModel.decrementFilterType();
+            current = viewModel.getFilterType();
+        }
+    };
 }

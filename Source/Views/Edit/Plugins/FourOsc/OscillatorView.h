@@ -35,11 +35,14 @@ class OscillatorView : public juce::Component,
     void parametersChanged() override;
 
   private:
+    void attachSliderCallbacks();
+
     app_view_models::OscillatorViewModel viewModel;
     app_services::MidiCommandManager &midiCommandManager;
     juce::Label titleLabel;
     Knobs pluginKnobs;
     AppLookAndFeel appLookAndFeel;
+    bool sliderUpdateInProgress = false;
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(OscillatorView)
 };

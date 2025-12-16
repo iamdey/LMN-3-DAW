@@ -29,6 +29,7 @@ class ArpeggiatorView : public juce::Component,
     void controlButtonPressed() override;
 
     void parametersChanged() override;
+    void visibilityChanged() override;
 
   private:
     app_view_models::ArpeggiatorViewModel viewModel;
@@ -38,6 +39,8 @@ class ArpeggiatorView : public juce::Component,
     juce::Label titleLabel;
     juce::Label statusLabel;
     juce::ToggleButton tempoSyncButton;
+    bool sliderUpdateInProgress = false;
 
     void updateStatusLabel();
+    void attachSliderCallbacks();
 };
