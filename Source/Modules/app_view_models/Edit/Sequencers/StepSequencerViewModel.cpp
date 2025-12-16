@@ -118,6 +118,7 @@ StepSequencerViewModel::StepSequencerViewModel(tracktion::AudioTrack::Ptr t)
 
     numberOfNotes.setConstrainer(numberOfNotesConstrainer);
     // compute default total notes according to the duration in beats
+    // XXX: for some reasons, it's incorrect when clip starts in between 2 clips
     numberOfNotes.referTo(state, IDs::numberOfNotes, nullptr,
                           juce::roundToInt(nbBeats * notesPerMeasure.get() /
                                            NB_BEATS_PER_MEASURE));
