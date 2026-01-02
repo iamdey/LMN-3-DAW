@@ -229,7 +229,7 @@ int StepSequencerViewModel::getNumNotesPerChannel() {
     return app_models::StepChannel::getMaxNumberOfNotes(notesPerMeasure.get());
 }
 
-int StepSequencerViewModel::hasNoteAt(int channel, int noteIndex) {
+int StepSequencerViewModel::noteIntensityAt(int channel, int noteIndex) {
     return stepSequence.getChannel(channel)->getNote(noteIndex);
 }
 
@@ -238,39 +238,38 @@ int StepSequencerViewModel::hasNoteAt(int channel, int noteIndex) {
 void StepSequencerViewModel::toggleNoteNumberAtSelectedIndex(int noteNumber) {
     // FIXME: it crashes if octave is higher or lower than normal
     int channel = noteNumberToChannel(noteNumber);
-    // TODO: rename into `intensity`
-    int velocity = hasNoteAt(channel, selectedNoteIndex.get());
-    bool active = velocity > 0;
+    int intensity = noteIntensityAt(channel, selectedNoteIndex.get());
+    bool active = intensity > 0;
     bool isPlaying = track->edit.getTransport().isPlaying();
 
-    // get current note velocity then change for the next velocity:
+    // get current note intensity then change for the next intensity:
     // 3: 30% > 5: 60% > 7: 100% > 0: 0% …
     // The note's “intensity” is encoded on 3 bits (between 0 & 7)
-    int nextVelo;
+    int nextIntensity;
     if (isPlaying && active) {
-        nextVelo = 0;
+        nextIntensity = 0;
     } else if (isPlaying && !active) {
-        // when playing, the note is at max velocity
-        nextVelo = 7;
-    } else if (velocity < 3) {
-        nextVelo = 3;
-    } else if (velocity < 5) {
-        nextVelo = 5;
-    } else if (velocity < 7) {
-        nextVelo = 7;
+        // when playing, the note is at max intensity
+        nextIntensity = 7;
+    } else if (intensity < 3) {
+        nextIntensity = 3;
+    } else if (intensity < 5) {
+        nextIntensity = 5;
+    } else if (intensity < 7) {
+        nextIntensity = 7;
     } else {
-        nextVelo = 0;
+        nextIntensity = 0;
     }
 
     stepSequence.getChannel(channel)->setNote(selectedNoteIndex.get(),
-                                              nextVelo);
+                                              nextIntensity);
 
     if (isPlaying) {
         // When looping also add or remove note from the midi sequence to hear
-        if (nextVelo == 0) {
+        if (nextIntensity == 0) {
             removeNoteFromSequence(channel, selectedNoteIndex.get());
         } else {
-            addNoteToSequence(channel, selectedNoteIndex.get(), nextVelo);
+            addNoteToSequence(channel, selectedNoteIndex.get(), nextIntensity);
         }
     }
 }
@@ -280,8 +279,6 @@ int StepSequencerViewModel::computeNoteIntensity(tracktion::MidiNote *note) {
     // intensity is encoded as an int between 0-7
     // coef is 0,05511811 = 7 * 1/127
     long intensity = std::lround(note->getVelocity() * 0.05511811);
-
-    DBG("Note real intensity " + std::to_string(intensity));
 
     // 3: 30% | 5: 60% | 7: 100% | 0: 0% …
     // The note's “intensity” is encoded on 3 bits (between 0 & 7)
@@ -454,7 +451,7 @@ void StepSequencerViewModel::copySelection() {
         std::to_string(to));
     for (int index = from; index <= to; index++) {
         for (int channel = 0; channel < getNumChannels(); channel++) {
-            int velocity = hasNoteAt(channel, index);
+            int velocity = noteIntensityAt(channel, index);
             if (velocity > 0) {
                 Note note;
                 note.index = index - from;
@@ -476,8 +473,8 @@ void StepSequencerViewModel::pasteSelection() {
     DBG("Pasting selection");
     int from = getSelectedNoteIndex();
     for (int noteIndex = 0; noteIndex < copiedNotes.size(); noteIndex++) {
-        int velocity = hasNoteAt(copiedNotes[noteIndex].channel,
-                                 copiedNotes[noteIndex].index);
+        int velocity = noteIntensityAt(copiedNotes[noteIndex].channel,
+                                       copiedNotes[noteIndex].index);
         addNoteToSequence(copiedNotes[noteIndex].channel,
                           from + copiedNotes[noteIndex].index, velocity);
 
@@ -627,19 +624,19 @@ void StepSequencerViewModel::generateMidiSequence() {
 
     for (int i = 0; i < getNumChannels(); i++) {
         for (int j = 0; j < getNumNotesPerChannel(); j++) {
-            int velocity = hasNoteAt(i, j);
-            if (velocity > 0) {
-                addNoteToSequence(i, j, velocity);
+            int intensity = noteIntensityAt(i, j);
+            if (intensity > 0) {
+                addNoteToSequence(i, j, intensity);
             }
         }
     }
 }
 
 void StepSequencerViewModel::addNoteToSequence(int channel, int noteIndex,
-                                               int dumbVelocity) {
-    // dumbVelocity is an int between 0-7
+                                               int intensity) {
+    // intensity is an int between 0-7
     // velocity is an int between 0 and 127
-    int velocity = dumbVelocity * 18;
+    int velocity = intensity * 18;
     // Need to get the pitch based on the sequence position and
     // current octave remember that we need to add the min note
     // number to get things correct since the min note number
