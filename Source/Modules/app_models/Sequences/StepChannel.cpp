@@ -46,7 +46,7 @@ juce::BigInteger StepChannel::getPattern() {
 }
 
 /**
- * Set the note velocity between 0-7
+ * Set the note intensity between 0-7
  */
 void StepChannel::setNote(int noteIndex, int value) {
     jassert(value >= 0 && value < 8);
@@ -58,7 +58,7 @@ void StepChannel::setNote(int noteIndex, int value) {
 }
 
 /**
- * Get the note velocity between 0-7
+ * Get the note intensity between 0-7
  */
 int StepChannel::getNote(int noteIndex) {
     return getPattern().getBitRangeAsInt(noteIndex * 3, 3);

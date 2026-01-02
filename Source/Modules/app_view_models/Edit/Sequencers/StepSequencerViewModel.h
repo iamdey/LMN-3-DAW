@@ -21,7 +21,7 @@ class StepSequencerViewModel : public juce::ValueTree::Listener,
     int getNumChannels();
     int getNumNotesPerChannel();
 
-    int hasNoteAt(int channel, int noteIndex);
+    int noteIntensityAt(int channel, int noteIndex);
 
     void toggleNoteNumberAtSelectedIndex(int noteNumber);
 
