@@ -59,38 +59,16 @@ StepSequencerViewModel::StepSequencerViewModel(tracktion::AudioTrack::Ptr t)
     rangeSelectionEnabled.referTo(state, IDs::RANGE_SELECTION_ENABLED, nullptr,
                                   false);
 
-    // Clear channels before init clip and fill them
-    stepSequence.clear();
-
     midiClip = editCurrentMidiClip();
 
     if (midiClip == nullptr) {
         midiClip = insertMidiClip();
     }
 
-    auto &sequence = midiClip->getSequence();
-
-    // Fill channels
-    if (!sequence.isEmpty()) {
-        DBG("Start fill patterns");
-        for (auto note : sequence.getNotes()) {
-            auto pos = note->getBeatPosition();
-            auto velocity = note->getVelocity();
-            auto noteNumber = note->getNoteNumber();
-            /* get the closest index of the beat position e.g. `beatsPos *
-             * (16/4)` */
-            long index = std::lround(pos.inBeats() * notesPerMeasure.get() /
-                                     NB_BEATS_PER_MEASURE);
-            jassert(index >= 0);
-            int intensity = computeNoteIntensity(note);
-
-            stepSequence.getChannel(noteNumberToChannel(noteNumber))
-                ->setNote(index, intensity);
-        }
-    }
-
     DBG("clip starts at " + std::to_string(midiClipStart.inSeconds()));
     DBG("clip ends at " + std::to_string(midiClipEnd.inSeconds()));
+
+    generateStepSequenceFromMidi();
 
     // --------------------------
     // compute numberOfNotes for the saved clip
@@ -119,8 +97,9 @@ StepSequencerViewModel::StepSequencerViewModel(tracktion::AudioTrack::Ptr t)
     numberOfNotes.setConstrainer(numberOfNotesConstrainer);
     // compute default total notes according to the duration in beats
     int defaultNbNotes = juce::roundToInt(nbBeats * notesPerMeasure.get() /
-                                           NB_BEATS_PER_MEASURE);
-    // a default cached value is already set at this point, may be there is an other way to constrain a value
+                                          NB_BEATS_PER_MEASURE);
+    // a default cached value is already set at this point, may be there is an
+    // other way to constrain a value
     numberOfNotes.referTo(state, IDs::numberOfNotes, nullptr);
     // so, force to set a new cached value.
     numberOfNotes.setValue(defaultNbNotes, nullptr);
@@ -152,7 +131,8 @@ StepSequencerViewModel::~StepSequencerViewModel() {
         .removeListener(this);
     track->edit.getTransport().removeListener(this);
 
-    // Cleanup sequence before going out to prevent cached data to restore on next instanciation
+    // Cleanup sequence before going out to prevent cached data to restore on
+    // next instanciation
     stepSequence.clear();
 }
 
@@ -180,8 +160,9 @@ tracktion::MidiClip *StepSequencerViewModel::editCurrentMidiClip() {
 
                         midiClipStart = clip->getPosition().getStart();
                         midiClipEnd = tracktion::TimePosition::fromSeconds(
-                            midiClipStart.inSeconds() +
-                            NB_BEATS_PER_MEASURE * MAX_MEASURES * secondsPerBeat);
+                            midiClipStart.inSeconds() + NB_BEATS_PER_MEASURE *
+                                                            MAX_MEASURES *
+                                                            secondsPerBeat);
 
                         if (auto splittedClip =
                                 clipTrack->splitClip(*clip, midiClipEnd)) {
@@ -367,13 +348,19 @@ void StepSequencerViewModel::incrementNotesPerMeasure() {
             else
                 newIndex = currentIndex + 1;
 
-            notesPerMeasure.setValue(notesPerMeasureOptions[newIndex], nullptr);
+            int nextValue = notesPerMeasureOptions[newIndex];
+
+            notesPerMeasure.setValue(nextValue, nullptr);
+
             // compute the new number of notes for the measure division
             float prevNbMeasures =
                 numberOfNotes.get() / notesPerMeasureOptions[currentIndex];
             int newNbNotes =
                 (int)std::round(notesPerMeasure.get() * prevNbMeasures);
             numberOfNotes.setValue(newNbNotes, nullptr);
+
+            // recompute pattern according to the current midiclip
+            generateStepSequenceFromMidi();
         }
     }
 }
@@ -397,6 +384,10 @@ void StepSequencerViewModel::decrementNotesPerMeasure() {
             int newNbNotes =
                 (int)std::round(notesPerMeasure.get() * prevNbMeasures);
             numberOfNotes.setValue(newNbNotes, nullptr);
+
+            // recompute pattern according to the current midiclip
+            // some notes can be lost during the process
+            generateStepSequenceFromMidi();
         }
     }
 }
@@ -595,6 +586,39 @@ void StepSequencerViewModel::removeListener(Listener *l) {
     listeners.remove(l);
 }
 
+/**
+ * Generate channel patterns from midiClip
+ * This will also clean the current patterns if any.
+ */
+void StepSequencerViewModel::generateStepSequenceFromMidi() {
+    auto &sequence = midiClip->getSequence();
+
+    // Fill channels
+    if (!sequence.isEmpty()) {
+        DBG("Start fill patterns");
+        // Clear channels before filling again
+        stepSequence.clear();
+
+        for (auto note : sequence.getNotes()) {
+            auto pos = note->getBeatPosition();
+            auto velocity = note->getVelocity();
+            auto noteNumber = note->getNoteNumber();
+            /* get the closest index of the beat position e.g. `beatsPos *
+             * (16/4)` */
+            long index = std::lround(pos.inBeats() * notesPerMeasure.get() /
+                                     NB_BEATS_PER_MEASURE);
+            jassert(index >= 0);
+            int intensity = computeNoteIntensity(note);
+
+            stepSequence.getChannel(noteNumberToChannel(noteNumber))
+                ->setNote(index, intensity);
+        }
+    }
+}
+
+/**
+ * Generate midiclip from channel patterns
+ */
 void StepSequencerViewModel::generateMidiSequence() {
     auto &sequence = midiClip->getSequence();
     sequence.clear(nullptr);

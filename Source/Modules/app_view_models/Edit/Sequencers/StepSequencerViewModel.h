@@ -126,6 +126,7 @@ class StepSequencerViewModel : public juce::ValueTree::Listener,
     void valueTreePropertyChanged(juce::ValueTree &treeWhosePropertyHasChanged,
                                   const juce::Identifier &property) override;
 
+    void generateStepSequenceFromMidi();
     void generateMidiSequence();
     void addNoteToSequence(int channel, int noteIndex, int dumbVelocity);
     void removeNoteFromSequence(int channel, int noteIndex);

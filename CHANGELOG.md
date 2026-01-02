@@ -15,6 +15,7 @@ and this project adheres to
 ### Fixed
 
 - Sequencer had a length of 0 on loading. It's now filled by default: 4 measures of 4 notes.
+- When changing number of notes per measures, the midi clip stays the same instead of time stretched.
 
 ## [0.6.0] - 2025-11-20
 
