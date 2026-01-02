@@ -344,7 +344,8 @@ void StepSequencerViewModel::incrementNotesPerMeasure() {
         if (currentIndex != -1) {
             int newIndex;
             if (currentIndex == notesPerMeasureOptions.size() - 1)
-                newIndex = 0;
+                // stay on the last index
+                return;
             else
                 newIndex = currentIndex + 1;
 
@@ -373,7 +374,8 @@ void StepSequencerViewModel::decrementNotesPerMeasure() {
         if (currentIndex != -1) {
             int newIndex;
             if (currentIndex == 0)
-                newIndex = notesPerMeasureOptions.size() - 1;
+                // stay on the first index
+                return;
             else
                 newIndex = currentIndex - 1;
 

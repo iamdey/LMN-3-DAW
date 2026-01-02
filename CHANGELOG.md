@@ -11,6 +11,7 @@ and this project adheres to
 ### Changed
 
 - Step Sequencer: Edit current clip instead of creating a new one.
+- Step Sequencer: Changing number of note per measure does not loop accross options anymore.
 
 ### Fixed
 
