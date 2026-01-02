@@ -87,6 +87,7 @@ class StepSequencerViewModel : public juce::ValueTree::Listener,
      * Currently StepSequencer handles common 4/4 time signature.
      */
     const int NB_BEATS_PER_MEASURE = 4;
+    const int MAX_MEASURES = 4;
     /**
      * max for notesPerMeasure selector
      */

@@ -118,10 +118,12 @@ StepSequencerViewModel::StepSequencerViewModel(tracktion::AudioTrack::Ptr t)
 
     numberOfNotes.setConstrainer(numberOfNotesConstrainer);
     // compute default total notes according to the duration in beats
-    numberOfNotes.referTo(state, IDs::numberOfNotes, nullptr,
-                          juce::roundToInt(nbBeats * notesPerMeasure.get() /
-                                           NB_BEATS_PER_MEASURE));
-
+    int defaultNbNotes = juce::roundToInt(nbBeats * notesPerMeasure.get() /
+                                           NB_BEATS_PER_MEASURE);
+    // a default cached value is already set at this point, may be there is an other way to constrain a value
+    numberOfNotes.referTo(state, IDs::numberOfNotes, nullptr);
+    // so, force to set a new cached value.
+    numberOfNotes.setValue(defaultNbNotes, nullptr);
     // --------------------------
 
     // resync midi clip sequence with patterns
@@ -149,10 +151,12 @@ StepSequencerViewModel::~StepSequencerViewModel() {
     track->edit.state.getChildWithName(IDs::EDIT_VIEW_STATE)
         .removeListener(this);
     track->edit.getTransport().removeListener(this);
+
+    // Cleanup sequence before going out to prevent cached data to restore on next instanciation
+    stepSequence.clear();
 }
 
 tracktion::MidiClip *StepSequencerViewModel::editCurrentMidiClip() {
-    DBG("Edit Current clip");
     if (auto trackItem = track->getNextTrackItemAt(
             track->edit.getTransport().getPosition())) {
         // only keep the clip if it starts before current pos
@@ -164,13 +168,11 @@ tracktion::MidiClip *StepSequencerViewModel::editCurrentMidiClip() {
 
         if (strcmp(trackItem->typeToString(trackItem->type), "midi") == 0) {
             if (auto clip = dynamic_cast<tracktion::MidiClip *>(trackItem)) {
-                if (track->edit.getTransport().getPosition() >=
-                        trackItem->getPosition().getStart() &&
-                    // TODO: compute to fit the actual place before next
-                    // trackItem
-                    trackItem->getLengthInBeats().inBeats() >
-                        MAX_NOTES_PER_MEASURE) {
-                    std::to_string(trackItem->getLengthInBeats().inBeats());
+                DBG("Edit Current clip");
+                // In case trackItem is longer than the maximum duration of the
+                // sequence, split the clip.
+                if (trackItem->getLengthInBeats().inBeats() >
+                    NB_BEATS_PER_MEASURE * MAX_MEASURES) {
                     if (auto clipTrack = clip->getClipTrack()) {
                         double secondsPerBeat =
                             1.0 / track->edit.tempoSequence.getBeatsPerSecondAt(
@@ -179,9 +181,8 @@ tracktion::MidiClip *StepSequencerViewModel::editCurrentMidiClip() {
                         midiClipStart = clip->getPosition().getStart();
                         midiClipEnd = tracktion::TimePosition::fromSeconds(
                             midiClipStart.inSeconds() +
-                            MAX_NOTES_PER_MEASURE * secondsPerBeat);
+                            NB_BEATS_PER_MEASURE * MAX_MEASURES * secondsPerBeat);
 
-                        // TODO: support cancel
                         if (auto splittedClip =
                                 clipTrack->splitClip(*clip, midiClipEnd)) {
                             DBG("return 1st part of the clip");
