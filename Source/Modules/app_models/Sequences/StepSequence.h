@@ -11,8 +11,16 @@ class StepSequence {
     explicit StepSequence(juce::ValueTree v);
 
     StepChannel *getChannel(int index);
+    /**
+     * remove and init patterns
+     */
+    void clear();
 
   private:
+    /**
+     * init patterns
+     */
+    void init();
     juce::ValueTree state;
     StepChannelList channelList;
 };

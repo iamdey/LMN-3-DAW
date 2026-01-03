@@ -21,7 +21,7 @@ class StepSequencerViewModel : public juce::ValueTree::Listener,
     int getNumChannels();
     int getNumNotesPerChannel();
 
-    int hasNoteAt(int channel, int noteIndex);
+    int noteIntensityAt(int channel, int noteIndex);
 
     void toggleNoteNumberAtSelectedIndex(int noteNumber);
 
@@ -83,6 +83,15 @@ class StepSequencerViewModel : public juce::ValueTree::Listener,
     const int MIN_OCTAVE = -4;
     const int MAX_OCTAVE = 4;
     const int NOTES_PER_OCTAVE = 12;
+    /**
+     * Currently StepSequencer handles common 4/4 time signature.
+     */
+    const int NB_BEATS_PER_MEASURE = 4;
+    const int MAX_MEASURES = 4;
+    /**
+     * max for notesPerMeasure selector
+     */
+    const int MAX_NOTES_PER_MEASURE = 16;
     tracktion::AudioTrack::Ptr track;
     tracktion::MidiClip::Ptr midiClip;
 
@@ -117,11 +126,20 @@ class StepSequencerViewModel : public juce::ValueTree::Listener,
     void valueTreePropertyChanged(juce::ValueTree &treeWhosePropertyHasChanged,
                                   const juce::Identifier &property) override;
 
+    void generateStepSequenceFromMidi();
     void generateMidiSequence();
     void addNoteToSequence(int channel, int noteIndex, int dumbVelocity);
     void removeNoteFromSequence(int channel, int noteIndex);
     std::optional<tracktion::MidiNote *> findNoteInSequence(int channel,
                                                             int noteIndex);
+
+    tracktion::MidiClip *editCurrentMidiClip();
+    tracktion::MidiClip *insertMidiClip();
+
+    /**
+     * Transform note velocity in intensity (between 0-7) for patterns
+     */
+    int computeNoteIntensity(tracktion::MidiNote *note);
 
     // used for transport changes
     void playbackContextChanged() override {}

@@ -17,11 +17,11 @@ class StepChannel {
 
     juce::BigInteger getPattern();
     /**
-     * Set the note velocity between 0 & 7
+     * Set the note intensity between 0 & 7
      */
     void setNote(int noteIndex, int value);
     /**
-     * Return the note velocity between 0 & 7
+     * Return the note intensity between 0 & 7
      */
     int getNote(int noteIndex);
     /**
