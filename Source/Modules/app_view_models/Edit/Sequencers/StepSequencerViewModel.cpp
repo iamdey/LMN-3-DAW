@@ -608,8 +608,9 @@ void StepSequencerViewModel::generateStepSequenceFromMidi() {
                                      NB_BEATS_PER_MEASURE);
             jassert(index >= 0);
             int intensity = computeNoteIntensity(note);
+            int channelIdx = noteNumberToChannel(noteNumber);
 
-            stepSequence.getChannel(noteNumberToChannel(noteNumber))
+            stepSequence.getChannel(channelIdx)
                 ->setNote(index, intensity);
         }
     }
@@ -670,9 +671,6 @@ StepSequencerViewModel::findNoteInSequence(int channel, int noteIndex) {
         channel + (NOTES_PER_OCTAVE * getZeroBasedOctave()) + MIN_NOTE_NUMBER;
     auto startBeat = tracktion::BeatPosition::fromBeats(
         double(noteIndex * 4.0) / double(notesPerMeasure.get()));
-    // auto duration =
-    //     tracktion::BeatDuration::fromBeats(4.0 /
-    //     double(notesPerMeasure.get()));
 
     // find the first node with matching pitch & startBeat
     for (auto note : sequence.getNotes()) {
