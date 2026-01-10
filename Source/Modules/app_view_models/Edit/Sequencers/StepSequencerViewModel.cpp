@@ -20,23 +20,10 @@ StepSequencerViewModel::StepSequencerViewModel(tracktion::AudioTrack::Ptr t)
     // listening for that, and listen to the state directly here
     editState.addListener(this);
 
-    std::function<int(int)> numberOfNotesConstrainer = [this](int param) {
-        // numberOfNotes cannot be less than 1
-        // it also cannot be greater than the maximum number of notes allowed
-        if (param <= 1)
-            return 1;
-        else if (param >= app_models::StepChannel::getMaxNumberOfNotes(
-                              notesPerMeasure.get()))
-            return app_models::StepChannel::getMaxNumberOfNotes(
-                notesPerMeasure.get());
-        else
-            return param;
-    };
-
-    numberOfNotes.setConstrainer(numberOfNotesConstrainer);
-    numberOfNotes.referTo(
-        state, IDs::numberOfNotes, nullptr,
-        app_models::StepChannel::getMaxNumberOfNotes(notesPerMeasure.get()));
+    // set a default before introducing numberOfNotesConstrainer because it
+    // relies on it
+    notesPerMeasure.referTo(state, IDs::notesPerMeasure, nullptr,
+                            MAX_NOTES_PER_MEASURE);
 
     std::function<int(int)> selectedNoteIndexConstrainer = [this](int param) {
         // selected index cannot be less than 0
@@ -52,8 +39,6 @@ StepSequencerViewModel::StepSequencerViewModel(tracktion::AudioTrack::Ptr t)
 
     selectedNoteIndex.setConstrainer(selectedNoteIndexConstrainer);
     selectedNoteIndex.referTo(state, IDs::selectedNoteIndex, nullptr, 0);
-
-    notesPerMeasure.referTo(state, IDs::notesPerMeasure, nullptr, 4);
 
     std::function<int(int)> rangeIndexConstrainer = [this](int param) {
         // rangeStartIndex cannot be less than 0
@@ -74,20 +59,53 @@ StepSequencerViewModel::StepSequencerViewModel(tracktion::AudioTrack::Ptr t)
     rangeSelectionEnabled.referTo(state, IDs::RANGE_SELECTION_ENABLED, nullptr,
                                   false);
 
-    double secondsPerBeat = 1.0 / track->edit.tempoSequence.getBeatsPerSecondAt(
-                                      tracktion::TimePosition::fromSeconds(0));
+    midiClip = editCurrentMidiClip();
 
-    // Midi clip
-    midiClipStart = track->edit.getTransport().getPosition();
-    midiClipEnd = tracktion::TimePosition::fromSeconds(
-        midiClipStart.inSeconds() +
-        (numberOfNotes.get() * (4.0 / double(notesPerMeasure.get())) *
-         secondsPerBeat));
+    if (midiClip == nullptr) {
+        midiClip = insertMidiClip();
+    }
+
+    DBG("clip starts at " + std::to_string(midiClipStart.inSeconds()));
+    DBG("clip ends at " + std::to_string(midiClipEnd.inSeconds()));
+
+    generateStepSequenceFromMidi();
+
+    // --------------------------
+    // compute numberOfNotes for the saved clip
     const tracktion::TimeRange midiClipTimeRange =
         tracktion::TimeRange(midiClipStart, midiClipEnd);
-    midiClip = dynamic_cast<tracktion::MidiClip *>(track->insertNewClip(
-        tracktion::TrackItem::Type::midi, "step", midiClipTimeRange, nullptr));
 
+    auto duration = midiClipTimeRange.getLength();
+    double nbBeatsPerSecond = track->edit.tempoSequence.getBeatsPerSecondAt(
+        tracktion::TimePosition::fromSeconds(0));
+
+    int nbBeats = juce::roundToInt(duration.inSeconds() * nbBeatsPerSecond);
+
+    std::function<int(int)> numberOfNotesConstrainer = [this](int param) {
+        // numberOfNotes cannot be less than 1
+        // it also cannot be greater than the maximum number of notes allowed
+        if (param <= 1)
+            return 1;
+        else if (param >= app_models::StepChannel::getMaxNumberOfNotes(
+                              notesPerMeasure.get()))
+            return app_models::StepChannel::getMaxNumberOfNotes(
+                notesPerMeasure.get());
+        else
+            return param;
+    };
+
+    numberOfNotes.setConstrainer(numberOfNotesConstrainer);
+    // compute default total notes according to the duration in beats
+    int defaultNbNotes = juce::roundToInt(nbBeats * notesPerMeasure.get() /
+                                          NB_BEATS_PER_MEASURE);
+    // a default cached value is already set at this point, may be there is an
+    // other way to constrain a value
+    numberOfNotes.referTo(state, IDs::numberOfNotes, nullptr);
+    // so, force to set a new cached value.
+    numberOfNotes.setValue(defaultNbNotes, nullptr);
+    // --------------------------
+
+    // resync midi clip sequence with patterns
     generateMidiSequence();
 
     loopAroundClip(*midiClip);
@@ -112,6 +130,107 @@ StepSequencerViewModel::~StepSequencerViewModel() {
     track->edit.state.getChildWithName(IDs::EDIT_VIEW_STATE)
         .removeListener(this);
     track->edit.getTransport().removeListener(this);
+
+    // Cleanup sequence before going out to prevent cached data to restore on
+    // next instanciation
+    stepSequence.clear();
+}
+
+tracktion::MidiClip *StepSequencerViewModel::editCurrentMidiClip() {
+    if (auto trackItem = track->getNextTrackItemAt(
+            track->edit.getTransport().getPosition())) {
+        // only keep the clip if it starts before current pos
+        if (track->edit.getTransport().getPosition() <
+            trackItem->getPosition().getStart()) {
+            // nothing to return
+            return nullptr;
+        }
+
+        if (strcmp(trackItem->typeToString(trackItem->type), "midi") == 0) {
+            if (auto clip = dynamic_cast<tracktion::MidiClip *>(trackItem)) {
+                DBG("Edit Current clip");
+                // In case trackItem is longer than the maximum duration of the
+                // sequence, split the clip.
+                if (trackItem->getLengthInBeats().inBeats() >
+                    NB_BEATS_PER_MEASURE * MAX_MEASURES) {
+                    if (auto clipTrack = clip->getClipTrack()) {
+                        double secondsPerBeat =
+                            1.0 / track->edit.tempoSequence.getBeatsPerSecondAt(
+                                      tracktion::TimePosition::fromSeconds(0));
+
+                        midiClipStart = clip->getPosition().getStart();
+                        midiClipEnd = tracktion::TimePosition::fromSeconds(
+                            midiClipStart.inSeconds() + NB_BEATS_PER_MEASURE *
+                                                            MAX_MEASURES *
+                                                            secondsPerBeat);
+
+                        if (auto splittedClip =
+                                clipTrack->splitClip(*clip, midiClipEnd)) {
+                            // `splittedClip` is the 2nd part of the clip.
+                            // `splitClip` does not cleanup notes from first
+                            // clip. This forces note & offset cleanup
+                            if (auto newMidiClip =
+                                    dynamic_cast<tracktion::MidiClip *>(
+                                        splittedClip)) {
+                                DBG("Trim the 2nd part of the midiclip from "
+                                    "non-diplayable notes on the step "
+                                    "sequencer");
+                                newMidiClip->trimBeyondEnds(true, true,
+                                                            nullptr);
+                            }
+
+                            // We need the 1st part.
+                            DBG("return 1st part of the clip");
+                            return dynamic_cast<tracktion::MidiClip *>(clip);
+                        }
+                    }
+
+                    // nothing to return, split has failed
+                    return nullptr;
+                }
+
+                DBG("Return initial clip");
+                midiClipStart = trackItem->getPosition().getStart();
+                midiClipEnd = trackItem->getPosition().getEnd();
+                return clip;
+            }
+        }
+    }
+    // nothing to return, no clip or not midi clip or unable to get the
+    // trackItem as clip.
+    return nullptr;
+}
+
+tracktion::MidiClip *StepSequencerViewModel::insertMidiClip() {
+    DBG("Create new clip");
+    double secondsPerBeat = 1.0 / track->edit.tempoSequence.getBeatsPerSecondAt(
+                                      tracktion::TimePosition::fromSeconds(0));
+    //   note: actually there is a BeatDuration class, I'm not sure if it can be
+    //   used here
+    auto beatDuration = tracktion::TimeDuration::fromSeconds(secondsPerBeat);
+
+    // compute the available place before next clip
+    auto nextClip =
+        track->getNextTrackItemAt(track->edit.getTransport().getPosition());
+
+    midiClipStart = track->edit.getTransport().getPosition();
+
+    // hardcoded 4 measures cf. `StepChannel::maxNumberOfMeasures`
+    auto maxEnd = tracktion::TimePosition::fromSeconds(
+        midiClipStart.inSeconds() + NB_BEATS_PER_MEASURE * secondsPerBeat * 4);
+
+    if (nextClip && nextClip->getPosition().getStart() <= maxEnd) {
+        midiClipEnd = nextClip->getPosition().getStart();
+    } else {
+        // no next clip or empty track until max length of the clip
+        midiClipEnd = maxEnd;
+    }
+
+    const tracktion::TimeRange midiClipTimeRange =
+        tracktion::TimeRange(midiClipStart, midiClipEnd);
+
+    return dynamic_cast<tracktion::MidiClip *>(track->insertNewClip(
+        tracktion::TrackItem::Type::midi, "step", midiClipTimeRange, nullptr));
 }
 
 int StepSequencerViewModel::getNumChannels() {
@@ -122,7 +241,7 @@ int StepSequencerViewModel::getNumNotesPerChannel() {
     return app_models::StepChannel::getMaxNumberOfNotes(notesPerMeasure.get());
 }
 
-int StepSequencerViewModel::hasNoteAt(int channel, int noteIndex) {
+int StepSequencerViewModel::noteIntensityAt(int channel, int noteIndex) {
     return stepSequence.getChannel(channel)->getNote(noteIndex);
 }
 
@@ -131,40 +250,60 @@ int StepSequencerViewModel::hasNoteAt(int channel, int noteIndex) {
 void StepSequencerViewModel::toggleNoteNumberAtSelectedIndex(int noteNumber) {
     // FIXME: it crashes if octave is higher or lower than normal
     int channel = noteNumberToChannel(noteNumber);
-    int velocity = hasNoteAt(channel, selectedNoteIndex.get());
-    bool active = velocity > 0;
+    int intensity = noteIntensityAt(channel, selectedNoteIndex.get());
+    bool active = intensity > 0;
     bool isPlaying = track->edit.getTransport().isPlaying();
 
-    // get current note velocity then change for the next velocity:
+    // get current note intensity then change for the next intensity:
     // 3: 30% > 5: 60% > 7: 100% > 0: 0% …
-    // The velocity is encoded between 0 & 9
-    int nextVelo;
+    // The note's “intensity” is encoded on 3 bits (between 0 & 7)
+    int nextIntensity;
     if (isPlaying && active) {
-        nextVelo = 0;
+        nextIntensity = 0;
     } else if (isPlaying && !active) {
-        // when playing, the note is at max velocity
-        nextVelo = 7;
-    } else if (velocity < 3) {
-        nextVelo = 3;
-    } else if (velocity < 5) {
-        nextVelo = 5;
-    } else if (velocity < 7) {
-        nextVelo = 7;
+        // when playing, the note is at max intensity
+        nextIntensity = 7;
+    } else if (intensity < 3) {
+        nextIntensity = 3;
+    } else if (intensity < 5) {
+        nextIntensity = 5;
+    } else if (intensity < 7) {
+        nextIntensity = 7;
     } else {
-        nextVelo = 0;
+        nextIntensity = 0;
     }
 
     stepSequence.getChannel(channel)->setNote(selectedNoteIndex.get(),
-                                              nextVelo);
+                                              nextIntensity);
 
     if (isPlaying) {
         // When looping also add or remove note from the midi sequence to hear
-        if (nextVelo == 0) {
+        if (nextIntensity == 0) {
             removeNoteFromSequence(channel, selectedNoteIndex.get());
         } else {
-            addNoteToSequence(channel, selectedNoteIndex.get(), nextVelo);
+            addNoteToSequence(channel, selectedNoteIndex.get(), nextIntensity);
         }
     }
+}
+
+int StepSequencerViewModel::computeNoteIntensity(tracktion::MidiNote *note) {
+    // velocity is encoded as an int between 0-127 (TO CONFIRM)
+    // intensity is encoded as an int between 0-7
+    // coef is 0,05511811 = 7 * 1/127
+    long intensity = std::lround(note->getVelocity() * 0.05511811);
+
+    // 3: 30% | 5: 60% | 7: 100% | 0: 0% …
+    // The note's “intensity” is encoded on 3 bits (between 0 & 7)
+    int stepIntensity = 0;
+    if (intensity >= 2 && intensity < 4) {
+        stepIntensity = 3;
+    } else if (intensity >= 4 && intensity < 6) {
+        stepIntensity = 5;
+    } else if (intensity >= 6) {
+        stepIntensity = 7;
+    }
+
+    return stepIntensity;
 }
 
 int StepSequencerViewModel::noteNumberToChannel(int noteNumber) {
@@ -214,17 +353,24 @@ void StepSequencerViewModel::incrementNotesPerMeasure() {
         if (currentIndex != -1) {
             int newIndex;
             if (currentIndex == notesPerMeasureOptions.size() - 1)
-                newIndex = 0;
+                // stay on the last index
+                return;
             else
                 newIndex = currentIndex + 1;
 
-            notesPerMeasure.setValue(notesPerMeasureOptions[newIndex], nullptr);
+            int nextValue = notesPerMeasureOptions[newIndex];
+
+            notesPerMeasure.setValue(nextValue, nullptr);
+
             // compute the new number of notes for the measure division
             float prevNbMeasures =
                 numberOfNotes.get() / notesPerMeasureOptions[currentIndex];
             int newNbNotes =
                 (int)std::round(notesPerMeasure.get() * prevNbMeasures);
             numberOfNotes.setValue(newNbNotes, nullptr);
+
+            // recompute pattern according to the current midiclip
+            generateStepSequenceFromMidi();
         }
     }
 }
@@ -237,7 +383,8 @@ void StepSequencerViewModel::decrementNotesPerMeasure() {
         if (currentIndex != -1) {
             int newIndex;
             if (currentIndex == 0)
-                newIndex = notesPerMeasureOptions.size() - 1;
+                // stay on the first index
+                return;
             else
                 newIndex = currentIndex - 1;
 
@@ -248,6 +395,10 @@ void StepSequencerViewModel::decrementNotesPerMeasure() {
             int newNbNotes =
                 (int)std::round(notesPerMeasure.get() * prevNbMeasures);
             numberOfNotes.setValue(newNbNotes, nullptr);
+
+            // recompute pattern according to the current midiclip
+            // some notes can be lost during the process
+            generateStepSequenceFromMidi();
         }
     }
 }
@@ -312,7 +463,7 @@ void StepSequencerViewModel::copySelection() {
         std::to_string(to));
     for (int index = from; index <= to; index++) {
         for (int channel = 0; channel < getNumChannels(); channel++) {
-            int velocity = hasNoteAt(channel, index);
+            int velocity = noteIntensityAt(channel, index);
             if (velocity > 0) {
                 Note note;
                 note.index = index - from;
@@ -334,8 +485,8 @@ void StepSequencerViewModel::pasteSelection() {
     DBG("Pasting selection");
     int from = getSelectedNoteIndex();
     for (int noteIndex = 0; noteIndex < copiedNotes.size(); noteIndex++) {
-        int velocity = hasNoteAt(copiedNotes[noteIndex].channel,
-                                 copiedNotes[noteIndex].index);
+        int velocity = noteIntensityAt(copiedNotes[noteIndex].channel,
+                                       copiedNotes[noteIndex].index);
         addNoteToSequence(copiedNotes[noteIndex].channel,
                           from + copiedNotes[noteIndex].index, velocity);
 
@@ -446,25 +597,69 @@ void StepSequencerViewModel::removeListener(Listener *l) {
     listeners.remove(l);
 }
 
+/**
+ * Generate channel patterns from midiClip
+ * This will also clean the current patterns if any.
+ * And cleanup current clip from offset and unreachable notes.
+ */
+void StepSequencerViewModel::generateStepSequenceFromMidi() {
+    auto &sequence = midiClip->getSequence();
+
+    // Fill channels
+    if (!sequence.isEmpty()) {
+        DBG("Start fill patterns");
+        // Clear channels before filling again
+        stepSequence.clear();
+        // A clip may have an offset (after a split for example),
+        // we need to compute note position according to this offset
+        tracktion::BeatDuration offset = midiClip->getOffsetInBeats();
+
+        if (offset.inBeats() > 0) {
+            DBG("Trim the midiclip from non-diplayable notes on the step "
+                "sequencer");
+            midiClip->trimBeyondEnds(true, true, nullptr);
+        }
+
+        for (auto note : sequence.getNotes()) {
+            auto pos = note->getBeatPosition();
+            auto velocity = note->getVelocity();
+            auto noteNumber = note->getNoteNumber();
+            /* get the closest index of the beat position e.g. `beatsPos *
+             * (16/4)` */
+            long index = std::lround(pos.inBeats() * notesPerMeasure.get() /
+                                     NB_BEATS_PER_MEASURE);
+            jassert(index >= 0);
+            int intensity = computeNoteIntensity(note);
+            int channelIdx = noteNumberToChannel(noteNumber);
+
+            stepSequence.getChannel(channelIdx)->setNote(index, intensity);
+        }
+    }
+}
+
+/**
+ * Generate midiclip from channel patterns
+ */
 void StepSequencerViewModel::generateMidiSequence() {
     auto &sequence = midiClip->getSequence();
     sequence.clear(nullptr);
 
     for (int i = 0; i < getNumChannels(); i++) {
         for (int j = 0; j < getNumNotesPerChannel(); j++) {
-            int velocity = hasNoteAt(i, j);
-            if (velocity > 0) {
-                addNoteToSequence(i, j, velocity);
+            int intensity = noteIntensityAt(i, j);
+            if (intensity > 0) {
+                addNoteToSequence(i, j, intensity);
             }
         }
     }
 }
 
 void StepSequencerViewModel::addNoteToSequence(int channel, int noteIndex,
-                                               int dumbVelocity) {
-    // dumbVelocity is an int between 0-7
+                                               int intensity) {
+    // intensity is an int between 0-7
     // velocity is an int between 0 and 127
-    int velocity = dumbVelocity * 18;
+    // ratio is 127 ÷ 7 ≃ 18
+    int velocity = intensity * 18;
     // Need to get the pitch based on the sequence position and
     // current octave remember that we need to add the min note
     // number to get things correct since the min note number
@@ -498,9 +693,6 @@ StepSequencerViewModel::findNoteInSequence(int channel, int noteIndex) {
         channel + (NOTES_PER_OCTAVE * getZeroBasedOctave()) + MIN_NOTE_NUMBER;
     auto startBeat = tracktion::BeatPosition::fromBeats(
         double(noteIndex * 4.0) / double(notesPerMeasure.get()));
-    // auto duration =
-    //     tracktion::BeatDuration::fromBeats(4.0 /
-    //     double(notesPerMeasure.get()));
 
     // find the first node with matching pitch & startBeat
     for (auto note : sequence.getNotes()) {
