@@ -166,9 +166,21 @@ tracktion::MidiClip *StepSequencerViewModel::editCurrentMidiClip() {
 
                         if (auto splittedClip =
                                 clipTrack->splitClip(*clip, midiClipEnd)) {
-                            DBG("return 1st part of the clip");
-                            // splittedClip is the 2nd part of the clip.
+                            // `splittedClip` is the 2nd part of the clip.
+                            // `splitClip` does not cleanup notes from first
+                            // clip. This forces note & offset cleanup
+                            if (auto newMidiClip =
+                                    dynamic_cast<tracktion::MidiClip *>(
+                                        splittedClip)) {
+                                DBG("Trim the 2nd part of the midiclip from "
+                                    "non-diplayable notes on the step "
+                                    "sequencer");
+                                newMidiClip->trimBeyondEnds(true, true,
+                                                            nullptr);
+                            }
+
                             // We need the 1st part.
+                            DBG("return 1st part of the clip");
                             return dynamic_cast<tracktion::MidiClip *>(clip);
                         }
                     }
@@ -588,6 +600,7 @@ void StepSequencerViewModel::removeListener(Listener *l) {
 /**
  * Generate channel patterns from midiClip
  * This will also clean the current patterns if any.
+ * And cleanup current clip from offset and unreachable notes.
  */
 void StepSequencerViewModel::generateStepSequenceFromMidi() {
     auto &sequence = midiClip->getSequence();
@@ -597,6 +610,15 @@ void StepSequencerViewModel::generateStepSequenceFromMidi() {
         DBG("Start fill patterns");
         // Clear channels before filling again
         stepSequence.clear();
+        // A clip may have an offset (after a split for example),
+        // we need to compute note position according to this offset
+        tracktion::BeatDuration offset = midiClip->getOffsetInBeats();
+
+        if (offset.inBeats() > 0) {
+            DBG("Trim the midiclip from non-diplayable notes on the step "
+                "sequencer");
+            midiClip->trimBeyondEnds(true, true, nullptr);
+        }
 
         for (auto note : sequence.getNotes()) {
             auto pos = note->getBeatPosition();
@@ -610,8 +632,7 @@ void StepSequencerViewModel::generateStepSequenceFromMidi() {
             int intensity = computeNoteIntensity(note);
             int channelIdx = noteNumberToChannel(noteNumber);
 
-            stepSequence.getChannel(channelIdx)
-                ->setNote(index, intensity);
+            stepSequence.getChannel(channelIdx)->setNote(index, intensity);
         }
     }
 }
@@ -637,6 +658,7 @@ void StepSequencerViewModel::addNoteToSequence(int channel, int noteIndex,
                                                int intensity) {
     // intensity is an int between 0-7
     // velocity is an int between 0 and 127
+    // ratio is 127 ÷ 7 ≃ 18
     int velocity = intensity * 18;
     // Need to get the pitch based on the sequence position and
     // current octave remember that we need to add the min note
