@@ -17,6 +17,8 @@ class InternalPluginView
   public:
     InternalPluginView(tracktion::Plugin *p,
                        app_services::MidiCommandManager &mcm);
+    InternalPluginView(internal_plugins::DistortionPlugin *p,
+                       app_services::MidiCommandManager &mcm);
     InternalPluginView(tracktion::ReverbPlugin *p,
                        app_services::MidiCommandManager &mcm);
     InternalPluginView(tracktion::DelayPlugin *p,

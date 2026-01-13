@@ -8,6 +8,10 @@ and this project adheres to
 
 ## [Unreleased]
 
+### Added
+
+- Plugins: Distortion effect.
+
 ### Changed
 
 - Step Sequencer: Edit current clip instead of creating a new one.

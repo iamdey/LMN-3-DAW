@@ -61,6 +61,15 @@ class ExtendedUIBehaviour : public tracktion::UIBehaviour {
                 return internalPluginView;
             }
 
+            if (auto distortionPlugin =
+                    dynamic_cast<internal_plugins::DistortionPlugin *>(
+                        &(ws->plugin))) {
+                std::unique_ptr<InternalPluginView> internalPluginView =
+                    std::make_unique<InternalPluginView>(distortionPlugin,
+                                                         *midiCommandManager);
+                return internalPluginView;
+            }
+
             if (auto delayPlugin =
                     dynamic_cast<tracktion::DelayPlugin *>(&(ws->plugin))) {
                 std::unique_ptr<InternalPluginView> internalPluginView =

@@ -8,9 +8,6 @@ PluginTreeGroup::PluginTreeGroup(tracktion::Edit &e)
     : name("Plugins"), edit(e) {
     scanForPlugins();
 
-    // we need to add the app internal plugins to the cache:
-    // edit.engine.getPluginManager().createBuiltInType<internal_plugins::DrumSamplerPlugin>();
-
     auto &list = edit.engine.getPluginManager().knownPluginList;
 
     {
@@ -71,6 +68,7 @@ void PluginTreeGroup::populateBuiltInEffects(int &num) {
     //        addInternalPlugin<tracktion::VolumeAndPanPlugin>(*this,
     //        num); addInternalPlugin<tracktion::LevelMeterPlugin>(*this,
     //        num);
+    addInternalPlugin<internal_plugins::DistortionPlugin>(*this, num);
     addInternalPlugin<tracktion::EqualiserPlugin>(*this, num);
     addInternalPlugin<tracktion::ReverbPlugin>(*this, num);
     addInternalPlugin<tracktion::DelayPlugin>(*this, num);
