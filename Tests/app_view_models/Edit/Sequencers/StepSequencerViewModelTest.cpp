@@ -25,7 +25,7 @@ TEST_F(StepSequencerViewModelTest, getNumChannels) {
 }
 
 TEST_F(StepSequencerViewModelTest, getNumNotesPerChannel) {
-    EXPECT_EQ(viewModel.getNumNotesPerChannel(), 16);
+    EXPECT_EQ(viewModel.getNumNotesPerChannel(), 64);
 }
 
 } // namespace AppViewModelsTests
