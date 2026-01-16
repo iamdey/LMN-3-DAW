@@ -13,17 +13,17 @@ class PluginsListAdapterTest : public ::testing::Test {
         auto track = tracktion::getAudioTracks(*edit)[0];
 
         // Add 2 effects from the plugin effects group to the track
-        // we will add the equaliser and the Reverb
+        // we will add the equaliser(1) and the Reverb(2)
         // effects is group at index 1
         if (auto selectedPluginItem =
                 dynamic_cast<app_view_models::PluginTreeItem *>(
-                    group.getSubItem(1)->getSubItem(0)))
+                    group.getSubItem(1)->getSubItem(1)))
             track->pluginList.insertPlugin(
                 selectedPluginItem->create(track->edit), -1, nullptr);
 
         if (auto selectedPluginItem =
                 dynamic_cast<app_view_models::PluginTreeItem *>(
-                    group.getSubItem(1)->getSubItem(1)))
+                    group.getSubItem(1)->getSubItem(2)))
             track->pluginList.insertPlugin(
                 selectedPluginItem->create(track->edit), -1, nullptr);
     }

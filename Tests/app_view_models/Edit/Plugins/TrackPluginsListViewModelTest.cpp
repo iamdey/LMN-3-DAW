@@ -18,13 +18,13 @@ class TrackPluginsListViewModelTest : public ::testing::Test {
 
     void SetUp() override {
         // Add 2 effects from the plugin effects group to the track
-        // we will add the equaliser and the Reverb
+        // we will add the equaliser(1) and the Reverb(2)
         // effects is group at index 1
         auto singlePluginTrack =
             tracktion::getAudioTracks(*singlePluginEdit)[0];
         if (auto selectedPluginItem =
                 dynamic_cast<app_view_models::PluginTreeItem *>(
-                    singlePluginGroup.getSubItem(1)->getSubItem(0)))
+                    singlePluginGroup.getSubItem(1)->getSubItem(1)))
             singlePluginTrack->pluginList.insertPlugin(
                 selectedPluginItem->create(singlePluginTrack->edit), -1,
                 nullptr);
@@ -32,13 +32,13 @@ class TrackPluginsListViewModelTest : public ::testing::Test {
         auto multiPluginTrack = tracktion::getAudioTracks(*multiPluginEdit)[0];
         if (auto selectedPluginItem =
                 dynamic_cast<app_view_models::PluginTreeItem *>(
-                    multiPluginGroup.getSubItem(1)->getSubItem(0)))
+                    multiPluginGroup.getSubItem(1)->getSubItem(1)))
             multiPluginTrack->pluginList.insertPlugin(
                 selectedPluginItem->create(multiPluginTrack->edit), -1,
                 nullptr);
         if (auto selectedPluginItem =
                 dynamic_cast<app_view_models::PluginTreeItem *>(
-                    multiPluginGroup.getSubItem(1)->getSubItem(1)))
+                    multiPluginGroup.getSubItem(1)->getSubItem(2)))
             multiPluginTrack->pluginList.insertPlugin(
                 selectedPluginItem->create(multiPluginTrack->edit), -1,
                 nullptr);

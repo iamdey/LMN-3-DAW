@@ -9,6 +9,15 @@ InternalPluginView::InternalPluginView(tracktion::Plugin *p,
     init();
 }
 
+InternalPluginView::InternalPluginView(internal_plugins::DistortionPlugin *p,
+                                       app_services::MidiCommandManager &mcm)
+    : TabbedComponent(juce::TabbedButtonBar::Orientation::TabsAtTop),
+      viewModel(std::unique_ptr<app_view_models::InternalPluginViewModel>(
+          std::make_unique<app_view_models::DistortionPluginViewModel>(p))),
+      midiCommandManager(mcm) {
+    init();
+}
+
 InternalPluginView::InternalPluginView(tracktion::ReverbPlugin *p,
                                        app_services::MidiCommandManager &mcm)
     : TabbedComponent(juce::TabbedButtonBar::Orientation::TabsAtTop),

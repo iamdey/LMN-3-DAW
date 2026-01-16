@@ -15,6 +15,13 @@ class AvailablePluginsViewModelTest : public ::testing::Test {
     void SetUp() override {
         // flush any updates
         viewModel.handleUpdateNowIfNeeded();
+
+        // We need to add the app internal plugins to the cache (cf.
+        // `Main.cpp`):
+        engine.getPluginManager()
+            .createBuiltInType<internal_plugins::DrumSamplerPlugin>();
+        engine.getPluginManager()
+            .createBuiltInType<internal_plugins::DistortionPlugin>();
     }
 
     tracktion::Engine engine{"ENGINE"};
@@ -73,7 +80,8 @@ TEST_F(AvailablePluginsViewModelTest, setSelectedPluginIndexInstruments) {
 }
 
 TEST_F(AvailablePluginsViewModelTest, setSelectedPluginIndexEffects) {
-    // For effects there should only be 7
+    // For effects there should only be 8
+    // DistortionPlugin
     // EqualiserPlugin
     // ReverbPlugin
     // DelayPlugin
@@ -101,11 +109,11 @@ TEST_F(AvailablePluginsViewModelTest, setSelectedPluginIndexEffects) {
     viewModel.setSelectedPluginIndex(6);
     EXPECT_EQ(viewModel.getSelectedPluginIndex(), 6);
     viewModel.setSelectedPluginIndex(7);
-    EXPECT_EQ(viewModel.getSelectedPluginIndex(), 6);
+    EXPECT_EQ(viewModel.getSelectedPluginIndex(), 7);
     viewModel.setSelectedPluginIndex(8);
-    EXPECT_EQ(viewModel.getSelectedPluginIndex(), 6);
+    EXPECT_EQ(viewModel.getSelectedPluginIndex(), 7);
     viewModel.setSelectedPluginIndex(100);
-    EXPECT_EQ(viewModel.getSelectedPluginIndex(), 6);
+    EXPECT_EQ(viewModel.getSelectedPluginIndex(), 7);
 }
 
 TEST_F(AvailablePluginsViewModelTest, getSelectedCategory) {
@@ -128,11 +136,11 @@ TEST_F(AvailablePluginsViewModelTest, getSelectedPluginEffects) {
     viewModel.setSelectedCategoryIndex(1);
     viewModel.handleUpdateNowIfNeeded();
 
-    EXPECT_EQ(viewModel.getSelectedPlugin()->getName(), "4-Band Equaliser");
+    EXPECT_EQ(viewModel.getSelectedPlugin()->getName(), "Distortion");
 
     viewModel.setSelectedPluginIndex(5);
     viewModel.handleUpdateNowIfNeeded();
-    EXPECT_EQ(viewModel.getSelectedPlugin()->getName(), "Compressor");
+    EXPECT_EQ(viewModel.getSelectedPlugin()->getName(), "Phaser");
 }
 
 using ::testing::_;
