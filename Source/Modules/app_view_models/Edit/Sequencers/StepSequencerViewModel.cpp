@@ -62,6 +62,7 @@ StepSequencerViewModel::StepSequencerViewModel(tracktion::AudioTrack::Ptr t)
     midiClip = editCurrentMidiClip();
 
     if (midiClip == nullptr) {
+        // FIXME: when multiclip or when edit clip failed, clips ends before start
         midiClip = insertMidiClip();
     }
 
@@ -148,7 +149,18 @@ tracktion::MidiClip *StepSequencerViewModel::editCurrentMidiClip() {
 
         if (strcmp(trackItem->typeToString(trackItem->type), "midi") == 0) {
             if (auto clip = dynamic_cast<tracktion::MidiClip *>(trackItem)) {
-                DBG("Edit Current clip");
+                if (auto octave = getClipOctave(clip)) {
+                    int curr = (int)(editState.getProperty(app_view_models::IDs::currentOctave));
+                    if (*octave != curr) {
+                        // FIXME: doesn't change octave every where
+                        DBG("Change the octave to match the clip");
+                        editState.setProperty(app_view_models::IDs::currentOctave, *octave, nullptr);
+                    }
+                } else {
+                    // clip's notes are on more than 2 octaves and can't be edited here
+                    return nullptr;
+                }
+
                 // In case trackItem is longer than the maximum duration of the
                 // sequence, split the clip.
                 if (trackItem->getLengthInBeats().inBeats() >
@@ -241,16 +253,17 @@ int StepSequencerViewModel::getNumNotesPerChannel() {
     return app_models::StepChannel::getMaxNumberOfNotes(notesPerMeasure.get());
 }
 
-int StepSequencerViewModel::noteIntensityAt(int channel, int noteIndex) {
-    return stepSequence.getChannel(channel)->getNote(noteIndex);
+int StepSequencerViewModel::noteIntensityAt(int channelIndex, int noteIndex) {
+    if (auto channel = stepSequence.getChannel(channelIndex)) {
+        return channel->getNote(noteIndex);
+    }
 }
 
 // TODO: refactor with toggleNote(index, channel)
 
 void StepSequencerViewModel::toggleNoteNumberAtSelectedIndex(int noteNumber) {
-    // FIXME: it crashes if octave is higher or lower than normal
-    int channel = noteNumberToChannel(noteNumber);
-    int intensity = noteIntensityAt(channel, selectedNoteIndex.get());
+    int channelIndex = noteNumberToChannel(noteNumber);
+    int intensity = noteIntensityAt(channelIndex, selectedNoteIndex.get());
     bool active = intensity > 0;
     bool isPlaying = track->edit.getTransport().isPlaying();
 
@@ -273,15 +286,17 @@ void StepSequencerViewModel::toggleNoteNumberAtSelectedIndex(int noteNumber) {
         nextIntensity = 0;
     }
 
-    stepSequence.getChannel(channel)->setNote(selectedNoteIndex.get(),
+    if (auto channel = stepSequence.getChannel(channelIndex)) {
+        channel->setNote(selectedNoteIndex.get(),
                                               nextIntensity);
+    }
 
     if (isPlaying) {
         // When looping also add or remove note from the midi sequence to hear
         if (nextIntensity == 0) {
-            removeNoteFromSequence(channel, selectedNoteIndex.get());
+            removeNoteFromSequence(channelIndex, selectedNoteIndex.get());
         } else {
-            addNoteToSequence(channel, selectedNoteIndex.get(), nextIntensity);
+            addNoteToSequence(channelIndex, selectedNoteIndex.get(), nextIntensity);
         }
     }
 }
@@ -304,13 +319,6 @@ int StepSequencerViewModel::computeNoteIntensity(tracktion::MidiNote *note) {
     }
 
     return stepIntensity;
-}
-
-int StepSequencerViewModel::noteNumberToChannel(int noteNumber) {
-    // Note numbers range from 5 to 124
-    // Subtract the min note number from the note so that its zero based
-    int zeroBasedNoteNumber = noteNumber - MIN_NOTE_NUMBER;
-    return zeroBasedNoteNumber - (NOTES_PER_OCTAVE * getZeroBasedOctave());
 }
 
 int StepSequencerViewModel::getSelectedNoteIndex() {
@@ -737,6 +745,42 @@ int StepSequencerViewModel::getZeroBasedOctave() {
     }
 
     return zeroBasedOctave;
+}
+
+std::optional<int> StepSequencerViewModel::getClipOctave(tracktion::MidiClip *clip) {
+    int zeroBasedOctave = getZeroBasedOctave();
+    std::vector<int> notesOctaves{};
+
+    for (auto note: clip->getSequence().getNotes()) {
+        int zeroBasedNoteNumber = note->getNoteNumber() - MIN_NOTE_NUMBER;
+        notesOctaves.push_back(floor(zeroBasedNoteNumber / NOTES_PER_OCTAVE));
+    }
+
+    auto zeroBasedOctaves = std::minmax_element(notesOctaves.begin(), notesOctaves.end());
+    auto diff = *zeroBasedOctaves.second - *zeroBasedOctaves.first;
+
+    // StepSequencer can display only 24 notes => 2 octaves (2*12 notes)
+    if (diff * NOTES_PER_OCTAVE <= app_models::StepChannel::maxNumberOfChannels) {
+        // return the minimum octave possible
+        return *zeroBasedOctaves.first - abs(MIN_OCTAVE);
+    }
+
+    DBG("Octave range for the clip is over than max number of channels can handle");
+
+    return {};
+}
+
+int StepSequencerViewModel::noteNumberToChannel(int noteNumber) {
+    // Note numbers range from 5 to 124
+    // Subtract the min note number from the note so that its zero based
+    int zeroBasedNoteNumber = noteNumber - MIN_NOTE_NUMBER;
+    int res = zeroBasedNoteNumber - (NOTES_PER_OCTAVE * getZeroBasedOctave());
+
+    // channels are 2 octaves (2×12 notes)
+    jassert(res >= 0);
+    jassert(res < app_models::StepChannel::maxNumberOfChannels);
+
+    return res;
 }
 
 } // namespace app_view_models

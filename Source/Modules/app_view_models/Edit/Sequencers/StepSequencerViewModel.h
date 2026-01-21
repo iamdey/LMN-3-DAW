@@ -150,6 +150,8 @@ class StepSequencerViewModel : public juce::ValueTree::Listener,
     void startVideo() override {}
     void stopVideo() override {}
     int getZeroBasedOctave();
+    // int noteNumberToOctave(int noteNumber);
+    std::optional<int> getClipOctave(tracktion::MidiClip *clip);
     static double floorToFraction(double number, double denominator = 1);
 };
 
